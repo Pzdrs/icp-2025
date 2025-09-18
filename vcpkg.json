@@ -1,10 +1,5 @@
 {
   "dependencies": [
-    "fat",
-    "glew",
-    "glfw3",
-    "opencv4",
-    "glm",
-    "nolhmann-json"
+    "opengl"
   ]
 }
