@@ -6,7 +6,7 @@
 
 ```bash
 # with Nix
-nix-shell
+nix develop
 
 # without Nix (untested)
 brew install vcpkg # optionally cmake, gcc, etc.
