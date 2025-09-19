@@ -1,11 +1,14 @@
 {
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+  
   outputs =
     { self, nixpkgs, ... }:
     let
-      pkgs = import nixpkgs { system = "aarch64-darwin"; };
+      system = "aarch64-darwin";
+      pkgs = import nixpkgs { inherit system; };
     in
     {
-      devShells.aarch64-darwin.default = pkgs.mkShell {
+      devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           gcc
           cmake
