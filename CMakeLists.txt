@@ -11,7 +11,6 @@ find_package(glm CONFIG REQUIRED)
 
 add_executable(icp-fuckfest
     src/main.cpp
-    src/app.cpp
 )
 
 # Link libraries using vcpkg targets
