@@ -9,6 +9,9 @@
 nix develop
 
 # without Nix (untested)
-brew install vcpkg # optionally cmake, gcc, etc.
-export VCPKG_ROOT=$(which vcpkg)
+
+# 1) Clone vcpkg and bootstrp the binary
+git clone https://github.com/microsoft/vcpkg.git --depth 1
+cd vcpkg && ./bootstrap-vcpkg.sh
+export VCPKG_ROOT=$(pwd)
 ```
