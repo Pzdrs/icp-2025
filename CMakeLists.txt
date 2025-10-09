@@ -11,6 +11,10 @@ find_package(glm CONFIG REQUIRED)
 
 add_executable(icp-fuckfest
     src/main.cpp
+    src/ImageProcessor.cpp
+    src/FaceProcessor.cpp
+    src/fps_meter.cpp
+    src/CrossDrawer.cpp
 )
 
 # Link libraries using vcpkg targets
