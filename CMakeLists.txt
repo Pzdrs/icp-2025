@@ -9,8 +9,14 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(GLEW CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+
 add_executable(icp-fuckfest
-    src/main.cpp
+    ${SOURCES}
+)
+
+include_directories(
+    include
 )
 
 # Link libraries using vcpkg targets
