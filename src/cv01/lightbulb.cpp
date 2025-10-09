@@ -1,5 +1,8 @@
 #include <lightbulb.hpp>
 
+#define GRAYSCALE_THRESHOLD 240
+#define CROSS_SIZE 25
+
 void draw_cross(cv::Mat &img, int x, int y, int size)
 {
     cv::Point p1(x - size / 2, y);
@@ -57,7 +60,7 @@ void doLightbulb()
                 0.587 * pixel[1] + // Green
                 0.299 * pixel[2]); // Red
 
-            if (Y < 128)
+            if (Y < GRAYSCALE_THRESHOLD)
             {
                 frame2.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 0);
             }
@@ -91,9 +94,9 @@ void doLightbulb()
     std::cout << "Elapsed time: " << elapsed_seconds.count() << " sec" << std::endl;
 
     // vykresli kříž
-    draw_cross(frame, static_cast<int>(center.x), static_cast<int>(center.y), 25);
-    draw_cross_normalized(frame2, center_normalized, 25);
+    draw_cross(frame, static_cast<int>(center.x), static_cast<int>(center.y), CROSS_SIZE);
+    draw_cross_normalized(frame2, center_normalized, CROSS_SIZE);
 
-    cv::imshow("frame", frame);
-    cv::imshow("frame2", frame2);
+    cv::imshow("original", frame);
+    cv::imshow("thresholded", frame2);
 }
