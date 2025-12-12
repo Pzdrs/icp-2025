@@ -1,0 +1,20 @@
+VCPKG_ROOT ?= $(HOME)/vcpkg
+BUILD_DIR = build
+BINARY_NAME = icp-fuckfest
+
+.PHONY: all configure build clean
+
+all: build
+
+configure:
+	cmake -S . -B $(BUILD_DIR) \
+		-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
+
+build: configure
+	cmake --build $(BUILD_DIR)
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+run: build
+	./$(BUILD_DIR)/$(BINARY_NAME)
