@@ -4,91 +4,9 @@
 #include <iostream>
 #include <assert.h>
 #include <shader.hpp>
-#include "stb_image.h"
 #include <glm/glm.hpp>
-
-struct UVRect
-{
-    float u0, v0; // bottom-left
-    float u1, v1; // top-right
-};
-
-// Get UV coordinates for a sprite at (col, row)
-UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight)
-{
-    float uSize = (float)spriteSize / atlasWidth;
-    float vSize = (float)spriteSize / atlasHeight;
-
-    // OpenGL UV origin is bottom-left
-    float u0 = col * uSize;
-    float v0 = row * vSize;
-    float u1 = u0 + uSize;
-    float v1 = v0 + vSize;
-
-    return {u0, v0, u1, v1};
-}
-
-struct Vertex
-{
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec2 texCoord;
-};
-void initAttribs()
-{
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(Vertex),
-        (const void *)offsetof(Vertex, position));
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(Vertex),
-        (const void *)offsetof(Vertex, color));
-
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(
-        2,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(Vertex),
-        (const void *)offsetof(Vertex, texCoord));
-}
-unsigned int initTexture()
-{
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("resources/atlas.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    return texture;
-}
+#include <vertex.hpp>
+#include <atlas.hpp>
 
 int main(void)
 {
@@ -109,7 +27,7 @@ int main(void)
 #endif
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(720, 720, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -149,7 +67,7 @@ int main(void)
         0, 1, 2,
         2, 1, 3};
 
-    unsigned int texture = initTexture();
+    unsigned int blockAtlas = initAtlas("resources/blocks.png");
 
     unsigned int buffer;
     glGenBuffers(1, &buffer);
@@ -174,7 +92,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
         glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr);
 
