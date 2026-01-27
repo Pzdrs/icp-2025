@@ -3,7 +3,6 @@
     "glew",
     "glfw3",
     "glm",
-    "opencv4",
-    "opengl"
+    "opencv4"
   ]
 }
