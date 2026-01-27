@@ -84,7 +84,6 @@ int main(void)
 
     Shader shader("shaders/vertex.shader", "shaders/fragment.shader");
     shader.use();
-    shader.setInt("atlas", 0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
