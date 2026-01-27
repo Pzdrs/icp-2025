@@ -8,7 +8,7 @@ file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 find_package(OpenCV REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
-find_package(GLEW REQUIRED)
+find_package(glad REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
 add_executable(icp-fuckfest ${SOURCES})
@@ -16,7 +16,7 @@ add_executable(icp-fuckfest ${SOURCES})
 target_include_directories(icp-fuckfest PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 target_link_libraries(icp-fuckfest PRIVATE
-    GLEW::GLEW
+    glad::glad
     glfw              
     glm::glm          
 )

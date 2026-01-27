@@ -1,6 +1,6 @@
 {
   "dependencies": [
-    "glew",
+    "glad",
     "glfw3",
     "glm",
     "opencv4"
