@@ -201,7 +201,7 @@ int main(void)
 
         glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("projection", projection);
         shader.setMat4("view", camera.getViewMatrix());
 
@@ -239,24 +239,25 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    const float cameraSpeed = 5 * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, deltaTime);
+        camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, deltaTime);
+        camera.processKeyboard(MovementDirection::BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, deltaTime);
+        camera.processKeyboard(MovementDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, deltaTime);
+        camera.processKeyboard(MovementDirection::RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.processKeyboard(UP, deltaTime);
+        camera.processKeyboard(MovementDirection::UP, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.processKeyboard(DOWN, deltaTime);
+        camera.processKeyboard(MovementDirection::DOWN, deltaTime);
 
     if (commandHeld && !commandWasHeld)
         camera.zoomIn();
     if (!commandHeld && commandWasHeld)
-        camera.resetZoom();
+        camera.zoomOut();
+    
+    camera.tickZoom();
 
     commandWasHeld = commandHeld;
 }
