@@ -55,7 +55,7 @@ int main(void)
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    Shader shader("shaders/vertex.shader", "shaders/fragment.shader");
+    Shader shader("shaders/shader.vert", "shaders/shader.frag");
 
     UVRect uv = getSpriteUV(17, 8, 16, 1024, 1024);
 
