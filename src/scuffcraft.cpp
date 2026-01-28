@@ -163,7 +163,6 @@ void Scuffcraft::run()
     unsigned int blockAtlas = initAtlas("resources/blocks.png");
     glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
-
     while (!window.shouldClose())
     {
         window.pollEvents();
@@ -171,7 +170,7 @@ void Scuffcraft::run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window.window);
+        update(deltaTime);
 
         render(blockAtlas, shader, cubePositions);
 
@@ -188,6 +187,11 @@ void Scuffcraft::run()
 void Scuffcraft::render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions)
 {
     renderer.renderWorld(cubePositions, shader, camera);
+}
+
+void Scuffcraft::update(float deltaTime)
+{
+    processInput(window.window);
 }
 
 void Scuffcraft::shutdown()

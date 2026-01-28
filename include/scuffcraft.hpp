@@ -9,6 +9,7 @@ class Scuffcraft
 public:
     int init();
     void run();
+    void update(float deltaTime);
     void render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions);
     void shutdown();
 
