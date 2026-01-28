@@ -1,8 +1,8 @@
 #pragma once
 
+#include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
-#include <glad/glad.h>
 
 
 class Shader
@@ -11,6 +11,7 @@ public:
     unsigned int ID;
 
     Shader(const char *vertexPath, const char *fragmentPath);
+    Shader(): ID(0) {}
     ~Shader() {
         glUseProgram(0);
         glDeleteProgram(ID);

@@ -3,11 +3,11 @@
 #include <string>
 #include <iostream>
 #include <assert.h>
-#include <shader.hpp>
+#include <render/shader.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <vertex.hpp>
+#include <render/vertex.hpp>
 #include <atlas.hpp>
 #include <camera.hpp>
 #include "scuffcraft.hpp"
@@ -33,29 +33,19 @@ bool commandWasHeld = false;
 int Scuffcraft::init()
 {
     window.init();
+
+    glfwSetFramebufferSizeCallback(window.window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window.window, mouse_callback);
+    glfwSetScrollCallback(window.window, scroll_callback);
+
+    renderer.init();
+
     return 0;
 }
 
 void Scuffcraft::run()
 {
     init();
-
-    glfwSetFramebufferSizeCallback(window.window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window.window, mouse_callback);
-    glfwSetScrollCallback(window.window, scroll_callback);
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return;
-    }
-    printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-
-    // configure global opengl state
-    // -----------------------------
-    glEnable(GL_DEPTH_TEST);
 
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
 
@@ -116,7 +106,7 @@ void Scuffcraft::run()
         {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
         {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
     };
-    glm::vec3 cubePositions[] = {
+    std::vector<glm::vec3> cubePositions = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(2.0f, 5.0f, -15.0f),
         glm::vec3(-1.5f, -2.2f, -2.5f),
@@ -171,44 +161,21 @@ void Scuffcraft::run()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     unsigned int blockAtlas = initAtlas("resources/blocks.png");
+    glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
-    shader.use();
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window.window))
+    while (!window.shouldClose())
     {
+        window.pollEvents();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         processInput(window.window);
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindTexture(GL_TEXTURE_2D, blockAtlas);
+        render(blockAtlas, shader, cubePositions);
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", camera.getViewMatrix());
-
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            angle = glfwGetTime() * 25.0f;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window.window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
+        window.swapBuffers();
     }
 
     glDeleteVertexArrays(1, &VAO);
@@ -216,6 +183,11 @@ void Scuffcraft::run()
     glDeleteBuffers(1, &IBO);
 
     shutdown();
+}
+
+void Scuffcraft::render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions)
+{
+    renderer.renderWorld(cubePositions, shader, camera);
 }
 
 void Scuffcraft::shutdown()

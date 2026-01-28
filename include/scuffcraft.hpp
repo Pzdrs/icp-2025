@@ -1,13 +1,18 @@
 #pragma once
+#define GLFW_INCLUDE_NONE
 #include "window.hpp"
+#include "render/renderer.hpp"
+#include "render/shader.hpp"
 
 class Scuffcraft
 {
 public:
     int init();
     void run();
+    void render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions);
     void shutdown();
 
 private:
     Window window;
+    Renderer renderer;
 };
