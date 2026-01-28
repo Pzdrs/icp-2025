@@ -3,6 +3,10 @@
     "glad",
     "glfw3",
     "glm",
-    "opencv4"
+    "opencv4",
+    {
+      "name": "imgui",
+      "features": ["glfw-binding", "opengl3-binding"]
+    }
   ]
 }

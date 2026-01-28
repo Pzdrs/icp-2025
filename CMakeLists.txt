@@ -10,6 +10,7 @@ find_package(OpenCV REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 add_executable(icp-fuckfest ${SOURCES})
 
@@ -19,4 +20,5 @@ target_link_libraries(icp-fuckfest PRIVATE
     glad::glad
     glfw              
     glm::glm          
+    imgui::imgui
 )
