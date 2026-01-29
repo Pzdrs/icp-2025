@@ -155,10 +155,14 @@ void Scuffcraft::run()
     layout.push<float>(2); // texCoord
     va.addBuffer(vb, layout);
 
-    // IndexBuffer ib(indices, sizeof(indices));
-    
+    IndexBuffer ib(indices, sizeof(indices));
+
     unsigned int blockAtlas = initAtlas("resources/blocks.png");
     glBindTexture(GL_TEXTURE_2D, blockAtlas);
+
+    va.unbind();
+    vb.unbind();
+    ib.unbind();
 
     while (!window.shouldClose())
     {
@@ -167,9 +171,30 @@ void Scuffcraft::run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        renderer.clear();
+
         update(deltaTime);
 
-        render(blockAtlas, shader, cubePositions);
+        renderer.draw(va, ib, shader);
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", camera.getViewMatrix());
+
+        int i = 0;
+        for (auto &&cube : cubePositions)
+        {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cube);
+            float angle = 20.0f * i;
+            angle = glfwGetTime() * 25.0f;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            shader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            i++;
+        }
 
         window.swapBuffers();
     }
@@ -179,7 +204,6 @@ void Scuffcraft::run()
 
 void Scuffcraft::render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions)
 {
-    renderer.renderWorld(cubePositions, shader, camera);
 }
 
 void Scuffcraft::update(float deltaTime)
