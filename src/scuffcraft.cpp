@@ -11,10 +11,10 @@
 #include <atlas.hpp>
 #include <camera.hpp>
 #include "scuffcraft.hpp"
-#include <vertex_buffer.hpp>
-#include <index_buffer.hpp>
-#include <vertex_buffer_layout.hpp>
-#include <vertex_array.hpp>
+#include <render/vertex_buffer.hpp>
+#include <render/index_buffer.hpp>
+#include <render/vertex_buffer_layout.hpp>
+#include <render/vertex_array.hpp>
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);

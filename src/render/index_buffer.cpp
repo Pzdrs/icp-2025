@@ -1,4 +1,4 @@
-#include "index_buffer.hpp"
+#include "render/index_buffer.hpp"
 #include <glad/glad.h>
 
 IndexBuffer::IndexBuffer(const unsigned int *data, unsigned int count) : count(count)
