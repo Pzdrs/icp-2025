@@ -26,12 +26,27 @@ void Window::init()
     }
     
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // enable vsync
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    lockMouse();
+    setVSync(true);
 }
 
 void Window::shutdown()
 {
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+void Window::lockMouse()
+{
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void Window::unlockMouse()
+{
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::setVSync(bool enabled)
+{
+    glfwSwapInterval(enabled ? 1 : 0);
 }

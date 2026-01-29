@@ -139,7 +139,6 @@ void Scuffcraft::run()
 
     IndexBuffer ib(indices, sizeof(indices));
 
-
     va.unbind();
     vb.unbind();
     ib.unbind();

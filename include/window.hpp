@@ -10,5 +10,9 @@ class Window
     void swapBuffers() { glfwSwapBuffers(window); }
     bool shouldClose() { return glfwWindowShouldClose(window); }
 
+    void lockMouse();
+    void unlockMouse();
+    void setVSync(bool enabled);
+
     GLFWwindow* window;
 };
