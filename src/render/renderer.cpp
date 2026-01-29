@@ -25,9 +25,10 @@ void Renderer::clear() const
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::draw(const VertexArray &va, const Shader &shader)
+void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader)
 {
     shader.use();
     va.bind();
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    ib.bind();
+    glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
 }

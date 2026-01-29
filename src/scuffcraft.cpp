@@ -52,63 +52,46 @@ void Scuffcraft::run()
     init();
 
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
+    unsigned int blockAtlas = initAtlas("resources/blocks.png");
 
-    UVRect uv = getSpriteUV(17, 8, 16, 1024, 1024);
+    UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
 
-    // Vertex vertices[] = {
-    //     {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {uv.u0, uv.v0}},
-    //     {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {uv.u1, uv.v0}},
-    //     {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {uv.u0, uv.v1}},
-    //     {{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {uv.u1, uv.v1}},
-    // };
     Vertex vertices[] = {
-        // back face
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
+        // Back face (z = -0.5)
+        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 0
+        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 1
+        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 2
+        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 3
 
-        // front face
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
+        // Front face (z = 0.5)
+        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 4
+        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 5
+        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 6
+        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 7
 
-        // left face
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
+        // Left face (x = -0.5)
+        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},  // 8
+        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},   // 9
+        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},  // 10
+        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}, // 11
 
-        // right face
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
+        // Right face (x = 0.5)
+        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},  // 12
+        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},   // 13
+        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},  // 14
+        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}, // 15
 
-        // bottom face
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
+        // Bottom face (y = -0.5)
+        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 16
+        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 17
+        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 18
+        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 19
 
-        // top face
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},
+        // Top face (y = 0.5)
+        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 20
+        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 21
+        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 22
+        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}   // 23
     };
     std::vector<glm::vec3> cubePositions = {
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -121,31 +104,30 @@ void Scuffcraft::run()
         glm::vec3(1.5f, 2.0f, -2.5f),
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
-
     unsigned int indices[] = {
-        // back
+        // Back face
         0, 1, 2,
-        2, 1, 3,
+        2, 3, 0,
 
-        // front
+        // Front face
         4, 5, 6,
-        6, 5, 7,
+        6, 7, 4,
 
-        // left
+        // Left face
         8, 9, 10,
-        10, 9, 11,
+        10, 11, 8,
 
-        // right
+        // Right face
         12, 13, 14,
-        14, 13, 15,
+        14, 15, 12,
 
-        // bottom
+        // Bottom face
         16, 17, 18,
-        18, 17, 19,
+        18, 19, 16,
 
-        // top
+        // Top face
         20, 21, 22,
-        22, 21, 23};
+        22, 23, 20};
 
     VertexArray va;
     VertexBuffer vb(vertices, sizeof(vertices));
@@ -157,8 +139,6 @@ void Scuffcraft::run()
 
     IndexBuffer ib(indices, sizeof(indices));
 
-    unsigned int blockAtlas = initAtlas("resources/blocks.png");
-    glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
     va.unbind();
     vb.unbind();
@@ -190,7 +170,7 @@ void Scuffcraft::run()
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
 
-            renderer.draw(va, shader);
+            renderer.draw(va, ib, shader);
             i++;
         }
 

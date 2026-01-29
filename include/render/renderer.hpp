@@ -10,7 +10,7 @@ class Renderer
 {
 public:
     void clear() const;
-    void draw(const VertexArray &va, const Shader &shader);
+    void draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader);
     int init();
     void shutdown();
 
