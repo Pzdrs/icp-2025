@@ -175,8 +175,6 @@ void Scuffcraft::run()
 
         update(deltaTime);
 
-        renderer.draw(va, ib, shader);
-
         glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
         shader.setMat4("projection", projection);
         shader.setMat4("view", camera.getViewMatrix());
@@ -192,7 +190,7 @@ void Scuffcraft::run()
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             shader.setMat4("model", model);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            renderer.draw(va, shader);
             i++;
         }
 
