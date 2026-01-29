@@ -11,6 +11,10 @@
 #include <atlas.hpp>
 #include <camera.hpp>
 #include "scuffcraft.hpp"
+#include <vertex_buffer.hpp>
+#include <index_buffer.hpp>
+#include <vertex_buffer_layout.hpp>
+#include <vertex_array.hpp>
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -143,23 +147,16 @@ void Scuffcraft::run()
         20, 21, 22,
         22, 21, 23};
 
-    // macOS forcuje OpenGL Core Profile kterej defaultne nebinduje VAO - musim bindnout manualne
-    // kdyz totiz neni bindnutej zadnej VAO, tak OpenGL ignoruje vsechny vertex related calls nebo co nevim
-    unsigned int VBO, VAO, IBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &IBO);
+    VertexArray va;
+    VertexBuffer vb(vertices, sizeof(vertices));
+    VertexBufferLayout layout;
+    layout.push<float>(3); // position
+    layout.push<float>(3); // color
+    layout.push<float>(2); // texCoord
+    va.addBuffer(vb, layout);
 
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    initAttribs();
-
-    // index buffer (avoid vertex duplication)
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
+    // IndexBuffer ib(indices, sizeof(indices));
+    
     unsigned int blockAtlas = initAtlas("resources/blocks.png");
     glBindTexture(GL_TEXTURE_2D, blockAtlas);
 
@@ -176,10 +173,6 @@ void Scuffcraft::run()
 
         window.swapBuffers();
     }
-
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &IBO);
 
     shutdown();
 }
