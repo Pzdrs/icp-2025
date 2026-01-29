@@ -15,6 +15,7 @@
 #include <render/index_buffer.hpp>
 #include <render/vertex_buffer_layout.hpp>
 #include <render/vertex_array.hpp>
+#include <world.hpp>
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -44,6 +45,10 @@ int Scuffcraft::init()
 
     renderer.init();
 
+    Chunk::layout.push<float>(3); // position
+    Chunk::layout.push<float>(3); // color
+    Chunk::layout.push<float>(2); // texCoord
+
     return 0;
 }
 
@@ -55,6 +60,8 @@ void Scuffcraft::run()
     unsigned int blockAtlas = initAtlas("resources/blocks.png");
 
     UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
+
+    World world;
 
     Vertex vertices[] = {
         // Back face (z = -0.5)
@@ -155,8 +162,10 @@ void Scuffcraft::run()
         update(deltaTime);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", camera.getViewMatrix());
+        shader.setMat4("uProjection", projection);
+        shader.setMat4("uView", camera.getViewMatrix());
+
+        world.draw(renderer, shader);
 
         int i = 0;
         for (auto &&cube : cubePositions)
@@ -167,7 +176,7 @@ void Scuffcraft::run()
             float angle = 20.0f * i;
             angle = glfwGetTime() * 25.0f;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMat4("model", model);
+            shader.setMat4("uTransform", model);
 
             renderer.draw(va, ib, shader);
             i++;
