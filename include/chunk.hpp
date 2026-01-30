@@ -22,7 +22,7 @@ public:
     Chunk();
     ~Chunk();
     static const int SIZE_XZ = 16;
-    static const int SIZE_Y = 64;
+    static const int SIZE_Y = 1;
     static VertexBufferLayout layout;
     Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
     void generateMesh();

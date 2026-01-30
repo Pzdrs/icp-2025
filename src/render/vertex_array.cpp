@@ -1,12 +1,15 @@
 #include "render/vertex_array.hpp"
+#include <iostream>
 
 VertexArray::VertexArray()
 {
     glGenVertexArrays(1, &rendererID);
+    std::cout << "Created VertexArray with ID: " << rendererID << std::endl;
 }
 
 VertexArray::~VertexArray()
 {
+    std::cout << "Destroying VertexArray with ID: " << rendererID << std::endl;
     glDeleteVertexArrays(1, &rendererID);
 }
 

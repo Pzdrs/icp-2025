@@ -61,56 +61,61 @@ void Scuffcraft::run()
 
     UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
 
+    std::cout << "UV Coordinates: "
+                      << "u0: " << uv.u0 << ", v0: " << uv.v0
+                      << ", u1: " << uv.u1 << ", v1: " << uv.v1 << std::endl;
+
     World world;
 
     Vertex vertices[] = {
-        // Back face (z = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 0
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 1
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 2
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 3
+        // Back face (z = 0)
+        {{0, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},  // back top left
+        {{1, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},  // back top right
+        {{1, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}}, // back bottom right
+        {{0, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}}, // back bottom left
 
-        // Front face (z = 0.5)
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 4
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 5
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 6
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 7
+        // Front face (z = 1)
+        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
+        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
+        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
+        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
 
-        // Left face (x = -0.5)
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},  // 8
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},   // 9
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},  // 10
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}, // 11
+        // Left face (x = 0)
+        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
+        {{0, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},
+        {{0, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}},
+        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
 
-        // Right face (x = 0.5)
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v1}},  // 12
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},   // 13
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},  // 14
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}, // 15
+        // Right face (x = 1)
+        {{1, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},
+        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
+        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
+        {{1, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}},
 
-        // Bottom face (y = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 16
-        {{0.5f, -0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 17
-        {{0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 18
-        {{-0.5f, -0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}},  // 19
+        // Top face (y = 0)
+        {{0, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},
+        {{1, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},
+        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
+        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
 
-        // Top face (y = 0.5)
-        {{-0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u0, uv.v1}}, // 20
-        {{0.5f, 0.5f, -0.5f}, {0, 0, 0}, {uv.u1, uv.v1}},  // 21
-        {{0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u1, uv.v0}},   // 22
-        {{-0.5f, 0.5f, 0.5f}, {0, 0, 0}, {uv.u0, uv.v0}}   // 23
+        // Bottom face (y = -1)
+        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
+        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
+        {{1, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}},
+        {{0, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}},
     };
-    std::vector<glm::vec3> cubePositions = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)};
+
+    // std::vector<glm::vec3> cubePositions = {
+    //     // glm::vec3(0.0f, 0.0f, 0.0f),
+    //     glm::vec3(2.0f, 5.0f, -15.0f),
+    //     glm::vec3(-1.5f, -2.2f, -2.5f),
+    //     glm::vec3(-3.8f, -2.0f, -12.3f),
+    //     glm::vec3(2.4f, -0.4f, -3.5f),
+    //     glm::vec3(-1.7f, 3.0f, -7.5f),
+    //     glm::vec3(1.3f, -2.0f, -2.5f),
+    //     glm::vec3(1.5f, 2.0f, -2.5f),
+    //     glm::vec3(1.5f, 0.2f, -1.5f),
+    //     glm::vec3(-1.3f, 1.0f, -1.5f)};
     unsigned int indices[] = {
         // Back face
         0, 1, 2,
@@ -136,19 +141,33 @@ void Scuffcraft::run()
         20, 21, 22,
         22, 23, 20};
 
+    // Vertex pyramid[] = {
+    //     // Base
+    //     {{0.0f, 0.0f, 0.0f}, {1, 0, 0}, {0.0f, 0.0f}},
+    //     {{1.0f, 0.0f, 0.0f}, {0, 1, 0}, {1.0f, 0.0f}},
+    //     {{0.0f, 0.0f, 1.0f}, {0, 0, 1}, {1.0f, 1.0f}},
+    //     {{1.0f, 0.0f, 1.0f}, {1, 1, 0}, {0.0f, 1.0f}},
+    //     // Apex
+    //     {{0.5f, 1.0f, 0.5f}, {1, 0, 1}, {0.5f, 0.5f}}};
+    // unsigned int pyramidIndices[] = {
+    //     0, 1, 2,
+    //     2, 3, 1,
+
+    //     0, 1, 4,
+    //     1, 3, 4,
+    //     3, 2, 4,
+    //     2, 0, 4};
+
+    // VertexArray pyramidVA;
+    // VertexBuffer pyramidVB(pyramid, sizeof(pyramid));
+    // pyramidVA.addBuffer(pyramidVB, Chunk::layout);
+    // IndexBuffer pyramidIB(pyramidIndices, sizeof(pyramidIndices) / sizeof(unsigned int));
+
     VertexArray va;
     VertexBuffer vb(vertices, sizeof(vertices));
-    VertexBufferLayout layout;
-    layout.push<float>(3); // position
-    layout.push<float>(3); // color
-    layout.push<float>(2); // texCoord
-    va.addBuffer(vb, layout);
+    va.addBuffer(vb, Chunk::layout);
 
     IndexBuffer ib(indices, sizeof(indices));
-
-    va.unbind();
-    vb.unbind();
-    ib.unbind();
 
     while (!window.shouldClose())
     {
@@ -164,23 +183,40 @@ void Scuffcraft::run()
         glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
         shader.setMat4("uProjection", projection);
         shader.setMat4("uView", camera.getViewMatrix());
+        shader.setMat4("uTransform", glm::mat4(1.0f));
 
-        world.draw(renderer, shader);
+        // glBindTexture(GL_TEXTURE_2D, 0);
+        // renderer.draw(pyramidVA, pyramidIB, shader);
 
-        int i = 0;
-        for (auto &&cube : cubePositions)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cube);
-            float angle = 20.0f * i;
-            angle = glfwGetTime() * 25.0f;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader.setMat4("uTransform", model);
+        // glBindTexture(GL_TEXTURE_2D, blockAtlas);
+        renderer.draw(va, ib, shader);
 
-            renderer.draw(va, ib, shader);
-            i++;
-        }
+        // world.draw(renderer, shader);
+
+        // int i = 0;
+        // for (auto &&cube : cubePositions)
+        // {
+        //     // calculate the model matrix for each object and pass it to shader before drawing
+        //     glm::mat4 model = glm::mat4(1.0f);
+
+        //     // 1️⃣ move cube into world
+        //     model = glm::translate(model, cube);
+
+        //     // 2️⃣ move pivot to cube center
+        //     model = glm::translate(model, glm::vec3(0.5f, 0.5f, 0.5f));
+
+        //     // 3️⃣ rotate around center
+        //     float angle = glfwGetTime() * 25.0f;
+        //     model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+        //     // 4️⃣ move pivot back to corner
+        //     model = glm::translate(model, glm::vec3(-0.5f, -0.5f, -0.5f));
+
+        //     shader.setMat4("uTransform", model);
+        //     renderer.draw(va, ib, shader);
+        //     // renderer.drawWithoutIB(va, 36, shader);
+        //     i++;
+        // }
 
         window.swapBuffers();
     }

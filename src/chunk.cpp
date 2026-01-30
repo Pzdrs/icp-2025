@@ -1,20 +1,44 @@
 #include "chunk.hpp"
 #include <iostream>
 #include <render/vertex.hpp>
+#include <atlas.hpp>
 
 static const glm::vec3 cubeVerts[6][4] = {
-    // Front
-    {{0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1}},
-    // Back
-    {{1, 0, 0}, {0, 0, 0}, {0, 1, 0}, {1, 1, 0}},
-    // Left
-    {{0, 0, 0}, {0, 0, 1}, {0, 1, 1}, {0, 1, 0}},
-    // Right
-    {{1, 0, 1}, {1, 0, 0}, {1, 1, 0}, {1, 1, 1}},
-    // Top
-    {{0, 1, 1}, {1, 1, 1}, {1, 1, 0}, {0, 1, 0}},
-    // Bottom
-    {{0, 0, 0}, {1, 0, 0}, {1, 0, 1}, {0, 0, 1}},
+    // Back face (z = 0)
+    {{0, 0, 0},   // back top left
+     {1, 0, 0},   // back top right
+     {1, -1, 0},  // back bottom right
+     {0, -1, 0}}, // back bottom left
+
+    // Front face (z = 1)
+    {{0, 0, 1},
+     {1, 0, 1},
+     {1, -1, 1},
+     {0, -1, 1}},
+
+    // Left face (x = 0)
+    {{0, 0, 1},
+     {0, 0, 0},
+     {0, -1, 0},
+     {0, -1, 1}},
+
+    // Right face (x = 1)
+    {{1, 0, 0},
+     {1, 0, 1},
+     {1, -1, 1},
+     {1, -1, 0}},
+
+    // Top face (y = 0)
+    {{0, 0, 0},
+     {1, 0, 0},
+     {1, 0, 1},
+     {0, 0, 1}},
+
+    // Bottom face (y = -1)
+    {{0, -1, 1},
+     {1, -1, 1},
+     {1, -1, 0},
+     {0, -1, 0}},
 };
 
 static const unsigned int quadIndices[6] = {
@@ -22,7 +46,11 @@ static const unsigned int quadIndices[6] = {
     2, 3, 0};
 
 static const glm::vec2 quadUVs[4] = {
-    {0, 0}, {1, 0}, {1, 1}, {0, 1}};
+    {0, 1}, // 0 = top-left
+    {1, 1}, // 1 = top-right
+    {1, 0}, // 2 = bottom-right
+    {0, 0}, // 3 = bottom-left
+};
 
 VertexBufferLayout Chunk::layout;
 
@@ -31,9 +59,21 @@ Chunk::~Chunk()
     std::cout << "Destroying Chunk\n";
 }
 
-Chunk::Chunk() : vb(nullptr, 0), ib(nullptr, 0)
+Chunk::Chunk()
 {
     std::cout << "Creating Chunk\n";
+}
+
+glm::vec2 getBlockUV(BlockType type, int vertexIndex)
+{
+    UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
+
+    const glm::vec2 &c = quadUVs[vertexIndex];
+    float u = c.x ? uv.u1 : uv.u0;
+    float v = c.y ? uv.v1 : uv.v0;
+
+
+    return {u, v};
 }
 
 void Chunk::generateMesh()
@@ -59,9 +99,9 @@ void Chunk::generateMesh()
                     for (int v = 0; v < 4; v++)
                     {
                         Vertex vert;
-                        vert.position = blockPos + cubeVerts[face][v];
-                        vert.color = {1.0f, 1.0f, 1.0f};
-                        vert.texCoord = quadUVs[v];
+                        vert.position = cubeVerts[face][v] + blockPos;
+                        vert.color = {0.0f, 0.0f, 0.0f};
+                        vert.texCoord = getBlockUV(blocks[x][y][z].type, v);
 
                         vertices.push_back(vert);
                     }
@@ -74,14 +114,15 @@ void Chunk::generateMesh()
                 }
             }
 
-    va.bind();
-
     vb = VertexBuffer(vertices.data(), vertices.size() * sizeof(Vertex));
     ib = IndexBuffer(indices.data(), indices.size());
 
     va.addBuffer(vb, layout);
 
     va.unbind();
+    vb.unbind();
+    ib.unbind();
+    std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
 void Chunk::draw(const Renderer &renderer, const Shader &shader)

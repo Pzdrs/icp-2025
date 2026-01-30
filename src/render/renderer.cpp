@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "render/renderer.hpp"
 #include <stdio.h>
+#include <iostream>
 
 int Renderer::init()
 {
@@ -30,5 +31,12 @@ void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &
     shader.use();
     va.bind();
     ib.bind();
+
     glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
+}
+void Renderer::drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const
+{
+    shader.use();
+    va.bind();
+    glDrawArrays(GL_TRIANGLES, 0, count);
 }

@@ -11,7 +11,7 @@ struct UVRect
 };
 
 // Get UV coordinates for a sprite at (col, row)
-UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight)
+inline UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight)
 {
     float uSize = (float)spriteSize / atlasWidth;
     float vSize = (float)spriteSize / atlasHeight;
@@ -25,7 +25,7 @@ UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHe
     return {u0, v0, u1, v1};
 }
 
-unsigned int initAtlas(const char *path)
+inline unsigned int initAtlas(const char *path)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -37,9 +37,11 @@ unsigned int initAtlas(const char *path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
+        std::cout << "Loaded texture: " << path << " (" << width << "x" << height << ", " << nrChannels << " channels)" << std::endl;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }

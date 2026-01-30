@@ -11,6 +11,7 @@ class Renderer
 public:
     void clear() const;
     void draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader) const;
+    void drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const;
     int init();
     void shutdown();
 
