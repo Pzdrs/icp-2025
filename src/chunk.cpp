@@ -2,55 +2,7 @@
 #include <iostream>
 #include <render/vertex.hpp>
 #include <atlas.hpp>
-
-static const glm::vec3 cubeVerts[6][4] = {
-    // Back face (z = 0)
-    {{0, 0, 0},   // back top left
-     {1, 0, 0},   // back top right
-     {1, -1, 0},  // back bottom right
-     {0, -1, 0}}, // back bottom left
-
-    // Front face (z = 1)
-    {{0, 0, 1},
-     {1, 0, 1},
-     {1, -1, 1},
-     {0, -1, 1}},
-
-    // Left face (x = 0)
-    {{0, 0, 1},
-     {0, 0, 0},
-     {0, -1, 0},
-     {0, -1, 1}},
-
-    // Right face (x = 1)
-    {{1, 0, 0},
-     {1, 0, 1},
-     {1, -1, 1},
-     {1, -1, 0}},
-
-    // Top face (y = 0)
-    {{0, 0, 0},
-     {1, 0, 0},
-     {1, 0, 1},
-     {0, 0, 1}},
-
-    // Bottom face (y = -1)
-    {{0, -1, 1},
-     {1, -1, 1},
-     {1, -1, 0},
-     {0, -1, 0}},
-};
-
-static const unsigned int quadIndices[6] = {
-    0, 1, 2,
-    2, 3, 0};
-
-static const glm::vec2 quadUVs[4] = {
-    {0, 1}, // 0 = top-left
-    {1, 1}, // 1 = top-right
-    {1, 0}, // 2 = bottom-right
-    {0, 0}, // 3 = bottom-left
-};
+#include <block.hpp>
 
 VertexBufferLayout Chunk::layout;
 
@@ -64,14 +16,20 @@ Chunk::Chunk()
     std::cout << "Creating Chunk\n";
 }
 
-glm::vec2 getBlockUV(BlockType type, int vertexIndex)
+glm::vec2 getBlockUV(BlockType type, int face, int vertexIndex)
 {
-    UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
+    // actual UVs on the atlas
+    UVRect uv;
+    if (face == 0 || face == 1 || face == 2 || face == 3)
+        uv = getSpriteUV(20, 6, 16, 1024, 1024);
+    else if (face == 4)
+        uv = getSpriteUV(21, 5, 16, 1024, 1024);
+    else // face == 5
+        uv = getSpriteUV(17, 10, 16, 1024, 1024);
 
-    const glm::vec2 &c = quadUVs[vertexIndex];
+    const glm::vec2 &c = FACE_UVS[vertexIndex];
     float u = c.x ? uv.u1 : uv.u0;
     float v = c.y ? uv.v1 : uv.v0;
-
 
     return {u, v};
 }
@@ -95,20 +53,22 @@ void Chunk::generateMesh()
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
-                    // Add 4 vertices
+                    // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
                     {
                         Vertex vert;
-                        vert.position = cubeVerts[face][v] + blockPos;
+                        vert.position = CUBE_VERTS[face][v] + blockPos;
                         vert.color = {0.0f, 0.0f, 0.0f};
-                        vert.texCoord = getBlockUV(blocks[x][y][z].type, v);
+
+                        int uvIndex = FACE_UV_MAP[face][v];
+                        vert.texCoord = getBlockUV(blocks[x][y][z].type, face, uvIndex);
 
                         vertices.push_back(vert);
                     }
 
-                    // Add indices
+                    // Add 6 indices per face
                     for (int i = 0; i < 6; i++)
-                        indices.push_back(indexOffset + quadIndices[i]);
+                        indices.push_back(indexOffset + FACE_INDICES[i]);
 
                     indexOffset += 4;
                 }

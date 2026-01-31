@@ -16,9 +16,12 @@ inline UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int 
     float uSize = (float)spriteSize / atlasWidth;
     float vSize = (float)spriteSize / atlasHeight;
 
+    int rows = atlasHeight / spriteSize;
+    int flippedRow = rows - 1 - row;
+
     // OpenGL UV origin is bottom-left
     float u0 = col * uSize;
-    float v0 = row * vSize;
+    float v0 = flippedRow * vSize;
     float u1 = u0 + uSize;
     float v1 = v0 + vSize;
 

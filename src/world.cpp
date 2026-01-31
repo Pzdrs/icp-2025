@@ -22,6 +22,10 @@ World::World()
             {
                 if (y < 4)
                     newChunk->blocks[x][y][z] = Block{BlockType::GRASS};
+                else if (y < 8)
+                    newChunk->blocks[x][y][z] = Block{BlockType::DIRT};
+                else if (y < 12)
+                    newChunk->blocks[x][y][z] = Block{BlockType::STONE};
                 else
                     newChunk->blocks[x][y][z] = Block{BlockType::AIR};
             }

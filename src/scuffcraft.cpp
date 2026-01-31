@@ -189,9 +189,9 @@ void Scuffcraft::run()
         // renderer.draw(pyramidVA, pyramidIB, shader);
 
         // glBindTexture(GL_TEXTURE_2D, blockAtlas);
-        renderer.draw(va, ib, shader);
+        //renderer.draw(va, ib, shader);
 
-        // world.draw(renderer, shader);
+        world.draw(renderer, shader);
 
         // int i = 0;
         // for (auto &&cube : cubePositions)
