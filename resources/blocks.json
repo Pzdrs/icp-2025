@@ -1,0 +1,52 @@
+[
+  {
+    "id": "air",
+    "name": "Air",
+    "solid": false,
+    "alpha": 0.0
+  },
+  {
+    "id": "stone",
+    "name": "Stone",
+    "solid": true,
+    "alpha": 1.0,
+    "textures": {
+      "side": [30, 18],
+      "top": [30, 18],
+      "bottom": [30, 18]
+    }
+  },
+  {
+    "id": "dirt",
+    "name": "Dirt",
+    "solid": true,
+    "alpha": 1.0,
+    "textures": {
+      "side": [17, 10],
+      "top": [17, 10],
+      "bottom": [17, 10]
+    }
+  },
+  {
+    "id": "grass",
+    "name": "Grass Block",
+    "solid": true,
+    "alpha": 1.0,
+    "textures": {
+      "side": [20, 6],
+      "top": [21, 5],
+      "bottom": [17, 10]
+    }
+  },
+  {
+    "id": "water",
+    "name": "Water",
+    "solid": false,
+    "alpha": 0.5,
+    "textures": {
+      "side": [8, 4],
+      "top": [15, 20],
+      "bottom": [15, 20]
+    }
+  }
+]

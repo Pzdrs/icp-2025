@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "chunk.hpp"
+#include "block.hpp"
 
 struct IVec2Hash
 {
@@ -18,7 +19,7 @@ struct IVec2Hash
 class World
 {
 public:
-    World();
+    World(const BlockRegistry &blockRegistry);
     void draw(const Renderer &renderer, const Shader &shader);
 
 private:

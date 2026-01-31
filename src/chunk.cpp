@@ -16,16 +16,18 @@ Chunk::Chunk()
     std::cout << "Creating Chunk\n";
 }
 
-glm::vec2 getBlockUV(BlockType type, int face, int vertexIndex)
+glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRegistry &blockRegistry)
 {
+    Face face = static_cast<Face>(faceIndex);
+    BlockTexture tex = getBlockTexture(type, blockRegistry);
     // actual UVs on the atlas
     UVRect uv;
-    if (face == 0 || face == 1 || face == 2 || face == 3)
-        uv = getSpriteUV(20, 6, 16, 1024, 1024);
-    else if (face == 4)
-        uv = getSpriteUV(21, 5, 16, 1024, 1024);
+    if (isSideFace(face))
+        uv = getSpriteUV(tex.side.u, tex.side.v, 16, 1024, 1024);
+    else if (face == Face::FACE_UP)
+        uv = getSpriteUV(tex.top.u, tex.top.v, 16, 1024, 1024);
     else // face == 5
-        uv = getSpriteUV(17, 10, 16, 1024, 1024);
+        uv = getSpriteUV(tex.bottom.u, tex.bottom.v, 16, 1024, 1024);
 
     const glm::vec2 &c = FACE_UVS[vertexIndex];
     float u = c.x ? uv.u1 : uv.u0;
@@ -34,7 +36,7 @@ glm::vec2 getBlockUV(BlockType type, int face, int vertexIndex)
     return {u, v};
 }
 
-void Chunk::generateMesh()
+void Chunk::generateMesh(const BlockRegistry &blockRegistry)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -45,7 +47,7 @@ void Chunk::generateMesh()
         for (int y = 0; y < SIZE_Y; y++)
             for (int z = 0; z < SIZE_XZ; z++)
             {
-                if (blocks[x][y][z].type == BlockType::AIR)
+                if (blocks[x][y][z].type == blockRegistry.getID("air"))
                     continue;
 
                 glm::vec3 blockPos(x, y, z);
@@ -61,7 +63,7 @@ void Chunk::generateMesh()
                         vert.color = {0.0f, 0.0f, 0.0f};
 
                         int uvIndex = FACE_UV_MAP[face][v];
-                        vert.texCoord = getBlockUV(blocks[x][y][z].type, face, uvIndex);
+                        vert.texCoord = getBlockUV(blocks[x][y][z].type, face, uvIndex, blockRegistry);
 
                         vertices.push_back(vert);
                     }

@@ -11,7 +11,7 @@ void World::draw(const Renderer &renderer, const Shader &shader)
     }
 }
 
-World::World()
+World::World(const BlockRegistry &blockRegistry)
 {
     glm::ivec2 chunkPos(0, 0);
     auto newChunk = std::make_unique<Chunk>();
@@ -21,16 +21,16 @@ World::World()
             for (int z = 0; z < Chunk::SIZE_XZ; z++)
             {
                 if (y < 4)
-                    newChunk->blocks[x][y][z] = Block{BlockType::GRASS};
+                    newChunk->blocks[x][y][z] = Block{blockRegistry.getID("stone")};
                 else if (y < 8)
-                    newChunk->blocks[x][y][z] = Block{BlockType::DIRT};
-                else if (y < 12)
-                    newChunk->blocks[x][y][z] = Block{BlockType::STONE};
+                    newChunk->blocks[x][y][z] = Block{blockRegistry.getID("dirt")};
+                else if (y < 9)
+                    newChunk->blocks[x][y][z] = Block{blockRegistry.getID("grass")};
                 else
-                    newChunk->blocks[x][y][z] = Block{BlockType::AIR};
+                    newChunk->blocks[x][y][z] = Block{blockRegistry.getID("air")};
             }
 
-    newChunk->generateMesh();
+    newChunk->generateMesh(blockRegistry);
 
     chunks[chunkPos] = std::move(newChunk);  // works fine
 }

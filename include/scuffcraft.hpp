@@ -3,6 +3,10 @@
 #include "window.hpp"
 #include "render/renderer.hpp"
 #include "render/shader.hpp"
+#include "block.hpp"
+
+static const std::string BLOCK_MANIFEST = "resources/blocks.json";
+static const std::string BLOCK_ATLAS = "resources/blocks.png";
 
 class Scuffcraft
 {
@@ -16,4 +20,6 @@ public:
 private:
     Window window;
     Renderer renderer;
+
+    BlockRegistry blockRegistry;
 };

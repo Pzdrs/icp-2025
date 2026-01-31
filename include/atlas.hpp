@@ -28,7 +28,7 @@ inline UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int 
     return {u0, v0, u1, v1};
 }
 
-inline unsigned int initAtlas(const char *path)
+inline unsigned int initAtlas(const std::string &path)
 {
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -41,7 +41,7 @@ inline unsigned int initAtlas(const char *path)
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
         std::cout << "Loaded texture: " << path << " (" << width << "x" << height << ", " << nrChannels << " channels)" << std::endl;

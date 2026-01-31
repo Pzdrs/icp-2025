@@ -13,7 +13,7 @@ public:
     static const int SIZE_Y = 16;
     static VertexBufferLayout layout;
     Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
-    void generateMesh();
+    void generateMesh(const BlockRegistry &blockRegistry);
     void draw(const Renderer &renderer, const Shader &shader);
 
 private:

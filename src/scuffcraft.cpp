@@ -49,6 +49,8 @@ int Scuffcraft::init()
     Chunk::layout.push<float>(3); // color
     Chunk::layout.push<float>(2); // texCoord
 
+    loadBlockDefinitions(BLOCK_MANIFEST, blockRegistry);
+
     return 0;
 }
 
@@ -57,117 +59,9 @@ void Scuffcraft::run()
     init();
 
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
-    unsigned int blockAtlas = initAtlas("resources/blocks.png");
+    unsigned int blockAtlas = initAtlas(BLOCK_ATLAS);
 
-    UVRect uv = getSpriteUV(17, 7, 16, 1024, 1024);
-
-    std::cout << "UV Coordinates: "
-                      << "u0: " << uv.u0 << ", v0: " << uv.v0
-                      << ", u1: " << uv.u1 << ", v1: " << uv.v1 << std::endl;
-
-    World world;
-
-    Vertex vertices[] = {
-        // Back face (z = 0)
-        {{0, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},  // back top left
-        {{1, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},  // back top right
-        {{1, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}}, // back bottom right
-        {{0, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}}, // back bottom left
-
-        // Front face (z = 1)
-        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
-
-        // Left face (x = 0)
-        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{0, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{0, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
-
-        // Right face (x = 1)
-        {{1, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{1, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}},
-
-        // Top face (y = 0)
-        {{0, 0, 0}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{1, 0, 0}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{1, 0, 1}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0, 0, 1}, {0, 0, 0}, {uv.u0, uv.v0}},
-
-        // Bottom face (y = -1)
-        {{0, -1, 1}, {0, 0, 0}, {uv.u0, uv.v1}},
-        {{1, -1, 1}, {0, 0, 0}, {uv.u1, uv.v1}},
-        {{1, -1, 0}, {0, 0, 0}, {uv.u1, uv.v0}},
-        {{0, -1, 0}, {0, 0, 0}, {uv.u0, uv.v0}},
-    };
-
-    // std::vector<glm::vec3> cubePositions = {
-    //     // glm::vec3(0.0f, 0.0f, 0.0f),
-    //     glm::vec3(2.0f, 5.0f, -15.0f),
-    //     glm::vec3(-1.5f, -2.2f, -2.5f),
-    //     glm::vec3(-3.8f, -2.0f, -12.3f),
-    //     glm::vec3(2.4f, -0.4f, -3.5f),
-    //     glm::vec3(-1.7f, 3.0f, -7.5f),
-    //     glm::vec3(1.3f, -2.0f, -2.5f),
-    //     glm::vec3(1.5f, 2.0f, -2.5f),
-    //     glm::vec3(1.5f, 0.2f, -1.5f),
-    //     glm::vec3(-1.3f, 1.0f, -1.5f)};
-    unsigned int indices[] = {
-        // Back face
-        0, 1, 2,
-        2, 3, 0,
-
-        // Front face
-        4, 5, 6,
-        6, 7, 4,
-
-        // Left face
-        8, 9, 10,
-        10, 11, 8,
-
-        // Right face
-        12, 13, 14,
-        14, 15, 12,
-
-        // Bottom face
-        16, 17, 18,
-        18, 19, 16,
-
-        // Top face
-        20, 21, 22,
-        22, 23, 20};
-
-    // Vertex pyramid[] = {
-    //     // Base
-    //     {{0.0f, 0.0f, 0.0f}, {1, 0, 0}, {0.0f, 0.0f}},
-    //     {{1.0f, 0.0f, 0.0f}, {0, 1, 0}, {1.0f, 0.0f}},
-    //     {{0.0f, 0.0f, 1.0f}, {0, 0, 1}, {1.0f, 1.0f}},
-    //     {{1.0f, 0.0f, 1.0f}, {1, 1, 0}, {0.0f, 1.0f}},
-    //     // Apex
-    //     {{0.5f, 1.0f, 0.5f}, {1, 0, 1}, {0.5f, 0.5f}}};
-    // unsigned int pyramidIndices[] = {
-    //     0, 1, 2,
-    //     2, 3, 1,
-
-    //     0, 1, 4,
-    //     1, 3, 4,
-    //     3, 2, 4,
-    //     2, 0, 4};
-
-    // VertexArray pyramidVA;
-    // VertexBuffer pyramidVB(pyramid, sizeof(pyramid));
-    // pyramidVA.addBuffer(pyramidVB, Chunk::layout);
-    // IndexBuffer pyramidIB(pyramidIndices, sizeof(pyramidIndices) / sizeof(unsigned int));
-
-    VertexArray va;
-    VertexBuffer vb(vertices, sizeof(vertices));
-    va.addBuffer(vb, Chunk::layout);
-
-    IndexBuffer ib(indices, sizeof(indices));
+    World world(blockRegistry);
 
     while (!window.shouldClose())
     {
@@ -185,38 +79,7 @@ void Scuffcraft::run()
         shader.setMat4("uView", camera.getViewMatrix());
         shader.setMat4("uTransform", glm::mat4(1.0f));
 
-        // glBindTexture(GL_TEXTURE_2D, 0);
-        // renderer.draw(pyramidVA, pyramidIB, shader);
-
-        // glBindTexture(GL_TEXTURE_2D, blockAtlas);
-        //renderer.draw(va, ib, shader);
-
         world.draw(renderer, shader);
-
-        // int i = 0;
-        // for (auto &&cube : cubePositions)
-        // {
-        //     // calculate the model matrix for each object and pass it to shader before drawing
-        //     glm::mat4 model = glm::mat4(1.0f);
-
-        //     // 1️⃣ move cube into world
-        //     model = glm::translate(model, cube);
-
-        //     // 2️⃣ move pivot to cube center
-        //     model = glm::translate(model, glm::vec3(0.5f, 0.5f, 0.5f));
-
-        //     // 3️⃣ rotate around center
-        //     float angle = glfwGetTime() * 25.0f;
-        //     model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-        //     // 4️⃣ move pivot back to corner
-        //     model = glm::translate(model, glm::vec3(-0.5f, -0.5f, -0.5f));
-
-        //     shader.setMat4("uTransform", model);
-        //     renderer.draw(va, ib, shader);
-        //     // renderer.drawWithoutIB(va, 36, shader);
-        //     i++;
-        // }
 
         window.swapBuffers();
     }

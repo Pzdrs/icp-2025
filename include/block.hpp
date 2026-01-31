@@ -1,24 +1,46 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <unordered_map>
+#include <vector>
+#include <nlohmann/json.hpp>
 
-enum class BlockType : uint16_t
+using json = nlohmann::json;
+
+// using uint16 so chunks don't have to store a string id per block
+using BlockID = uint16_t;
+
+enum class Face : uint8_t
 {
-    AIR = 0,
-    DIRT = 1,
-    GRASS = 2,
-    STONE = 3,
+    FACE_BACK,
+    FACE_FRONT,
+    FACE_LEFT,
+    FACE_RIGHT,
+    FACE_UP,
+    FACE_DOWN,
 };
 
 struct AtlasCoord
 {
-    unsigned int col;
-    unsigned int row;
+    unsigned int u;
+    unsigned int v;
+};
+
+struct BlockTexture
+{
+    AtlasCoord top, side, bottom;
+
+    bool isValid() const
+    {
+        return !(top.u == 0 && top.v == 0 &&
+                 side.u == 0 && side.v == 0 &&
+                 bottom.u == 0 && bottom.v == 0);
+    }
 };
 
 struct Block
 {
-    BlockType type;
+    BlockID type;
 };
 
 // CUBE VERTICES
@@ -92,3 +114,39 @@ static const int FACE_UV_MAP[6][4] =
         {0, 1, 2, 3},
         // -Y (bottom)
         {0, 1, 2, 3}};
+
+struct BlockDefinition
+{
+    std::string id, name;
+
+    bool isSolid;
+    float alpha;
+
+    BlockTexture texture;
+};
+
+class BlockRegistry
+{
+public:
+    BlockID registerBlock(const BlockDefinition &def);
+
+    const BlockDefinition &get(BlockID id) const;
+
+    const BlockDefinition &get(const std::string &stringID) const;
+
+    BlockID getID(const std::string &stringID) const;
+
+    size_t size() const { return blocks.size(); }
+
+private:
+    std::vector<BlockDefinition> blocks;
+    std::unordered_map<std::string, BlockID> idLookup;
+};
+
+bool isSideFace(Face face);
+
+BlockTexture getBlockTexture(const BlockID type, const BlockRegistry &blockRegistry);
+
+BlockDefinition parseBlock(const json &j);
+
+void loadBlockDefinitions(const std::string &manifestPath, BlockRegistry &registry);
