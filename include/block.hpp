@@ -115,6 +115,15 @@ static const int FACE_UV_MAP[6][4] =
         // -Y (bottom)
         {0, 1, 2, 3}};
 
+static const glm::ivec3 FACE_DIRS[6] = {
+    {0, 0, -1}, // -Z
+    {0, 0, 1},  // +Z
+    {-1, 0, 0}, // -X
+    {1, 0, 0},  // +X
+    {0, 1, 0},  // +Y
+    {0, -1, 0}  // -Y
+};
+
 struct BlockDefinition
 {
     std::string id, name;

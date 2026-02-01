@@ -36,6 +36,23 @@ glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRe
     return {u, v};
 }
 
+bool Chunk::isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const
+{
+    glm::ivec3 d = FACE_DIRS[face];
+
+    int nx = x + d.x;
+    int ny = y + d.y;
+    int nz = z + d.z;
+
+    // Outside chunk = visible face
+    if (nx < 0 || nx >= SIZE_XZ ||
+        ny < 0 || ny >= SIZE_Y ||
+        nz < 0 || nz >= SIZE_XZ)
+        return true;
+
+    return blocks[nx][ny][nz].type == blockRegistry.getID("air");
+}
+
 void Chunk::generateMesh(const BlockRegistry &blockRegistry)
 {
     std::vector<Vertex> vertices;
@@ -49,12 +66,15 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
             {
                 if (blocks[x][y][z].type == blockRegistry.getID("air"))
                     continue;
-
+                
                 glm::vec3 blockPos(x, y, z);
 
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
+                    if (!isFaceExposed(x, y, z, face, blockRegistry))
+                        continue;
+
                     // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
                     {

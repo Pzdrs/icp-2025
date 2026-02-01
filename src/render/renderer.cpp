@@ -13,6 +13,7 @@ int Renderer::init()
     }
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
     glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_CULL_FACE);
     return 0;
 }
 
