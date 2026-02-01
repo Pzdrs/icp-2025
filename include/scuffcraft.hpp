@@ -4,6 +4,7 @@
 #include "render/renderer.hpp"
 #include "render/shader.hpp"
 #include "block.hpp"
+#include "world.hpp"
 
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 static const std::string BLOCK_ATLAS = "resources/blocks.png";

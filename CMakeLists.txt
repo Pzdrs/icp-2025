@@ -12,6 +12,7 @@ find_package(glad REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(Stb REQUIRED)
 
 add_executable(icp-fuckfest ${SOURCES})
 

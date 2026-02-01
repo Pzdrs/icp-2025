@@ -5,6 +5,7 @@
     "glm",
     "opencv4",
     "nlohmann-json",
+    "stb",
     {
       "name": "imgui",
       "features": ["glfw-binding", "opengl3-binding"]
