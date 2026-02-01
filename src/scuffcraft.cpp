@@ -74,12 +74,7 @@ void Scuffcraft::run()
 
         update(deltaTime);
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
-        shader.setMat4("uProjection", projection);
-        shader.setMat4("uView", camera.getViewMatrix());
-        shader.setMat4("uTransform", glm::mat4(1.0f));
-
-        world.draw(renderer, shader);
+        render(world, shader);
 
         window.swapBuffers();
     }
@@ -87,8 +82,14 @@ void Scuffcraft::run()
     shutdown();
 }
 
-void Scuffcraft::render(unsigned int blockAtlas, Shader &shader, std::vector<glm::vec3> &cubePositions)
+void Scuffcraft::render(World &world, Shader &shader)
 {
+    glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
+    shader.setMat4("uProjection", projection);
+    shader.setMat4("uView", camera.getViewMatrix());
+    shader.setMat4("uTransform", glm::mat4(1.0f));
+
+    world.draw(renderer, shader);
 }
 
 void Scuffcraft::update(float deltaTime)
@@ -132,15 +133,6 @@ void processInput(GLFWwindow *window)
     camera.tickZoom();
 
     commandWasHeld = commandHeld;
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
