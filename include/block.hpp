@@ -48,10 +48,10 @@ struct Block
 
 static const glm::vec3 CUBE_VERTS[6][4] = {
     // Back face (z = 0)
-    {{0, 0, 0},   // back top left
-     {1, 0, 0},   // back top right
-     {1, -1, 0},  // back bottom right
-     {0, -1, 0}}, // back bottom left
+    {{1, 0, 0},   // back top left
+     {0, 0, 0},   // back top right
+     {0, -1, 0},  // back bottom right
+     {1, -1, 0}}, // back bottom left
 
     // Front face (z = 1)
     {{0, 0, 1},
@@ -60,16 +60,16 @@ static const glm::vec3 CUBE_VERTS[6][4] = {
      {0, -1, 1}},
 
     // Left face (x = 0)
-    {{0, 0, 1},
-     {0, 0, 0},
-     {0, -1, 0},
-     {0, -1, 1}},
+    {{0, 0, 0},
+     {0, 0, 1},
+     {0, -1, 1},
+     {0, -1, 0}},
 
     // Right face (x = 1)
-    {{1, 0, 0},
-     {1, 0, 1},
-     {1, -1, 1},
-     {1, -1, 0}},
+    {{1, 0, 1},
+     {1, 0, 0},
+     {1, -1, 0},
+     {1, -1, 1}},
 
     // Top face (y = 0)
     {{0, 0, 0},
@@ -84,9 +84,19 @@ static const glm::vec3 CUBE_VERTS[6][4] = {
      {0, -1, 0}},
 };
 
+// CW winding
 static const unsigned int FACE_INDICES[6] = {
     0, 1, 2,
     2, 3, 0};
+
+static const glm::ivec3 FACE_DIRS[6] = {
+    {0, 0, -1}, // -Z
+    {0, 0, 1},  // +Z
+    {-1, 0, 0}, // -X
+    {1, 0, 0},  // +X
+    {0, 1, 0},  // +Y
+    {0, -1, 0}  // -Y
+};
 
 // FACE TEXTURE COORDINATES
 // --------------------------------
@@ -114,15 +124,6 @@ static const int FACE_UV_MAP[6][4] =
         {0, 1, 2, 3},
         // -Y (bottom)
         {0, 1, 2, 3}};
-
-static const glm::ivec3 FACE_DIRS[6] = {
-    {0, 0, -1}, // -Z
-    {0, 0, 1},  // +Z
-    {-1, 0, 0}, // -X
-    {1, 0, 0},  // +X
-    {0, 1, 0},  // +Y
-    {0, -1, 0}  // -Y
-};
 
 struct BlockDefinition
 {
