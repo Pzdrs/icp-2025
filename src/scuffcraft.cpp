@@ -35,13 +35,27 @@ float lastFrame = 0.0f; // Time of last frame
 
 bool commandWasHeld = false;
 
+Scuffcraft::Scuffcraft()
+{
+    m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
+    m_Window->setEventCallback(std::bind(&Scuffcraft::onEvent, this, std::placeholders::_1));
+}
+
+Scuffcraft::~Scuffcraft()
+{
+}
+
+void Scuffcraft::onEvent(Event &e)
+{
+    EventDispatcher dispatcher(e);
+    std::cout << "Event: " << e.getName() << std::endl;
+}
+
 int Scuffcraft::init()
 {
-    window.init();
-
-    glfwSetFramebufferSizeCallback(window.window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window.window, mouse_callback);
-    glfwSetScrollCallback(window.window, scroll_callback);
+    // glfwSetFramebufferSizeCallback(window.window, framebuffer_size_callback);
+    // glfwSetCursorPosCallback(window.window, mouse_callback);
+    // glfwSetScrollCallback(window.window, scroll_callback);
 
     renderer.init();
 
@@ -63,9 +77,9 @@ void Scuffcraft::run()
 
     World world(blockRegistry);
 
-    while (!window.shouldClose())
+    while (m_Running)
     {
-        window.pollEvents();
+        m_Window->onUpdate();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -75,8 +89,6 @@ void Scuffcraft::run()
         update(deltaTime);
 
         render(world, shader);
-
-        window.swapBuffers();
     }
 
     shutdown();
@@ -94,12 +106,12 @@ void Scuffcraft::render(World &world, Shader &shader)
 
 void Scuffcraft::update(float deltaTime)
 {
-    processInput(window.window);
+    // processInput(window.window);
 }
 
 void Scuffcraft::shutdown()
 {
-    window.shutdown();
+    m_Window->shutdown();
 }
 
 void processInput(GLFWwindow *window)
