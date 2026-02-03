@@ -27,20 +27,10 @@ public:
 
     virtual void setEventCallback(const EventCallbackFunc &callback) = 0;
     virtual void setVSync(bool enabled) = 0;
+    virtual void setMouseLocked(bool locked) = 0; 
     virtual bool isVSync() const = 0;
 
     virtual void *getNativeWindow() const = 0;
 
     static Window *create(const WindowProps &props = WindowProps());
-
-    void init();
-    void shutdown();
-    void pollEvents() { glfwPollEvents(); }
-    void swapBuffers() { glfwSwapBuffers(window); }
-    bool shouldClose() { return glfwWindowShouldClose(window); }
-
-    void lockMouse();
-    void unlockMouse();
-
-    GLFWwindow *window;
 };

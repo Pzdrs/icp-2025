@@ -2,6 +2,7 @@
 #include "event/application_event.hpp"
 #include "event/key_event.hpp"
 #include "event/mouse_event.hpp"
+#include <iostream>
 
 static bool s_GLFWInitialized = false;
 
@@ -51,6 +52,7 @@ void MacOSWindow::init(const WindowProps &props)
     glfwMakeContextCurrent(m_Window);
     glfwSetWindowUserPointer(m_Window, &m_Data);
     setVSync(true);
+    glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
                               {
@@ -59,6 +61,14 @@ void MacOSWindow::init(const WindowProps &props)
         data.height = height;
 
         WindowResizeEvent event(width, height);
+        data.eventCallback(event); });
+
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
+                                   {
+        WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+        data.fbWidth = width;
+        data.fbHeight = height;
+        FramebufferResizeEvent event(width, height);
         data.eventCallback(event); });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow *window)
@@ -144,6 +154,14 @@ void MacOSWindow::setVSync(bool enabled)
 {
     glfwSwapInterval(enabled ? 1 : 0);
     m_Data.vSync = enabled;
+}
+
+void MacOSWindow::setMouseLocked(bool locked)
+{
+    if (locked)
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    else
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 bool MacOSWindow::isVSync() const

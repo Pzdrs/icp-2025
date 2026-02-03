@@ -19,6 +19,11 @@ int Renderer::init()
     return 0;
 }
 
+void Renderer::setViewport(int x, int y, int width, int height)
+{
+    glViewport(x, y, width, height);
+}
+
 void Renderer::shutdown()
 {
     // Cleanup code for the renderer would go here

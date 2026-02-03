@@ -16,6 +16,7 @@ public:
     inline void setEventCallback(const EventCallbackFunc &callback) override { m_Data.eventCallback = callback; };
     void setVSync(bool enabled) override;
     bool isVSync() const override;
+    void setMouseLocked(bool locked) override;
 
     void *getNativeWindow() const override;
 private:
@@ -28,6 +29,7 @@ private:
     {
         std::string title;
         unsigned int width, height;
+        unsigned int fbWidth, fbHeight;
         bool vSync;
 
         EventCallbackFunc eventCallback;

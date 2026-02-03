@@ -49,13 +49,15 @@ public:
     float mouseSensitivity;
 
     float fov;
+    float aspectRation;
     ZoomState zoomState = ZoomState::ZOOMED_OUT;
 
     Camera(
+        float aspectRation,
         glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
         float yaw = YAW,
-        float pitch = PITCH) : front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(ZOOMED_OUT)
+        float pitch = PITCH) : front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(ZOOMED_OUT), aspectRation(aspectRation)
     {
         this->position = position;
         worldUp = up;
@@ -63,11 +65,12 @@ public:
         this->pitch = pitch;
         updateCameraVectors();
     }
-    
+
     Camera(
+        float aspectRation,
         float posX, float posY, float posZ,
         float upX, float upY, float upZ,
-        float yaw, float pitch) : front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(ZOOMED_OUT)
+        float yaw, float pitch) : front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(SPEED), mouseSensitivity(SENSITIVITY), fov(ZOOMED_OUT), aspectRation(aspectRation)
     {
         this->position = glm::vec3(posX, posY, posZ);
         worldUp = glm::vec3(upX, upY, upZ);
@@ -79,6 +82,11 @@ public:
     glm::mat4 getViewMatrix()
     {
         return glm::lookAt(position, position + front, up);
+    }
+
+    glm::mat4 getProjectionMatrixf(float near, float far)
+    {
+        return glm::perspective(glm::radians(fov), aspectRation, near, far);
     }
 
     void processKeyboard(MovementDirection direction, float deltaTime)
@@ -97,6 +105,11 @@ public:
             position += up * velocity;
         else if (direction == MovementDirection::DOWN)
             position -= up * velocity;
+    }
+
+    void setAspectRatio(float ratio)
+    {
+        aspectRation = ratio;
     }
 
     void processMouseMovement(float xoffset, float yoffset)

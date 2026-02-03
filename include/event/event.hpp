@@ -7,6 +7,7 @@ enum class EventType
     None = 0,
     WindowClose,
     WindowResize,
+    FramebufferResize,
     WindowFocus,
     WindowLostFocus,
     WindowMoved,

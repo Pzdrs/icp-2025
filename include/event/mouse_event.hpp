@@ -27,8 +27,8 @@ class MouseScrolledEvent : public Event
 public:
     MouseScrolledEvent(float xOffset, float yOffset)
         : m_XOffset(xOffset), m_YOffset(yOffset) {}
-    inline float getX() const { return m_XOffset; }
-    inline float getY() const { return m_YOffset; }
+    inline float getXOffset() const { return m_XOffset; }
+    inline float getYOffset() const { return m_YOffset; }
 
     std::string toString() const override
     {

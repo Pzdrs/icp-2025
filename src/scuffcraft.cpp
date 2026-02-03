@@ -16,16 +16,17 @@
 #include <render/vertex_buffer_layout.hpp>
 #include <render/vertex_array.hpp>
 #include <world.hpp>
+#include <event/mouse_event.hpp>
+#include <event/key_event.hpp>
+
+#define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
 
 void processInput(GLFWwindow *window);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-const unsigned int SCR_WIDTH = 720;
+const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera((float)SCR_WIDTH / (float)SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -38,7 +39,7 @@ bool commandWasHeld = false;
 Scuffcraft::Scuffcraft()
 {
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
-    m_Window->setEventCallback(std::bind(&Scuffcraft::onEvent, this, std::placeholders::_1));
+    m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
 }
 
 Scuffcraft::~Scuffcraft()
@@ -48,15 +49,17 @@ Scuffcraft::~Scuffcraft()
 void Scuffcraft::onEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
-    std::cout << "Event: " << e.getName() << std::endl;
+
+    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(onWindowsClose));
+    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMove));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(onKeyPressed));
+    dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(onScroll));
+    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(onWindowResize));
+    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(onFramebufferResize));
 }
 
 int Scuffcraft::init()
 {
-    // glfwSetFramebufferSizeCallback(window.window, framebuffer_size_callback);
-    // glfwSetCursorPosCallback(window.window, mouse_callback);
-    // glfwSetScrollCallback(window.window, scroll_callback);
-
     renderer.init();
 
     Chunk::layout.push<float>(3); // position
@@ -96,8 +99,7 @@ void Scuffcraft::run()
 
 void Scuffcraft::render(World &world, Shader &shader)
 {
-    glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)720 / (float)720, 0.1f, 100.0f);
-    shader.setMat4("uProjection", projection);
+    shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
     shader.setMat4("uView", camera.getViewMatrix());
     shader.setMat4("uTransform", glm::mat4(1.0f));
 
@@ -106,12 +108,35 @@ void Scuffcraft::render(World &world, Shader &shader)
 
 void Scuffcraft::update(float deltaTime)
 {
-    // processInput(window.window);
+    processInput(static_cast<GLFWwindow *>(m_Window->getNativeWindow()));
 }
 
 void Scuffcraft::shutdown()
 {
-    m_Window->shutdown();
+}
+
+void Scuffcraft::pause()
+{
+    m_Paused = !m_Paused;
+    m_Window->setMouseLocked(!m_Paused);
+}
+
+bool Scuffcraft::onWindowsClose(WindowCloseEvent &e)
+{
+    m_Running = false;
+    return true;
+}
+
+bool Scuffcraft::onWindowResize(WindowResizeEvent &e)
+{
+    camera.setAspectRatio((float)e.getWidth() / (float)e.getHeight());
+    return true;
+}
+
+bool Scuffcraft::onFramebufferResize(FramebufferResizeEvent &e)
+{
+    renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
+    return true;
 }
 
 void processInput(GLFWwindow *window)
@@ -120,9 +145,6 @@ void processInput(GLFWwindow *window)
     bool commandHeld =
         glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
         glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS;
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
@@ -147,35 +169,36 @@ void processInput(GLFWwindow *window)
     commandWasHeld = commandHeld;
 }
 
-void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
+bool Scuffcraft::onMouseMove(MouseMovedEvent &e)
 {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+    if (m_Paused)
+        return false;
 
     if (firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
+        lastX = e.getX();
+        lastY = e.getY();
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float xoffset = e.getX() - lastX;
+    float yoffset = lastY - e.getY(); // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
-
+    lastX = e.getX();
+    lastY = e.getY();
     camera.processMouseMovement(xoffset, yoffset);
+    return true;
 }
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+bool Scuffcraft::onKeyPressed(KeyPressedEvent &e)
 {
-    camera.processMouseScroll(static_cast<float>(yoffset));
+    if (e.getKeyCode() == GLFW_KEY_ESCAPE)
+        pause();
+    return true;
 }
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+bool Scuffcraft::onScroll(MouseScrolledEvent &e)
 {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
+    camera.processMouseScroll(e.getYOffset());
+    return true;
 }

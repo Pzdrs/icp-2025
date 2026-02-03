@@ -14,6 +14,7 @@ public:
     void drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const;
     int init();
     void shutdown();
+    void setViewport(int x, int y, int width, int height);
 
 private:
 };
