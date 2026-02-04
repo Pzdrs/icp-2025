@@ -15,6 +15,11 @@ void OpenGLContext::Init()
     glfwMakeContextCurrent(m_WindowHandle);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         std::cout << "Failed to initialize GLAD" << std::endl;
+    
+    std::cout << "OpenGL Info:" << std::endl;
+    std::cout << "  Vendor: " << glGetString(GL_VENDOR) << std::endl;
+    std::cout << "  Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "  Version: " << glGetString(GL_VERSION) << std::endl;
 }
 
 void OpenGLContext::SwapBuffers()
