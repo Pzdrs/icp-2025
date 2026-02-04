@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 
+RendererAPI RendererNew::s_RendererAPI = RendererAPI::OpenGL;
+
 int Renderer::init()
 {
     glEnable(GL_DEPTH_TEST);
