@@ -20,35 +20,32 @@ public:
     Scuffcraft();
     virtual ~Scuffcraft();
 
-    int init();
-    void onEvent(Event &e);
-    void pause();
+    void OnEvent(Event &e);
+    void Pause();
 
-    void pushLayer(Layer *layer);
-    void pushOverlay(Layer *overlay);
+    void PushLayer(Layer *layer);
+    void PushOverlay(Layer *overlay);
 
-    inline static Scuffcraft &get() { return *s_Instance; }
-    inline Window &getWindow() { return *m_Window; }
+    inline static Scuffcraft &Get() { return *s_Instance; }
+    inline Window &GetWindow() { return *m_Window; }
 
-    void run();
-    void update(float deltaTime);
-    void render(World &world, Shader &shader);
-    void shutdown();
+    void Run();
 
 private:
-    bool onWindowsClose(WindowCloseEvent &e);
-    bool onWindowResize(WindowResizeEvent &e);
-    bool onFramebufferResize(FramebufferResizeEvent &e);
-    bool onMouseMove(MouseMovedEvent &e);
-    bool onKeyPressed(KeyPressedEvent &e);
-    bool onScroll(MouseScrolledEvent &e);
+    bool OnWindowsClose(WindowCloseEvent &e);
+    bool OnWindowResize(WindowResizeEvent &e);
+    bool OnFramebufferResize(FramebufferResizeEvent &e);
+    bool OnMouseMove(MouseMovedEvent &e);
+    bool OnKeyPressed(KeyPressedEvent &e);
+    bool OnScroll(MouseScrolledEvent &e);
 
+private:
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     bool m_Paused = false;
 
-    Renderer renderer;
-    BlockRegistry blockRegistry;
+    Renderer m_Renderer;
+    BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
 
 private:

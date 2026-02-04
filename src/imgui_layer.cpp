@@ -19,11 +19,11 @@ void ImGuiLayer::OnAttach()
     ImGui::StyleColorsDark();
 
     ImGuiIO &io = ImGui::GetIO();
-    Scuffcraft &app = Scuffcraft::get();
+    Scuffcraft &app = Scuffcraft::Get();
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 
-    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(app.getWindow().getNativeWindow()), true);
+    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(app.GetWindow().getNativeWindow()), true);
     ImGui_ImplOpenGL3_Init("#version 410");
 }
 

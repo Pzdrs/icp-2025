@@ -3,6 +3,6 @@
 int main(void)
 {
     Scuffcraft app;
-    app.run();
+    app.Run();
     return 0;
 }

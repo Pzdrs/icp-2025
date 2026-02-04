@@ -7,21 +7,21 @@ Input *Input::s_Instance = new MacOSInput();
 
 bool MacOSInput::IsKeyPressedImpl(int keycode)
 {
-    auto window = static_cast<GLFWwindow *>(Scuffcraft::get().getWindow().getNativeWindow());
+    auto window = static_cast<GLFWwindow *>(Scuffcraft::Get().GetWindow().getNativeWindow());
     int state = glfwGetKey(window, keycode);
     return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
 bool MacOSInput::IsMouseButtonPressedImpl(int buttoncode)
 {
-    auto window = static_cast<GLFWwindow *>(Scuffcraft::get().getWindow().getNativeWindow());
+    auto window = static_cast<GLFWwindow *>(Scuffcraft::Get().GetWindow().getNativeWindow());
     int state = glfwGetMouseButton(window, buttoncode);
     return state == GLFW_PRESS;
 }
 
 std::pair<float, float> MacOSInput::GetMousePositionImpl()
 {
-    auto window = static_cast<GLFWwindow *>(Scuffcraft::get().getWindow().getNativeWindow());
+    auto window = static_cast<GLFWwindow *>(Scuffcraft::Get().GetWindow().getNativeWindow());
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     return {(float)xpos, (float)ypos};

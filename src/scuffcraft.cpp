@@ -46,39 +46,35 @@ Scuffcraft::Scuffcraft()
 {
     s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
-    m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
+    m_Window->setEventCallback(BIND_EVENT_FN(OnEvent));
 
-    pushLayer(new ImGuiLayer());
+    m_Renderer.init();
+
+    Chunk::layout.push<float>(3); // position
+    Chunk::layout.push<float>(3); // color
+    Chunk::layout.push<float>(2); // texCoord
+
+    loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
+
+    PushLayer(new ImGuiLayer());
 }
 
 Scuffcraft::~Scuffcraft()
 {
+    m_Renderer.shutdown();
 }
 
-void Scuffcraft::pushLayer(Layer *layer)
-{
-    m_LayerStack.PushLayer(layer);
-    layer->OnAttach();
-}
-
-void Scuffcraft::pushOverlay(Layer *overlay)
-{
-    m_LayerStack.PushOverlay(overlay);
-    overlay->OnAttach();
-}
-
-void Scuffcraft::onEvent(Event &e)
+void Scuffcraft::OnEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
 
-    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(onWindowsClose));
-    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(onMouseMove));
-    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(onKeyPressed));
-    dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(onScroll));
-    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(onWindowResize));
-    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(onFramebufferResize));
-
-    for(auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowsClose));
+    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(OnMouseMove));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
+    dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnScroll));
+    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(OnFramebufferResize));
+    for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
         (*--it)->OnEvent(e);
         if (e.isHandled())
@@ -86,27 +82,12 @@ void Scuffcraft::onEvent(Event &e)
     }
 }
 
-int Scuffcraft::init()
+void Scuffcraft::Run()
 {
-    renderer.init();
-
-    Chunk::layout.push<float>(3); // position
-    Chunk::layout.push<float>(3); // color
-    Chunk::layout.push<float>(2); // texCoord
-
-    loadBlockDefinitions(BLOCK_MANIFEST, blockRegistry);
-
-    return 0;
-}
-
-void Scuffcraft::run()
-{
-    init();
-
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
     unsigned int blockAtlas = initAtlas(BLOCK_ATLAS);
 
-    World world(blockRegistry);
+    World world(m_BlockRegistry);
 
     while (m_Running)
     {
@@ -115,58 +96,54 @@ void Scuffcraft::run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        renderer.clear();
+        m_Renderer.clear();
 
-        update(deltaTime);
+        processInput();
+
+        shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
+        shader.setMat4("uView", camera.getViewMatrix());
+        shader.setMat4("uTransform", glm::mat4(1.0f));
+
+        world.draw(m_Renderer, shader);
 
         for (Layer *layer : m_LayerStack)
             layer->OnUpdate();
-
-        render(world, shader);
     }
-
-    shutdown();
 }
 
-void Scuffcraft::render(World &world, Shader &shader)
+void Scuffcraft::PushLayer(Layer *layer)
 {
-    shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
-    shader.setMat4("uView", camera.getViewMatrix());
-    shader.setMat4("uTransform", glm::mat4(1.0f));
-
-    world.draw(renderer, shader);
+    m_LayerStack.PushLayer(layer);
+    layer->OnAttach();
 }
 
-void Scuffcraft::update(float deltaTime)
+void Scuffcraft::PushOverlay(Layer *overlay)
 {
-    processInput();
+    m_LayerStack.PushOverlay(overlay);
+    overlay->OnAttach();
 }
 
-void Scuffcraft::shutdown()
-{
-}
-
-void Scuffcraft::pause()
+void Scuffcraft::Pause()
 {
     m_Paused = !m_Paused;
     m_Window->setMouseLocked(!m_Paused);
 }
 
-bool Scuffcraft::onWindowsClose(WindowCloseEvent &e)
+bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)
 {
     m_Running = false;
     return true;
 }
 
-bool Scuffcraft::onWindowResize(WindowResizeEvent &e)
+bool Scuffcraft::OnWindowResize(WindowResizeEvent &e)
 {
     camera.setAspectRatio((float)e.getWidth() / (float)e.getHeight());
     return true;
 }
 
-bool Scuffcraft::onFramebufferResize(FramebufferResizeEvent &e)
+bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 {
-    renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
+    m_Renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
     return true;
 }
 
@@ -200,7 +177,7 @@ void processInput()
     commandWasHeld = commandHeld;
 }
 
-bool Scuffcraft::onMouseMove(MouseMovedEvent &e)
+bool Scuffcraft::OnMouseMove(MouseMovedEvent &e)
 {
     if (m_Paused)
         return false;
@@ -221,14 +198,14 @@ bool Scuffcraft::onMouseMove(MouseMovedEvent &e)
     return true;
 }
 
-bool Scuffcraft::onKeyPressed(KeyPressedEvent &e)
+bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
 {
     if (e.getKeyCode() == Key::Escape)
-        pause();
+        Pause();
     return true;
 }
 
-bool Scuffcraft::onScroll(MouseScrolledEvent &e)
+bool Scuffcraft::OnScroll(MouseScrolledEvent &e)
 {
     camera.processMouseScroll(e.getYOffset());
     return true;
