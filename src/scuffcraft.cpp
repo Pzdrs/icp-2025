@@ -46,6 +46,16 @@ Scuffcraft::~Scuffcraft()
 {
 }
 
+void Scuffcraft::pushLayer(Layer *layer)
+{
+    m_LayerStack.PushLayer(layer);
+}
+
+void Scuffcraft::pushOverlay(Layer *overlay)
+{
+    m_LayerStack.PushOverlay(overlay);
+}
+
 void Scuffcraft::onEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
@@ -56,6 +66,13 @@ void Scuffcraft::onEvent(Event &e)
     dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(onScroll));
     dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(onWindowResize));
     dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(onFramebufferResize));
+
+    for(auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+    {
+        (*--it)->OnEvent(e);
+        if (e.isHandled())
+            break;
+    }
 }
 
 int Scuffcraft::init()
@@ -90,6 +107,9 @@ void Scuffcraft::run()
         renderer.clear();
 
         update(deltaTime);
+
+        for (Layer *layer : m_LayerStack)
+            layer->OnUpdate();
 
         render(world, shader);
     }

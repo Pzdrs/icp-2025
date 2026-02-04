@@ -46,6 +46,7 @@ public:
     virtual const char *getName() const = 0;
     virtual int getCategoryFlags() const = 0;
     virtual std::string toString() const { return getName(); }
+    inline bool isHandled() const { return m_Handled; }
     inline bool isInCategory(EventCategory category)
     {
         return getCategoryFlags() & category;

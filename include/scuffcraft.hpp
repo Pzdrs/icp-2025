@@ -9,6 +9,8 @@
 #include "event/application_event.hpp"
 #include "event/mouse_event.hpp"
 #include "event/key_event.hpp"
+#include "layer.hpp"
+#include "layer_stack.hpp"
 
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 static const std::string BLOCK_ATLAS = "resources/blocks.png";
@@ -29,6 +31,9 @@ public:
     bool onScroll(MouseScrolledEvent &e);
     void pause();
 
+    void pushLayer(Layer *layer);
+    void pushOverlay(Layer *overlay);
+
 
     void run();
     void update(float deltaTime);
@@ -42,4 +47,5 @@ private:
 
     Renderer renderer;
     BlockRegistry blockRegistry;
+    LayerStack m_LayerStack;
 };
