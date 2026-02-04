@@ -21,12 +21,13 @@
 #include <event/key_event.hpp>
 #include "imgui_layer.hpp"
 #include "input.hpp"
+#include "key_codes.hpp"
 
 #define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
-void processInput(GLFWwindow *window);
+void processInput();
 
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
@@ -138,7 +139,7 @@ void Scuffcraft::render(World &world, Shader &shader)
 
 void Scuffcraft::update(float deltaTime)
 {
-    processInput(static_cast<GLFWwindow *>(m_Window->getNativeWindow()));
+    processInput();
 }
 
 void Scuffcraft::shutdown()
@@ -169,24 +170,24 @@ bool Scuffcraft::onFramebufferResize(FramebufferResizeEvent &e)
     return true;
 }
 
-void processInput(GLFWwindow *window)
+void processInput()
 {
 
     bool commandHeld =
-        Input::IsKeyPressed(GLFW_KEY_LEFT_SUPER) ||
-        Input::IsKeyPressed(GLFW_KEY_RIGHT_SUPER);
+        Input::IsKeyPressed(Key::LeftSuper) ||
+        Input::IsKeyPressed(Key::RightSuper);
 
-    if (Input::IsKeyPressed(GLFW_KEY_W))
+    if (Input::IsKeyPressed(Key::W))
         camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
-    if (Input::IsKeyPressed(GLFW_KEY_S))
+    if (Input::IsKeyPressed(Key::S))
         camera.processKeyboard(MovementDirection::BACKWARD, deltaTime);
-    if (Input::IsKeyPressed(GLFW_KEY_A))
+    if (Input::IsKeyPressed(Key::A))
         camera.processKeyboard(MovementDirection::LEFT, deltaTime);
-    if (Input::IsKeyPressed(GLFW_KEY_D))
+    if (Input::IsKeyPressed(Key::D))
         camera.processKeyboard(MovementDirection::RIGHT, deltaTime);
-    if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+    if (Input::IsKeyPressed(Key::Space))
         camera.processKeyboard(MovementDirection::UP, deltaTime);
-    if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
+    if (Input::IsKeyPressed(Key::LeftShift))
         camera.processKeyboard(MovementDirection::DOWN, deltaTime);
 
     if (commandHeld && !commandWasHeld)
@@ -222,7 +223,7 @@ bool Scuffcraft::onMouseMove(MouseMovedEvent &e)
 
 bool Scuffcraft::onKeyPressed(KeyPressedEvent &e)
 {
-    if (e.getKeyCode() == GLFW_KEY_ESCAPE)
+    if (e.getKeyCode() == Key::Escape)
         pause();
     return true;
 }
