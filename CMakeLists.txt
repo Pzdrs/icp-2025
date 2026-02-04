@@ -11,6 +11,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(imguizmo CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
@@ -23,5 +24,6 @@ target_link_libraries(icp-fuckfest PRIVATE
     glfw              
     glm::glm          
     imgui::imgui
+    imguizmo::imguizmo
     nlohmann_json::nlohmann_json
 )

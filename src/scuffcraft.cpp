@@ -95,7 +95,6 @@ void Scuffcraft::Run()
 
     while (m_Running)
     {
-        m_Window->onUpdate();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -117,6 +116,8 @@ void Scuffcraft::Run()
         for (Layer *layer : m_LayerStack)
             layer->OnImGuiRender();
         m_ImGuiLayer->End();
+
+        m_Window->onUpdate();
     }
 }
 
