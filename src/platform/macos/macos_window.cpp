@@ -3,6 +3,7 @@
 #include "event/key_event.hpp"
 #include "event/mouse_event.hpp"
 #include <iostream>
+#include "../opengl/opengl_context.hpp"
 
 static bool s_GLFWInitialized = false;
 
@@ -49,7 +50,10 @@ void MacOSWindow::init(const WindowProps &props)
 #endif
 
     m_Window = glfwCreateWindow((int)props.width, (int)props.height, m_Data.title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(m_Window);
+
+    m_Context = new OpenGLContext(m_Window);
+    m_Context->Init();
+
     glfwSetWindowUserPointer(m_Window, &m_Data);
     setVSync(true);
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -147,7 +151,7 @@ void MacOSWindow::shutdown()
 void MacOSWindow::onUpdate()
 {
     glfwPollEvents();
-    glfwSwapBuffers(m_Window);
+    m_Context->SwapBuffers();
 }
 
 void MacOSWindow::setVSync(bool enabled)

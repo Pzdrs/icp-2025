@@ -2,6 +2,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "window.hpp"
+#include <render/graphics_context.hpp>
+
 
 class MacOSWindow : public Window
 {
@@ -25,6 +27,7 @@ private:
     virtual void shutdown();
 private:
     GLFWwindow *m_Window;
+    GraphicsContext *m_Context;
 
     struct WindowData
     {

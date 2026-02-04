@@ -1,6 +1,4 @@
 #include "macos_input.hpp"
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include "scuffcraft.hpp"
 
 Input *Input::s_Instance = new MacOSInput();

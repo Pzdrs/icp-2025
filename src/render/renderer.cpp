@@ -7,11 +7,6 @@
 
 int Renderer::init()
 {
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        printf("Failed to initialize GLAD\n");
-        return -1;
-    }
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
