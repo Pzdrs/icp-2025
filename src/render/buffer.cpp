@@ -2,7 +2,7 @@
 #include <render/renderer.hpp>
 #include "../platform/opengl/opengl_buffer.hpp"
 
-VertexBufferNew *VertexBufferNew::Create(const void *data, uint32_t size)
+VertexBuffer *VertexBuffer::Create(const void *data, uint32_t size)
 {
     switch (RendererNew::CurrentAPI())
     {
@@ -17,7 +17,7 @@ VertexBufferNew *VertexBufferNew::Create(const void *data, uint32_t size)
     return nullptr;
 }
 
-IndexBufferNew *IndexBufferNew::Create(const uint32_t *indices, uint32_t count)
+IndexBuffer *IndexBuffer::Create(const uint32_t *indices, uint32_t count)
 {
     switch (RendererNew::CurrentAPI())
     {

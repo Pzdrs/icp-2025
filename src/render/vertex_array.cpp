@@ -1,4 +1,5 @@
 #include "render/vertex_array.hpp"
+#include "render/buffer.hpp"
 #include <iostream>
 
 VertexArray::VertexArray()
@@ -26,9 +27,9 @@ void VertexArray::unbind() const
 void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &layout)
 {
     bind();
-    vb.bind();
+    vb.Bind();
     const auto &elements = layout.getElements();
-    unsigned int offset = 0;
+    size_t offset = 0;
     for (unsigned int i = 0; i < elements.size(); i++)
     {
         const auto &element = elements[i];

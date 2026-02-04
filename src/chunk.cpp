@@ -66,7 +66,7 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
             {
                 if (blocks[x][y][z].type == blockRegistry.getID("air"))
                     continue;
-                
+
                 glm::vec3 blockPos(x, y, z);
 
                 // 6 faces per cube
@@ -96,18 +96,18 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
                 }
             }
 
-    vb = VertexBuffer(vertices.data(), vertices.size() * sizeof(Vertex));
-    ib = IndexBuffer(indices.data(), indices.size());
+    vb.reset(VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex)));
+    ib.reset(IndexBuffer::Create(indices.data(), indices.size()));
 
-    va.addBuffer(vb, layout);
+    va.addBuffer(*vb, layout);
 
     va.unbind();
-    vb.unbind();
-    ib.unbind();
+    vb->Unbind();
+    ib->Unbind();
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
 void Chunk::draw(const Renderer &renderer, const Shader &shader)
 {
-    renderer.draw(va, ib, shader);
+    renderer.draw(va, *ib, shader);
 }

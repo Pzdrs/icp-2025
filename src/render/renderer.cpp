@@ -4,6 +4,7 @@
 #include "render/renderer.hpp"
 #include <stdio.h>
 #include <iostream>
+#include <render/buffer.hpp>
 
 RendererAPI RendererNew::s_RendererAPI = RendererAPI::OpenGL;
 
@@ -35,9 +36,9 @@ void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &
 {
     shader.use();
     va.bind();
-    ib.bind();
+    ib.Bind();
 
-    glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 void Renderer::drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const
 {

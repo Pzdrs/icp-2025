@@ -12,10 +12,6 @@
 #include <atlas.hpp>
 #include <camera.hpp>
 #include "scuffcraft.hpp"
-#include <render/vertex_buffer.hpp>
-#include <render/index_buffer.hpp>
-#include <render/vertex_buffer_layout.hpp>
-#include <render/vertex_array.hpp>
 #include <world.hpp>
 #include <event/mouse_event.hpp>
 #include <event/key_event.hpp>

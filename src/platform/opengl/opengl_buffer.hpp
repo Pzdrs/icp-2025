@@ -2,7 +2,7 @@
 
 #include "render/buffer.hpp"
 
-class OpenGLVertexBuffer : public VertexBufferNew
+class OpenGLVertexBuffer : public VertexBuffer
 {
 public:
     OpenGLVertexBuffer(const void *data, uint32_t size);
@@ -17,7 +17,7 @@ private:
     uint32_t m_RendererID;
 };
 
-class OpenGLIndexBuffer : public IndexBufferNew
+class OpenGLIndexBuffer : public IndexBuffer
 {
 public:
     OpenGLIndexBuffer(const uint32_t *indices, uint32_t count);

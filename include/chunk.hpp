@@ -1,8 +1,8 @@
 #pragma once
 #include "render/vertex_array.hpp"
-#include "render/index_buffer.hpp"
 #include "render/renderer.hpp"
 #include "block.hpp"
+#include "render/buffer.hpp"
 
 class Chunk
 {
@@ -19,6 +19,6 @@ public:
 
 private:
     VertexArray va;
-    VertexBuffer vb;
-    IndexBuffer ib;
+    std::unique_ptr<VertexBuffer> vb;
+    std::unique_ptr<IndexBuffer> ib;
 };
