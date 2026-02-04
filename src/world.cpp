@@ -5,8 +5,6 @@ void World::draw(const Renderer &renderer, const Shader &shader)
 {
     for (auto &[pos, chunk] : chunks)
     {
-        glm::mat4 model = glm::mat4(1.0f);
-        shader.setMat4("uTransform", model);
         chunk->draw(renderer, shader);
     }
 }

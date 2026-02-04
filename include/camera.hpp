@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdio.h>
+#include <iostream>
 
 enum class MovementDirection
 {
@@ -51,6 +52,7 @@ public:
     float fov;
     float aspectRation;
     ZoomState zoomState = ZoomState::ZOOMED_OUT;
+
 
     Camera(
         float aspectRation,
@@ -143,11 +145,13 @@ public:
 
     void zoomIn()
     {
+        std::cout << "Zooming in\n";
         zoomState = ZoomState::ZOOMING_IN;
     }
 
     void zoomOut()
     {
+        std::cout << "Zooming out\n";
         zoomState = ZoomState::ZOOMING_OUT;
     }
 

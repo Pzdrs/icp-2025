@@ -17,6 +17,7 @@ int Renderer::init()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
+
     return 0;
 }
 

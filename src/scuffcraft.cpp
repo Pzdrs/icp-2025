@@ -20,60 +20,58 @@
 #include <event/mouse_event.hpp>
 #include <event/key_event.hpp>
 #include "imgui_layer.hpp"
+#include "game_layer.hpp"
 #include "input.hpp"
 #include "key_codes.hpp"
 
-#define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
+#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
-void processInput();
+// void processInput();
 
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
-Camera camera((float)SCR_WIDTH / (float)SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
+// float lastX = SCR_WIDTH / 2.0f;
+// float lastY = SCR_HEIGHT / 2.0f;
+// bool firstMouse = true;
+// bool commandWasHeld = false;
 
 float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
-bool commandWasHeld = false;
 
 Scuffcraft::Scuffcraft()
 {
     s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
-    m_Window->setEventCallback(BIND_EVENT_FN(OnEvent));
+    m_Window->setEventCallback(BIND_EVENT_FN(Scuffcraft::OnEvent));
 
-    m_Renderer.init();
+    // m_Renderer.init();
 
-    Chunk::layout.push<float>(3); // position
-    Chunk::layout.push<float>(3); // color
-    Chunk::layout.push<float>(2); // texCoord
+    // Chunk::layout.push<float>(3); // position
+    // Chunk::layout.push<float>(3); // color
+    // Chunk::layout.push<float>(2); // texCoord
 
-    loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
-
-    PushLayer(new ImGuiLayer());
+    PushLayer(new GameLayer());
+    // PushOverlay(new ImGuiLayer());
 }
 
 Scuffcraft::~Scuffcraft()
 {
-    m_Renderer.shutdown();
+    // m_Renderer.shutdown();
 }
 
 void Scuffcraft::OnEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
 
-    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowsClose));
-    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(OnMouseMove));
-    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
-    dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnScroll));
-    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
-    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(OnFramebufferResize));
+    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Scuffcraft::onWindowsClose)); 
+    // dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(Scuffcraft::onWindowResize));
+    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(Scuffcraft::onFramebufferResize));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(Scuffcraft::onKeyPressed));
+
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
         (*--it)->OnEvent(e);
@@ -84,30 +82,36 @@ void Scuffcraft::OnEvent(Event &e)
 
 void Scuffcraft::Run()
 {
-    Shader shader("shaders/shader.vert", "shaders/shader.frag");
-    unsigned int blockAtlas = initAtlas(BLOCK_ATLAS);
+    // Shader shader("shaders/shader.vert", "shaders/shader.frag");
+    // unsigned int blockAtlas = initAtlas(BLOCK_ATLAS);
 
-    World world(m_BlockRegistry);
+    // World world(m_BlockRegistry);
 
     while (m_Running)
     {
-        m_Window->onUpdate();
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        m_Renderer.clear();
+        // m_Renderer.clear();
 
-        processInput();
+        // processInput();
 
-        shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
-        shader.setMat4("uView", camera.getViewMatrix());
-        shader.setMat4("uTransform", glm::mat4(1.0f));
+        // shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
+        // shader.setMat4("uView", camera.getViewMatrix());
+        // shader.setMat4("uTransform", glm::mat4(1.0f));
 
-        world.draw(m_Renderer, shader);
+        // // world.draw(m_Renderer, shader);
 
         for (Layer *layer : m_LayerStack)
-            layer->OnUpdate();
+            layer->OnUpdate(deltaTime);
+
+        // m_ImGuiLayer->Begin();
+        // for (Layer *layer : m_LayerStack)
+        //     layer->OnImGuiRender();
+        // m_ImGuiLayer->End();
+
+        m_Window->onUpdate();
     }
 }
 
@@ -129,84 +133,83 @@ void Scuffcraft::Pause()
     m_Window->setMouseLocked(!m_Paused);
 }
 
-bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)
+bool Scuffcraft::onWindowsClose(WindowCloseEvent &e)
 {
     m_Running = false;
     return true;
 }
 
-bool Scuffcraft::OnWindowResize(WindowResizeEvent &e)
+// bool Scuffcraft::onWindowResize(WindowResizeEvent &e)
+// {
+//     camera.setAspectRatio((float)e.getWidth() / (float)e.getHeight());
+//     return true;
+// }
+
+bool Scuffcraft::onFramebufferResize(FramebufferResizeEvent &e)
 {
-    camera.setAspectRatio((float)e.getWidth() / (float)e.getHeight());
+    // m_Renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
     return true;
 }
 
-bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
-{
-    m_Renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
-    return true;
-}
+// void processInput()
+// {
+//     bool commandHeld =
+//         Input::IsKeyPressed(Key::LeftSuper) ||
+//         Input::IsKeyPressed(Key::RightSuper);
 
-void processInput()
-{
+//     if (Input::IsKeyPressed(Key::W))
+//         camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
+//     if (Input::IsKeyPressed(Key::S))
+//         camera.processKeyboard(MovementDirection::BACKWARD, deltaTime);
+//     if (Input::IsKeyPressed(Key::A))
+//         camera.processKeyboard(MovementDirection::LEFT, deltaTime);
+//     if (Input::IsKeyPressed(Key::D))
+//         camera.processKeyboard(MovementDirection::RIGHT, deltaTime);
+//     if (Input::IsKeyPressed(Key::Space))
+//         camera.processKeyboard(MovementDirection::UP, deltaTime);
+//     if (Input::IsKeyPressed(Key::LeftShift))
+//         camera.processKeyboard(MovementDirection::DOWN, deltaTime);
 
-    bool commandHeld =
-        Input::IsKeyPressed(Key::LeftSuper) ||
-        Input::IsKeyPressed(Key::RightSuper);
+//     if (commandHeld && !commandWasHeld)
+//         camera.zoomIn();
+//     if (!commandHeld && commandWasHeld)
+//         camera.zoomOut();
 
-    if (Input::IsKeyPressed(Key::W))
-        camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
-    if (Input::IsKeyPressed(Key::S))
-        camera.processKeyboard(MovementDirection::BACKWARD, deltaTime);
-    if (Input::IsKeyPressed(Key::A))
-        camera.processKeyboard(MovementDirection::LEFT, deltaTime);
-    if (Input::IsKeyPressed(Key::D))
-        camera.processKeyboard(MovementDirection::RIGHT, deltaTime);
-    if (Input::IsKeyPressed(Key::Space))
-        camera.processKeyboard(MovementDirection::UP, deltaTime);
-    if (Input::IsKeyPressed(Key::LeftShift))
-        camera.processKeyboard(MovementDirection::DOWN, deltaTime);
+//     camera.tickZoom();
 
-    if (commandHeld && !commandWasHeld)
-        camera.zoomIn();
-    if (!commandHeld && commandWasHeld)
-        camera.zoomOut();
+//     commandWasHeld = commandHeld;
+// }
 
-    camera.tickZoom();
+// bool Scuffcraft::OnMouseMove(MouseMovedEvent &e)
+// {
+//     if (m_Paused)
+//         return false;
 
-    commandWasHeld = commandHeld;
-}
+//     if (firstMouse)
+//     {
+//         lastX = e.getX();
+//         lastY = e.getY();
+//         firstMouse = false;
+//     }
 
-bool Scuffcraft::OnMouseMove(MouseMovedEvent &e)
-{
-    if (m_Paused)
-        return false;
+//     float xoffset = e.getX() - lastX;
+//     float yoffset = lastY - e.getY(); // reversed since y-coordinates go from bottom to top
 
-    if (firstMouse)
-    {
-        lastX = e.getX();
-        lastY = e.getY();
-        firstMouse = false;
-    }
+//     lastX = e.getX();
+//     lastY = e.getY();
+//     camera.processMouseMovement(xoffset, yoffset);
+//     return true;
+// }
 
-    float xoffset = e.getX() - lastX;
-    float yoffset = lastY - e.getY(); // reversed since y-coordinates go from bottom to top
-
-    lastX = e.getX();
-    lastY = e.getY();
-    camera.processMouseMovement(xoffset, yoffset);
-    return true;
-}
-
-bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
+bool Scuffcraft::onKeyPressed(KeyPressedEvent &e)
 {
     if (e.getKeyCode() == Key::Escape)
         Pause();
     return true;
 }
 
-bool Scuffcraft::OnScroll(MouseScrolledEvent &e)
-{
-    camera.processMouseScroll(e.getYOffset());
-    return true;
-}
+// bool Scuffcraft::OnScroll(MouseScrolledEvent &e)
+// {
+//     camera.processMouseScroll(e.getYOffset());
+//     return true;
+// }

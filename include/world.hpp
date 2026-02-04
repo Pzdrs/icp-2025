@@ -19,6 +19,7 @@ struct IVec2Hash
 class World
 {
 public:
+    World() = default;
     World(const BlockRegistry &blockRegistry);
     void draw(const Renderer &renderer, const Shader &shader);
 

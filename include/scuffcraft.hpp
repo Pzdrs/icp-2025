@@ -10,9 +10,7 @@
 #include "event/key_event.hpp"
 #include "layer.hpp"
 #include "layer_stack.hpp"
-
-static const std::string BLOCK_MANIFEST = "resources/blocks.json";
-static const std::string BLOCK_ATLAS = "resources/blocks.png";
+#include "imgui_layer.hpp"
 
 class Scuffcraft
 {
@@ -32,21 +30,18 @@ public:
     void Run();
 
 private:
-    bool OnWindowsClose(WindowCloseEvent &e);
-    bool OnWindowResize(WindowResizeEvent &e);
-    bool OnFramebufferResize(FramebufferResizeEvent &e);
-    bool OnMouseMove(MouseMovedEvent &e);
-    bool OnKeyPressed(KeyPressedEvent &e);
-    bool OnScroll(MouseScrolledEvent &e);
+    bool onWindowsClose(WindowCloseEvent &e);
+    // bool onWindowResize(WindowResizeEvent &e);
+    bool onFramebufferResize(FramebufferResizeEvent &e);
+    bool onKeyPressed(KeyPressedEvent &e);
 
 private:
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     bool m_Paused = false;
 
-    Renderer m_Renderer;
-    BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
+    ImGuiLayer *m_ImGuiLayer;
 
 private:
     static Scuffcraft *s_Instance;
