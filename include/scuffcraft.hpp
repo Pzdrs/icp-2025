@@ -10,6 +10,7 @@
 #include "event/key_event.hpp"
 #include "layer.hpp"
 #include "layer_stack.hpp"
+#include "imgui_layer.hpp"
 
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 static const std::string BLOCK_ATLAS = "resources/blocks.png";
@@ -40,6 +41,7 @@ private:
     bool OnScroll(MouseScrolledEvent &e);
 
 private:
+    ImGuiLayer *m_ImGuiLayer;
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     bool m_Paused = false;

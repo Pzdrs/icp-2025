@@ -20,6 +20,7 @@
 #include <event/mouse_event.hpp>
 #include <event/key_event.hpp>
 #include "imgui_layer.hpp"
+#include "game_layer.hpp"
 #include "input.hpp"
 #include "key_codes.hpp"
 
@@ -56,7 +57,10 @@ Scuffcraft::Scuffcraft()
 
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
 
-    PushLayer(new ImGuiLayer());
+    m_ImGuiLayer = new ImGuiLayer();
+    PushOverlay(m_ImGuiLayer);
+
+    PushLayer(new GameLayer());
 }
 
 Scuffcraft::~Scuffcraft()
@@ -107,7 +111,12 @@ void Scuffcraft::Run()
         world.draw(m_Renderer, shader);
 
         for (Layer *layer : m_LayerStack)
-            layer->OnUpdate();
+            layer->OnUpdate(deltaTime);
+
+        m_ImGuiLayer->Begin();
+        for (Layer *layer : m_LayerStack)
+            layer->OnImGuiRender();
+        m_ImGuiLayer->End();
     }
 }
 

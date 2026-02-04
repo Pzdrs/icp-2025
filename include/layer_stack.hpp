@@ -1,22 +1,29 @@
 #pragma once
 #include "layer.hpp"
 #include <vector>
+#include <algorithm>
 
 class LayerStack
 {
 public:
-    LayerStack();
+    LayerStack() = default;
     ~LayerStack();
 
-    void PushLayer(Layer *layer);
-    void PopLayer(Layer *layer);
-    void PushOverlay(Layer *overlay);
-    void PopOverlay(Layer *overlay);
+    LayerStack(const LayerStack&) = delete;
+    LayerStack& operator=(const LayerStack&) = delete;
 
-    std::vector<Layer *>::iterator begin() { return m_Layers.begin(); }
-    std::vector<Layer *>::iterator end() { return m_Layers.end(); }
+    void PushLayer(Layer* layer);
+    void PopLayer(Layer* layer);
+    void PushOverlay(Layer* overlay);
+    void PopOverlay(Layer* overlay);
+
+    auto begin() { return m_Layers.begin(); }
+    auto end()   { return m_Layers.end();   }
+
+    auto begin() const { return m_Layers.begin(); }
+    auto end()   const { return m_Layers.end();   }
 
 private:
-    std::vector<Layer *> m_Layers;
-    std::vector<Layer *>::iterator m_LayerInsert;
+    std::vector<Layer*> m_Layers;
+    size_t m_LayerInsertIndex = 0;
 };
