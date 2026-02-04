@@ -1,5 +1,4 @@
 #pragma once
-#define GLFW_INCLUDE_NONE
 #include "window.hpp"
 #include "render/renderer.hpp"
 #include "render/shader.hpp"
@@ -23,17 +22,13 @@ public:
 
     int init();
     void onEvent(Event &e);
-    bool onWindowsClose(WindowCloseEvent &e);
-    bool onWindowResize(WindowResizeEvent &e);
-    bool onFramebufferResize(FramebufferResizeEvent &e);
-    bool onMouseMove(MouseMovedEvent &e);
-    bool onKeyPressed(KeyPressedEvent &e);
-    bool onScroll(MouseScrolledEvent &e);
     void pause();
 
     void pushLayer(Layer *layer);
     void pushOverlay(Layer *overlay);
 
+    inline static Scuffcraft &get() { return *s_Instance; }
+    inline Window &getWindow() { return *m_Window; }
 
     void run();
     void update(float deltaTime);
@@ -41,6 +36,13 @@ public:
     void shutdown();
 
 private:
+    bool onWindowsClose(WindowCloseEvent &e);
+    bool onWindowResize(WindowResizeEvent &e);
+    bool onFramebufferResize(FramebufferResizeEvent &e);
+    bool onMouseMove(MouseMovedEvent &e);
+    bool onKeyPressed(KeyPressedEvent &e);
+    bool onScroll(MouseScrolledEvent &e);
+
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     bool m_Paused = false;
@@ -48,4 +50,7 @@ private:
     Renderer renderer;
     BlockRegistry blockRegistry;
     LayerStack m_LayerStack;
+
+private:
+    static Scuffcraft *s_Instance;
 };

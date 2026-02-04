@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
@@ -18,8 +19,12 @@
 #include <world.hpp>
 #include <event/mouse_event.hpp>
 #include <event/key_event.hpp>
+#include "imgui_layer.hpp"
+#include "input.hpp"
 
 #define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
+
+Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
 void processInput(GLFWwindow *window);
 
@@ -38,8 +43,11 @@ bool commandWasHeld = false;
 
 Scuffcraft::Scuffcraft()
 {
+    s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
     m_Window->setEventCallback(BIND_EVENT_FN(onEvent));
+
+    pushLayer(new ImGuiLayer());
 }
 
 Scuffcraft::~Scuffcraft()
@@ -49,11 +57,13 @@ Scuffcraft::~Scuffcraft()
 void Scuffcraft::pushLayer(Layer *layer)
 {
     m_LayerStack.PushLayer(layer);
+    layer->OnAttach();
 }
 
 void Scuffcraft::pushOverlay(Layer *overlay)
 {
     m_LayerStack.PushOverlay(overlay);
+    overlay->OnAttach();
 }
 
 void Scuffcraft::onEvent(Event &e)
@@ -163,20 +173,20 @@ void processInput(GLFWwindow *window)
 {
 
     bool commandHeld =
-        glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
-        glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS;
+        Input::IsKeyPressed(GLFW_KEY_LEFT_SUPER) ||
+        Input::IsKeyPressed(GLFW_KEY_RIGHT_SUPER);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_W))
         camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_S))
         camera.processKeyboard(MovementDirection::BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_A))
         camera.processKeyboard(MovementDirection::LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_D))
         camera.processKeyboard(MovementDirection::RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_SPACE))
         camera.processKeyboard(MovementDirection::UP, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    if (Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
         camera.processKeyboard(MovementDirection::DOWN, deltaTime);
 
     if (commandHeld && !commandWasHeld)

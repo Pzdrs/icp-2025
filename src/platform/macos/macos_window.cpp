@@ -45,7 +45,7 @@ void MacOSWindow::init(const WindowProps &props)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
 #endif
 
     m_Window = glfwCreateWindow((int)props.width, (int)props.height, m_Data.title.c_str(), nullptr, nullptr);
@@ -68,7 +68,7 @@ void MacOSWindow::init(const WindowProps &props)
         WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
         data.fbWidth = width;
         data.fbHeight = height;
-        FramebufferResizeEvent event(width, height);
+        WindowResizeEvent event(width, height);
         data.eventCallback(event); });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow *window)
