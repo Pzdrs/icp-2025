@@ -23,6 +23,9 @@ void ImGuiLayer::OnAttach()
     Scuffcraft &app = Scuffcraft::Get();
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+    // docking branch only
+    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; 
 
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(app.GetWindow().getNativeWindow()), true);
     ImGui_ImplOpenGL3_Init("#version 410");

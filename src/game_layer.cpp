@@ -3,10 +3,18 @@
 #include "event/key_event.hpp"
 #include "scuffcraft.hpp"
 #include <imgui.h>
+#include "chunk.hpp"
+#include "atlas.hpp"
+
+static const std::string BLOCK_ATLAS = "resources/blocks.png";
 
 GameLayer::GameLayer()
     : Layer("GameLayer")
 {
+    initAtlas(BLOCK_ATLAS);
+    Chunk::layout.push<float>(3); // position
+    Chunk::layout.push<float>(3); // color
+    Chunk::layout.push<float>(2); // texCoord
 }
 
 GameLayer::~GameLayer()

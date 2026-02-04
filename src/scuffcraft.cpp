@@ -51,16 +51,13 @@ Scuffcraft::Scuffcraft()
 
     m_Renderer.init();
 
-    Chunk::layout.push<float>(3); // position
-    Chunk::layout.push<float>(3); // color
-    Chunk::layout.push<float>(2); // texCoord
-
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
 
-    PushLayer(new GameLayer());
+    auto gameLayer = new GameLayer();
+    PushLayer(gameLayer);
 }
 
 Scuffcraft::~Scuffcraft()
@@ -89,7 +86,6 @@ void Scuffcraft::OnEvent(Event &e)
 void Scuffcraft::Run()
 {
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
-    unsigned int blockAtlas = initAtlas(BLOCK_ATLAS);
 
     World world(m_BlockRegistry);
 

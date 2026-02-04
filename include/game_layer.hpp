@@ -3,6 +3,7 @@
 #include "layer.hpp"
 #include "event/application_event.hpp"
 #include "event/mouse_event.hpp"
+#include "render/renderer.hpp"
 
 class GameLayer : public Layer
 {

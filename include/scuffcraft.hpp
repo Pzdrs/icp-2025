@@ -13,7 +13,6 @@
 #include "imgui_layer.hpp"
 
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
-static const std::string BLOCK_ATLAS = "resources/blocks.png";
 
 class Scuffcraft
 {
@@ -46,7 +45,7 @@ private:
     bool m_Running = true;
     bool m_Paused = false;
 
-    Renderer m_Renderer;
+    Renderer   m_Renderer;
     BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
 
