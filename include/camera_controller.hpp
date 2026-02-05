@@ -2,6 +2,7 @@
 #include "camera.hpp"
 #include "event/event.hpp"
 #include "event/mouse_event.hpp"
+#include "event/application_event.hpp"
 
 class CameraController
 {
@@ -20,6 +21,7 @@ public:
     virtual CameraNew &GetCamera() = 0;
 
 protected:
+    float m_AspectRatio;
     glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
 };
 
@@ -59,4 +61,10 @@ public:
 
 private:
     bool OnMouseMoved(MouseMovedEvent &e);
+    bool OnWindowResize(WindowResizeEvent &e);
+
+private:
+    bool m_FirstMouse = true;
+    float m_LastX = 1280 / 2.0f;
+    float m_LastY = 720 / 2.0f;
 };

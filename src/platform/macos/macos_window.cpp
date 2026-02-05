@@ -72,7 +72,7 @@ void MacOSWindow::init(const WindowProps &props)
         WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
         data.fbWidth = width;
         data.fbHeight = height;
-        WindowResizeEvent event(width, height);
+        FramebufferResizeEvent event(width, height);
         data.eventCallback(event); });
 
     glfwSetWindowCloseCallback(m_Window, [](GLFWwindow *window)

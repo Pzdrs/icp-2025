@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "chunk.hpp"
+#include <iostream>
 #include "block.hpp"
 
 struct IVec2Hash
@@ -19,8 +20,8 @@ struct IVec2Hash
 class World
 {
 public:
-    World(const BlockRegistry &blockRegistry);
     void draw(const Shader &shader);
+    void generate(const BlockRegistry &blockRegistry);
 
 private:
     std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> chunks;

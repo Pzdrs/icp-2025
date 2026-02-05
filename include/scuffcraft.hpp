@@ -10,7 +10,6 @@
 #include "layer_stack.hpp"
 #include "imgui_layer.hpp"
 
-static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 
 class Scuffcraft
 {
@@ -31,12 +30,9 @@ public:
 
 private:
     bool OnWindowsClose(WindowCloseEvent &e);
-    bool OnWindowResize(WindowResizeEvent &e);
     bool OnFramebufferResize(FramebufferResizeEvent &e);
-    bool OnMouseMove(MouseMovedEvent &e);
     bool OnKeyPressed(KeyPressedEvent &e);
-    bool OnKeyReleased(KeyReleasedEvent &e);
-    bool OnScroll(MouseScrolledEvent &e);
+    bool OnMouseMoved(MouseMovedEvent &e);
 
 private:
     ImGuiLayer *m_ImGuiLayer;
@@ -47,7 +43,6 @@ private:
     float m_DeltaTime = 0.0f;
     float m_LastFrameTime = 0.0f;
 
-    BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
 
 private:

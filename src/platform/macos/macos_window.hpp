@@ -16,6 +16,9 @@ public:
     unsigned int getWidth() const override { return m_Data.width; };
     unsigned int getHeight() const override { return m_Data.height; };
 
+    unsigned int getFramebufferWidth() const override { return m_Data.fbWidth; };
+    unsigned int getFramebufferHeight() const override { return m_Data.fbHeight; };
+
     inline void setEventCallback(const EventCallbackFunc &callback) override { m_Data.eventCallback = callback; };
     void setVSync(bool enabled) override;
     bool isVSync() const override;

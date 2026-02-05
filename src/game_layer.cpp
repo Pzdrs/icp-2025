@@ -8,11 +8,14 @@
 #include "render/render_command.hpp"
 
 static const std::string BLOCK_ATLAS = "resources/blocks.png";
+static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 
 GameLayer::GameLayer()
-    : Layer("GameLayer")
+    : Layer("GameLayer"), m_CameraController(60.0f, (float)1280 / (float)720, 0.1f, 100.0f), m_Shader("shaders/shader.vert", "shaders/shader.frag")
 {
     initAtlas(BLOCK_ATLAS);
+    loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
+    m_World.generate(m_BlockRegistry);
 }
 
 GameLayer::~GameLayer()
@@ -29,8 +32,19 @@ void GameLayer::OnDetach()
 
 void GameLayer::OnUpdate(float dt)
 {
+    m_CameraController.OnUpdate(dt);
+
     RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     RenderCommand::Clear();
+
+    Renderer::BeginScene();
+    
+    m_Shader.setMat4("uViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
+    m_Shader.setMat4("uTransform", glm::mat4(1.0f));
+
+    m_World.draw(m_Shader);
+
+    Renderer::EndScene();
 }
 
 void GameLayer::OnImGuiRender()
@@ -40,5 +54,5 @@ void GameLayer::OnImGuiRender()
 
 void GameLayer::OnEvent(Event &event)
 {
-    EventDispatcher dispatcher(event);
+    m_CameraController.OnEvent(event);
 }

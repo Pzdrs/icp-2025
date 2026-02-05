@@ -10,8 +10,9 @@ void World::draw(const Shader &shader)
     }
 }
 
-World::World(const BlockRegistry &blockRegistry)
+void World::generate(const BlockRegistry &blockRegistry)
 {
+    std::cout << "Generating world...\n";
     glm::ivec2 chunkPos(0, 0);
     auto newChunk = std::make_unique<Chunk>();
 

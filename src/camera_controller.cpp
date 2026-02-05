@@ -34,16 +34,41 @@ void FreeCameraController::OnUpdate(float dt)
 
 void FreeCameraController::OnResize(float width, float height)
 {
+    m_AspectRatio = width / height;
+    m_Camera.SetProjection(60.0f, m_AspectRatio, 0.1f, 100.0f);
 }
 
 void FreeCameraController::OnEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
+    dispatcher.dispatch<WindowResizeEvent>(std::bind(&FreeCameraController::OnWindowResize, this, std::placeholders::_1));
     dispatcher.dispatch<MouseMovedEvent>(std::bind(&FreeCameraController::OnMouseMoved, this, std::placeholders::_1));
+}
+
+bool FreeCameraController::OnWindowResize(WindowResizeEvent &e)
+{
+    OnResize((float)e.getWidth(), (float)e.getHeight());
+    return true;
 }
 
 bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
 {
-    std::cout << "Mouse moved: " << e.getX() << ", " << e.getY() << std::endl;
+    if (m_FirstMouse)
+    {
+        m_LastX = e.getX();
+        m_LastY = e.getY();
+        m_FirstMouse = false;
+    }
+
+    float xoffset = e.getX() - m_LastX;
+    float yoffset = m_LastY - e.getY(); // reversed since y-coordinates go from bottom to top
+
+    m_LastX = e.getX();
+    m_LastY = e.getY();
+    xoffset *= 0.1f;
+    yoffset *= 0.1f;
+    m_Yaw += xoffset;
+    m_Pitch += yoffset;
+    m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
     return true;
 }

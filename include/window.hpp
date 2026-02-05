@@ -23,6 +23,8 @@ public:
 
     virtual unsigned int getWidth() const = 0;
     virtual unsigned int getHeight() const = 0;
+    virtual unsigned int getFramebufferWidth() const = 0;
+    virtual unsigned int getFramebufferHeight() const = 0;
 
     virtual void setEventCallback(const EventCallbackFunc &callback) = 0;
     virtual void setVSync(bool enabled) = 0;
