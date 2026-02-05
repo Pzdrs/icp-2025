@@ -1,11 +1,17 @@
 #include "camera.hpp"
 
+void CameraNew::SetPosition(const glm::vec3 &position)
+{
+    m_Position = position;
+    RecalculateViewMatrix();
+}
+
 /////////////////////////
 // PERSPECTIVE CAMERA
 /////////////////////////
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio, float nearClip, float farClip)
-    : m_ProjectionMatrix(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
+    : CameraNew(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 {
     RecalculateViewMatrix();
 }
@@ -26,12 +32,6 @@ void PerspectiveCamera::SetPitchYaw(float pitch, float yaw)
 
     m_Pitch = pitch;
     m_Yaw = yaw;
-    RecalculateViewMatrix();
-}
-
-void PerspectiveCamera::SetPosition(const glm::vec3 &position)
-{
-    m_Position = position;
     RecalculateViewMatrix();
 }
 
@@ -61,7 +61,7 @@ void PerspectiveCamera::RecalculateViewMatrix()
 ///////////////////////
 
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-    : m_ProjectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
+    : CameraNew(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
 {
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
@@ -70,6 +70,12 @@ void OrthographicCamera::SetProjection(float left, float right, float bottom, fl
 {
     m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+}
+
+void OrthographicCamera::SetRotation(float rotation)
+{
+    m_Rotation = rotation;
+    RecalculateViewMatrix();
 }
 
 void OrthographicCamera::RecalculateViewMatrix()
