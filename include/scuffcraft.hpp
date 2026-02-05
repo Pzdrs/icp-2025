@@ -9,6 +9,7 @@
 #include "layer.hpp"
 #include "layer_stack.hpp"
 #include "imgui_layer.hpp"
+#include "camera.hpp"
 
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 
@@ -45,6 +46,7 @@ private:
 
     BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
+    PerspectiveCamera m_Camera;
 
 private:
     static Scuffcraft *s_Instance;

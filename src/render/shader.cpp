@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <assert.h>
+#include <glm/gtc/type_ptr.hpp>
 
 std::string ReadShaderFile(const std::string &filepath)
 {
@@ -62,6 +63,12 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
     m_RendererID = program;
 }
 
+Shader::~Shader()
+{
+    glUseProgram(0);
+    glDeleteProgram(m_RendererID);
+}
+
 void Shader::setBool(const std::string &name, bool value) const
 {
     glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), (int)value);
@@ -76,5 +83,5 @@ void Shader::setFloat(const std::string &name, float value) const
 }
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 }

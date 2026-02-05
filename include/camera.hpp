@@ -35,6 +35,9 @@ const float ZOOM_SNAP_EPSILON = 0.01f;
 
 class Camera
 {
+private:
+    glm::mat4 m_ViewProjectionMatrix;
+
 public:
     glm::vec3 position;
     glm::vec3 front;
@@ -198,4 +201,77 @@ private:
     {
         return zoomState == ZoomState::ZOOMED_IN || zoomState == ZoomState::ZOOMED_OUT;
     }
+};
+
+class PerspectiveCamera
+{
+public:
+    PerspectiveCamera(float fov, float aspectRatio, float nearClip, float farClip);
+
+    void SetProjection(float fov, float aspectRatio, float nearClip, float farClip);
+
+    void SetPosition(const glm::vec3 &position);
+
+    void SetPitchYaw(float pitch, float yaw);
+    float GetPitch() const { return m_Pitch; }
+    float GetYaw() const { return m_Yaw; }
+
+    const glm::mat4 &GetProjectionMatrix() const { return m_ProjectionMatrix; }
+    const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
+    const glm::mat4 &GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+
+private:
+    void RecalculateViewMatrix();
+
+private:
+    glm::mat4 m_ProjectionMatrix;
+    glm::mat4 m_ViewMatrix;
+    // cached value of Projection * View, as it's used often
+    glm::mat4 m_ViewProjectionMatrix;
+
+    glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
+    float m_Pitch = 0.0f;
+    float m_Yaw = -90.0f;
+
+    glm::vec3 m_Forward;
+    glm::vec3 m_Up;
+    glm::vec3 m_Right;
+};
+
+class OrthographicCamera
+{
+public:
+    OrthographicCamera(float left, float right, float bottom, float top);
+
+    void SetProjection(float left, float right, float bottom, float top);
+
+    void SetPostion(const glm::vec3 &position)
+    {
+        m_Position = position;
+        RecalculateViewMatrix();
+    }
+    const glm::vec3 &GetPosition() const { return m_Position; }
+
+    void SetRotation(float rotation)
+    {
+        m_Rotation = rotation;
+        RecalculateViewMatrix();
+    }
+    float GetRotation() const { return m_Rotation; }
+
+    const glm::mat4 &GetProjectionMatrix() const { return m_ProjectionMatrix; }
+    const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
+    const glm::mat4 &GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+
+private:
+    void RecalculateViewMatrix();
+
+private:
+    glm::mat4 m_ProjectionMatrix;
+    glm::mat4 m_ViewMatrix;
+    // cached value of Projection * View, as it's used often
+    glm::mat4 m_ViewProjectionMatrix;
+
+    glm::vec3 m_Position = {0.0f, 0.0f, 0.0f};
+    float m_Rotation = 0.0f;
 };

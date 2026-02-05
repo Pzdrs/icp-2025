@@ -40,7 +40,7 @@ float lastFrame = 0.0f; // Time of last frame
 
 bool commandWasHeld = false;
 
-Scuffcraft::Scuffcraft()
+Scuffcraft::Scuffcraft() : m_Camera(70.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f)
 {
     s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
@@ -55,6 +55,9 @@ Scuffcraft::Scuffcraft()
 
     auto gameLayer = new GameLayer();
     PushLayer(gameLayer);
+
+    m_Camera.SetPosition(glm::vec3(-1.0f, 0.0f, 3.0f));
+    m_Camera.SetPitchYaw(0.0f, -90.0f);
 }
 
 Scuffcraft::~Scuffcraft()
