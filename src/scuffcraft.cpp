@@ -25,7 +25,7 @@
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
-void processInput();
+void processInput(float deltaTime);
 
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
@@ -34,11 +34,6 @@ Camera camera((float)SCR_WIDTH / (float)SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 3.0f))
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-
-float deltaTime = 0.0f; // Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
-
-bool commandWasHeld = false;
 
 Scuffcraft::Scuffcraft() : m_Camera(70.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f)
 {
@@ -74,6 +69,7 @@ void Scuffcraft::OnEvent(Event &e)
 
     dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(OnMouseMove));
     dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
+    dispatcher.dispatch<KeyReleasedEvent>(BIND_EVENT_FN(OnKeyReleased));
     dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnScroll));
     dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(OnFramebufferResize));
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
@@ -93,13 +89,13 @@ void Scuffcraft::Run()
     while (m_Running)
     {
         float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        m_DeltaTime = currentFrame - m_LastFrameTime;
+        m_LastFrameTime = currentFrame;
 
-        processInput();
+        processInput(m_DeltaTime);
 
         for (Layer *layer : m_LayerStack)
-            layer->OnUpdate(deltaTime);
+            layer->OnUpdate(m_DeltaTime);
 
         // soon to be gone
 
@@ -157,13 +153,8 @@ bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
     return true;
 }
 
-void processInput()
+void processInput(float deltaTime)
 {
-
-    bool commandHeld =
-        Input::IsKeyPressed(Key::LeftSuper) ||
-        Input::IsKeyPressed(Key::RightSuper);
-
     if (Input::IsKeyPressed(Key::W))
         camera.processKeyboard(MovementDirection::FORWARD, deltaTime);
     if (Input::IsKeyPressed(Key::S))
@@ -177,14 +168,7 @@ void processInput()
     if (Input::IsKeyPressed(Key::LeftShift))
         camera.processKeyboard(MovementDirection::DOWN, deltaTime);
 
-    if (commandHeld && !commandWasHeld)
-        camera.zoomIn();
-    if (!commandHeld && commandWasHeld)
-        camera.zoomOut();
-
     camera.tickZoom();
-
-    commandWasHeld = commandHeld;
 }
 
 bool Scuffcraft::OnMouseMove(MouseMovedEvent &e)
@@ -212,6 +196,15 @@ bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
 {
     if (e.getKeyCode() == Key::Escape)
         Pause();
+    else if (e.getKeyCode() == Key::LeftSuper || e.getKeyCode() == Key::RightSuper)
+        camera.zoomIn();
+    return true;
+}
+
+bool Scuffcraft::OnKeyReleased(KeyReleasedEvent &e)
+{
+    if (e.getKeyCode() == Key::LeftSuper || e.getKeyCode() == Key::RightSuper)
+        camera.zoomOut();
     return true;
 }
 

@@ -36,6 +36,7 @@ private:
     bool OnFramebufferResize(FramebufferResizeEvent &e);
     bool OnMouseMove(MouseMovedEvent &e);
     bool OnKeyPressed(KeyPressedEvent &e);
+    bool OnKeyReleased(KeyReleasedEvent &e);
     bool OnScroll(MouseScrolledEvent &e);
 
 private:
@@ -43,6 +44,9 @@ private:
     std::unique_ptr<Window> m_Window;
     bool m_Running = true;
     bool m_Paused = false;
+
+    float m_DeltaTime = 0.0f;
+    float m_LastFrameTime = 0.0f;
 
     BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
