@@ -24,13 +24,7 @@ void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float nearCl
 
 void PerspectiveCamera::SetPitchYaw(float pitch, float yaw)
 {
-    // lock the pitch in <-89, 89> degrees
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    m_Pitch = pitch;
+    m_Pitch = glm::clamp(pitch, -89.0f, 89.0f);
     m_Yaw = yaw;
     RecalculateViewMatrix();
 }

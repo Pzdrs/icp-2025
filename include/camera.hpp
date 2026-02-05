@@ -239,12 +239,16 @@ public:
     float GetPitch() const { return m_Pitch; }
     float GetYaw() const { return m_Yaw; }
 
+    const glm::vec3 &GetForward() const { return m_Forward; };
+    const glm::vec3 &GetRight() const { return m_Right; };
+    const glm::vec3 &GetUp() const { return m_Up; };
+
 private:
     void RecalculateViewMatrix() override;
 
 private:
     float m_Pitch = 0.0f;
-    float m_Yaw = -90.0f;
+    float m_Yaw = 0.0f;
 
     glm::vec3 m_Forward;
     glm::vec3 m_Up;

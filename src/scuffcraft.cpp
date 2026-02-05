@@ -20,6 +20,7 @@
 #include "input.hpp"
 #include "render/render_command.hpp"
 #include "key_codes.hpp"
+#include <camera_controller.hpp>
 
 #define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
 
@@ -31,11 +32,12 @@ const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
 Camera camera((float)SCR_WIDTH / (float)SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 3.0f));
+FreeCameraController cameraController(60.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
-Scuffcraft::Scuffcraft() : m_Camera(70.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f)
+Scuffcraft::Scuffcraft()
 {
     s_Instance = this;
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
@@ -50,9 +52,6 @@ Scuffcraft::Scuffcraft() : m_Camera(70.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT,
 
     auto gameLayer = new GameLayer();
     PushLayer(gameLayer);
-
-    m_Camera.SetPosition(glm::vec3(-1.0f, 0.0f, 3.0f));
-    m_Camera.SetPitchYaw(0.0f, -90.0f);
 }
 
 Scuffcraft::~Scuffcraft()
@@ -62,6 +61,8 @@ Scuffcraft::~Scuffcraft()
 
 void Scuffcraft::OnEvent(Event &e)
 {
+    cameraController.OnEvent(e);
+    
     EventDispatcher dispatcher(e);
 
     dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowsClose));
@@ -84,6 +85,9 @@ void Scuffcraft::Run()
 {
     Shader shader("shaders/shader.vert", "shaders/shader.frag");
 
+    cameraController.SetPosition(glm::vec3(-1.0f, 0.0f, 3.0f));
+    cameraController.SetPitchYaw(0.0f, -90.0f);
+
     World world(m_BlockRegistry);
 
     while (m_Running)
@@ -93,6 +97,7 @@ void Scuffcraft::Run()
         m_LastFrameTime = currentFrame;
 
         processInput(m_DeltaTime);
+        cameraController.OnUpdate(m_DeltaTime);
 
         for (Layer *layer : m_LayerStack)
             layer->OnUpdate(m_DeltaTime);
@@ -100,8 +105,10 @@ void Scuffcraft::Run()
         // soon to be gone
 
         Renderer::BeginScene();
-        shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
-        shader.setMat4("uView", camera.getViewMatrix());
+        // shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
+        // shader.setMat4("uView", camera.getViewMatrix());
+        shader.setMat4("uProjection", cameraController.GetCamera().GetProjectionMatrix());
+        shader.setMat4("uView", cameraController.GetCamera().GetViewMatrix());
         shader.setMat4("uTransform", glm::mat4(1.0f));
         world.draw(shader);
         Renderer::EndScene();
