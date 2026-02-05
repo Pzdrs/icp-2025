@@ -151,7 +151,7 @@ public:
     virtual const BufferLayout &GetLayout() const = 0;
     virtual void SetLayout(const BufferLayout &layout) = 0;
 
-    static VertexBuffer *Create(const void *data, uint32_t size);
+    static std::unique_ptr<VertexBuffer> Create(const void *data, uint32_t size);
 };
 class IndexBuffer
 {
@@ -163,5 +163,5 @@ public:
 
     virtual uint32_t GetCount() const = 0;
 
-    static IndexBuffer *Create(const uint32_t *indices, uint32_t count);
+    static std::unique_ptr<IndexBuffer> Create(const uint32_t *indices, uint32_t count);
 };

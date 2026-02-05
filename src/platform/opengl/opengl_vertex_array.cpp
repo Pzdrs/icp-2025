@@ -39,11 +39,13 @@ static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 OpenGLVertexArray::OpenGLVertexArray()
 {
     glGenVertexArrays(1, &m_RendererID);
+    std::cout << "Created OpenGLVertexArray with ID: " << m_RendererID << std::endl;
 }
 
 OpenGLVertexArray::~OpenGLVertexArray()
 {
     glDeleteVertexArrays(1, &m_RendererID);
+    std::cout << "Destroying OpenGLVertexArray with ID: " << m_RendererID << std::endl;
 }
 
 void OpenGLVertexArray::Bind() const
@@ -56,7 +58,7 @@ void OpenGLVertexArray::Unbind() const
     glBindVertexArray(0);
 }
 
-void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vertexBuffer)
+void OpenGLVertexArray::AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer)
 {
 
     if (vertexBuffer->GetLayout().GetElements().size() == 0)
@@ -128,13 +130,13 @@ void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer> &ver
         }
     }
 
-    m_VertexBuffers.push_back(vertexBuffer);
+    m_VertexBuffers.push_back(std::move(vertexBuffer));
 }
 
-void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer> &indexBuffer)
+void OpenGLVertexArray::SetIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
 {
     glBindVertexArray(m_RendererID);
     indexBuffer->Bind();
 
-    m_IndexBuffer = indexBuffer;
+    m_IndexBuffer = std::move(indexBuffer);
 }

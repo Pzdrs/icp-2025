@@ -44,14 +44,14 @@ void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
     }
 }
 
-std::shared_ptr<VertexArrayNew> VertexArrayNew::Create()
+std::unique_ptr<VertexArrayNew> VertexArrayNew::Create()
 {
     switch (RendererNew::CurrentAPI())
     {
     case RendererAPI::None:
         return nullptr;
     case RendererAPI::OpenGL:
-        return std::make_shared<OpenGLVertexArray>();
+        return std::make_unique<OpenGLVertexArray>();
     }
 
     // assert

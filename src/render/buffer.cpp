@@ -2,7 +2,7 @@
 #include <render/renderer.hpp>
 #include "../platform/opengl/opengl_buffer.hpp"
 
-VertexBuffer *VertexBuffer::Create(const void *data, uint32_t size)
+std::unique_ptr<VertexBuffer> VertexBuffer::Create(const void *data, uint32_t size)
 {
     switch (RendererNew::CurrentAPI())
     {
@@ -10,14 +10,14 @@ VertexBuffer *VertexBuffer::Create(const void *data, uint32_t size)
         // assert
         return nullptr;
     case RendererAPI::OpenGL:
-        return new OpenGLVertexBuffer(data, size);
+        return std::make_unique<OpenGLVertexBuffer>(data, size);
     }
 
     // assert
     return nullptr;
 }
 
-IndexBuffer *IndexBuffer::Create(const uint32_t *indices, uint32_t count)
+std::unique_ptr<IndexBuffer> IndexBuffer::Create(const uint32_t *indices, uint32_t count)
 {
     switch (RendererNew::CurrentAPI())
     {
@@ -25,7 +25,7 @@ IndexBuffer *IndexBuffer::Create(const uint32_t *indices, uint32_t count)
         // assert
         return nullptr;
     case RendererAPI::OpenGL:
-        return new OpenGLIndexBuffer(indices, count);
+        return std::make_unique<OpenGLIndexBuffer>(indices, count);
     }
 
     // assert

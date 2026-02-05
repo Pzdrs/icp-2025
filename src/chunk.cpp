@@ -96,8 +96,8 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
                 }
             }
 
-    vb.reset(VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex)));
-    ib.reset(IndexBuffer::Create(indices.data(), indices.size()));
+    vb = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
+    ib = IndexBuffer::Create(indices.data(), indices.size());
 
     va.addBuffer(*vb, layout);
 
