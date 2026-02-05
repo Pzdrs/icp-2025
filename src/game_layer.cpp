@@ -12,9 +12,6 @@ GameLayer::GameLayer()
     : Layer("GameLayer")
 {
     initAtlas(BLOCK_ATLAS);
-    Chunk::layout.push<float>(3); // position
-    Chunk::layout.push<float>(3); // color
-    Chunk::layout.push<float>(2); // texCoord
 }
 
 GameLayer::~GameLayer()

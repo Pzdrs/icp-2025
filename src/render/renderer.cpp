@@ -35,7 +35,7 @@ void Renderer::clear() const
 void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader) const
 {
     shader.use();
-    va.bind();
+    va.Bind();
     ib.Bind();
 
     glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
@@ -43,6 +43,6 @@ void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &
 void Renderer::drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const
 {
     shader.use();
-    va.bind();
+    va.Bind();
     glDrawArrays(GL_TRIANGLES, 0, count);
 }

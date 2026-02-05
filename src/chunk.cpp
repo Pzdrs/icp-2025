@@ -4,14 +4,12 @@
 #include <atlas.hpp>
 #include <block.hpp>
 
-VertexBufferLayout Chunk::layout;
-
 Chunk::~Chunk()
 {
     std::cout << "Destroying Chunk\n";
 }
 
-Chunk::Chunk()
+Chunk::Chunk() : va(VertexArray::Create())
 {
     std::cout << "Creating Chunk\n";
 }
@@ -96,18 +94,22 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
                 }
             }
 
-    vb = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
-    ib = IndexBuffer::Create(indices.data(), indices.size());
+    auto vb = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
+    auto ib = IndexBuffer::Create(indices.data(), indices.size());
 
-    va.addBuffer(*vb, layout);
+    vb->SetLayout({
+        {ShaderDataType::Float3, "a_Position"},
+        {ShaderDataType::Float3, "a_Color"},
+        {ShaderDataType::Float2, "a_TexCoord"},
+    });
+    va->AddVertexBuffer(std::move(vb));
+    va->SetIndexBuffer(std::move(ib));
 
-    va.unbind();
-    vb->Unbind();
-    ib->Unbind();
+    va->Unbind();
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
 void Chunk::draw(const Renderer &renderer, const Shader &shader)
 {
-    renderer.draw(va, *ib, shader);
+    renderer.draw(*va, *va->GetIndexBuffer(), shader);
 }

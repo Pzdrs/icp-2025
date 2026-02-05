@@ -2,7 +2,7 @@
 
 #include "render/vertex_array.hpp"
 
-class OpenGLVertexArray : public VertexArrayNew
+class OpenGLVertexArray : public VertexArray
 {
 public:
     OpenGLVertexArray();
@@ -16,6 +16,7 @@ public:
 
     virtual const std::vector<std::unique_ptr<VertexBuffer>> &GetVertexBuffers() const override { return m_VertexBuffers; };
     virtual const std::unique_ptr<IndexBuffer> &GetIndexBuffer() const override { return m_IndexBuffer; };
+
 private:
     uint32_t m_RendererID;
     uint32_t m_VertexBufferIndex = 0;
