@@ -55,7 +55,7 @@ static uint32_t ShaderDataTypeSize(ShaderDataType type)
 struct BufferElement
 {
     std::string Name;
-    uint32_t Offset;
+    size_t Offset;
     uint32_t Size;
     ShaderDataType Type;
     bool Normalized;

@@ -1,6 +1,8 @@
 #include "render/vertex_array.hpp"
 #include "render/buffer.hpp"
+#include "render/renderer.hpp"
 #include <iostream>
+#include "../platform/opengl/opengl_vertex_array.hpp"
 
 VertexArray::VertexArray()
 {
@@ -40,4 +42,18 @@ void VertexArray::addBuffer(const VertexBuffer &vb, const VertexBufferLayout &la
         glEnableVertexAttribArray(i);
         offset += element.count * VertexBufferElement::getSizeOfType(element.type);
     }
+}
+
+std::shared_ptr<VertexArrayNew> VertexArrayNew::Create()
+{
+    switch (RendererNew::CurrentAPI())
+    {
+    case RendererAPI::None:
+        return nullptr;
+    case RendererAPI::OpenGL:
+        return std::make_shared<OpenGLVertexArray>();
+    }
+
+    // assert
+    return nullptr;
 }
