@@ -4,12 +4,12 @@
 
 std::unique_ptr<VertexBuffer> VertexBuffer::Create(const void *data, uint32_t size)
 {
-    switch (RendererNew::CurrentAPI())
+    switch (Renderer::CurrentAPI())
     {
-    case RendererAPI::None:
+    case RendererAPI::API::None:
         // assert
         return nullptr;
-    case RendererAPI::OpenGL:
+    case RendererAPI::API::OpenGL:
         return std::make_unique<OpenGLVertexBuffer>(data, size);
     }
 
@@ -19,12 +19,12 @@ std::unique_ptr<VertexBuffer> VertexBuffer::Create(const void *data, uint32_t si
 
 std::unique_ptr<IndexBuffer> IndexBuffer::Create(const uint32_t *indices, uint32_t count)
 {
-    switch (RendererNew::CurrentAPI())
+    switch (Renderer::CurrentAPI())
     {
-    case RendererAPI::None:
+    case RendererAPI::API::None:
         // assert
         return nullptr;
-    case RendererAPI::OpenGL:
+    case RendererAPI::API::OpenGL:
         return std::make_unique<OpenGLIndexBuffer>(indices, count);
     }
 

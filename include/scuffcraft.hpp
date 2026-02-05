@@ -1,7 +1,5 @@
 #pragma once
 #include "window.hpp"
-#include "render/renderer.hpp"
-#include "render/shader.hpp"
 #include "block.hpp"
 #include "world.hpp"
 #include "event/event.hpp"
@@ -45,7 +43,6 @@ private:
     bool m_Running = true;
     bool m_Paused = false;
 
-    Renderer   m_Renderer;
     BlockRegistry m_BlockRegistry;
     LayerStack m_LayerStack;
 

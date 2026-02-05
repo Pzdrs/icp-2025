@@ -16,5 +16,5 @@ public:
     virtual const std::vector<std::unique_ptr<VertexBuffer>> &GetVertexBuffers() const = 0;
     virtual const std::unique_ptr<IndexBuffer> &GetIndexBuffer() const = 0;
 
-    static std::unique_ptr<VertexArray> Create();
+    static std::shared_ptr<VertexArray> Create();
 };

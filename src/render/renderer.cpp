@@ -1,48 +1,33 @@
-#include <glad/glad.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include "render/renderer.hpp"
-#include <stdio.h>
-#include <iostream>
 #include <render/buffer.hpp>
+#include "render/render_command.hpp"
 
-RendererAPI RendererNew::s_RendererAPI = RendererAPI::OpenGL;
-
-int Renderer::init()
+void Renderer::Init()
 {
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
-    return 0;
+    RenderCommand::Init();
 }
 
-void Renderer::setViewport(int x, int y, int width, int height)
+void Renderer::OnWindowResize(uint32_t width, uint32_t height)
 {
-    glViewport(x, y, width, height);
+    RenderCommand::SetViewport(0, 0, width, height);
 }
 
-void Renderer::shutdown()
+void Renderer::Shutdown()
 {
-    // Cleanup code for the renderer would go here
+    // Cleanup code for Renderer would go here
 }
 
-void Renderer::clear() const
+void Renderer::BeginScene()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Code to begin a new scene would go here
 }
 
-void Renderer::draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader) const
+void Renderer::EndScene()
 {
-    shader.use();
-    va.Bind();
-    ib.Bind();
-
-    glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
+    // Code to end the current scene would go here
 }
-void Renderer::drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const
+
+void Renderer::Submit(const std::shared_ptr<VertexArray> &vertexArray)
 {
-    shader.use();
-    va.Bind();
-    glDrawArrays(GL_TRIANGLES, 0, count);
+    RenderCommand::DrawIndexed(vertexArray);
 }

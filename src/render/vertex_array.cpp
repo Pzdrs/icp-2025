@@ -2,14 +2,14 @@
 #include "render/renderer.hpp"
 #include "../platform/opengl/opengl_vertex_array.hpp"
 
-std::unique_ptr<VertexArray> VertexArray::Create()
+std::shared_ptr<VertexArray> VertexArray::Create()
 {
-    switch (RendererNew::CurrentAPI())
+    switch (Renderer::CurrentAPI())
     {
-    case RendererAPI::None:
+    case RendererAPI::API::None:
         return nullptr;
-    case RendererAPI::OpenGL:
-        return std::make_unique<OpenGLVertexArray>();
+    case RendererAPI::API::OpenGL:
+        return std::make_shared<OpenGLVertexArray>();
     }
 
     // assert

@@ -1,34 +1,22 @@
 #pragma once
 #include <camera.hpp>
-#include <vector>
 #include <glm/glm.hpp>
-#include <render/shader.hpp>
-#include <render/vertex_array.hpp>
+#include "render/shader.hpp"
+#include "render/vertex_array.hpp"
+#include "renderer_api.hpp"
 
 class Renderer
 {
 public:
-    void clear() const;
-    void draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader) const;
-    void drawWithoutIB(const VertexArray &va, const unsigned int count, const Shader &shader) const;
-    int init();
-    void shutdown();
-    void setViewport(int x, int y, int width, int height);
+    static void Init();
+    static void Shutdown();
 
-private:
-};
+    static void OnWindowResize(uint32_t width, uint32_t height);
 
-enum class RendererAPI
-{
-    None = 0,
-    OpenGL = 1
-};
+    static void BeginScene();
+    static void EndScene();
 
-class RendererNew
-{
-public:
-    static inline RendererAPI CurrentAPI() { return s_RendererAPI; }
+    static void Submit(const std::shared_ptr<VertexArray> &vertexArray);
 
-private:
-    static RendererAPI s_RendererAPI;
+    static RendererAPI::API CurrentAPI() { return RendererAPI::CurrentAPI(); }
 };

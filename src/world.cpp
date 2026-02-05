@@ -1,13 +1,12 @@
 #include "world.hpp"
 #include <iostream>
+#include "render/renderer.hpp"
 
-void World::draw(const Renderer &renderer, const Shader &shader)
+void World::draw(const Shader &shader)
 {
     for (auto &[pos, chunk] : chunks)
     {
-        glm::mat4 model = glm::mat4(1.0f);
-        shader.setMat4("uTransform", model);
-        chunk->draw(renderer, shader);
+        chunk->draw(shader);
     }
 }
 
@@ -32,5 +31,5 @@ World::World(const BlockRegistry &blockRegistry)
 
     newChunk->generateMesh(blockRegistry);
 
-    chunks[chunkPos] = std::move(newChunk);  // works fine
+    chunks[chunkPos] = std::move(newChunk); // works fine
 }

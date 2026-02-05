@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include "chunk.hpp"
 #include "atlas.hpp"
+#include "render/render_command.hpp"
 
 static const std::string BLOCK_ATLAS = "resources/blocks.png";
 
@@ -28,6 +29,8 @@ void GameLayer::OnDetach()
 
 void GameLayer::OnUpdate(float dt)
 {
+    RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+    RenderCommand::Clear();
 }
 
 void GameLayer::OnImGuiRender()

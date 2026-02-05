@@ -20,7 +20,7 @@ class World
 {
 public:
     World(const BlockRegistry &blockRegistry);
-    void draw(const Renderer &renderer, const Shader &shader);
+    void draw(const Shader &shader);
 
 private:
     std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> chunks;

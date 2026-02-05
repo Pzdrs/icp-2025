@@ -13,9 +13,9 @@ public:
     static const int SIZE_Y = 256;
     Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
     void generateMesh(const BlockRegistry &blockRegistry);
-    void draw(const Renderer &renderer, const Shader &shader);
+    void draw(const Shader &shader);
     bool isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
 
 private:
-    std::unique_ptr<VertexArray> va;
+    std::shared_ptr<VertexArray> va;
 };

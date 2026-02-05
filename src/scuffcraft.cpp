@@ -18,6 +18,7 @@
 #include "imgui_layer.hpp"
 #include "game_layer.hpp"
 #include "input.hpp"
+#include "render/render_command.hpp"
 #include "key_codes.hpp"
 
 #define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
@@ -45,7 +46,7 @@ Scuffcraft::Scuffcraft()
     m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
     m_Window->setEventCallback(BIND_EVENT_FN(OnEvent));
 
-    m_Renderer.init();
+    Renderer::Init();
 
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
 
@@ -58,7 +59,7 @@ Scuffcraft::Scuffcraft()
 
 Scuffcraft::~Scuffcraft()
 {
-    m_Renderer.shutdown();
+    Renderer::Shutdown();
 }
 
 void Scuffcraft::OnEvent(Event &e)
@@ -66,10 +67,11 @@ void Scuffcraft::OnEvent(Event &e)
     EventDispatcher dispatcher(e);
 
     dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowsClose));
+    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+
     dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(OnMouseMove));
     dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
     dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnScroll));
-    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
     dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(OnFramebufferResize));
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
@@ -91,18 +93,21 @@ void Scuffcraft::Run()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        m_Renderer.clear();
-
         processInput();
-
-        shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
-        shader.setMat4("uView", camera.getViewMatrix());
-        shader.setMat4("uTransform", glm::mat4(1.0f));
-
-        world.draw(m_Renderer, shader);
 
         for (Layer *layer : m_LayerStack)
             layer->OnUpdate(deltaTime);
+
+        // soon to be gone
+
+        Renderer::BeginScene();
+        shader.setMat4("uProjection", camera.getProjectionMatrixf(0.1f, 100.0f));
+        shader.setMat4("uView", camera.getViewMatrix());
+        shader.setMat4("uTransform", glm::mat4(1.0f));
+        world.draw(shader);
+        Renderer::EndScene();
+
+        // soon to be gone
 
         m_ImGuiLayer->Begin();
         for (Layer *layer : m_LayerStack)
@@ -145,7 +150,7 @@ bool Scuffcraft::OnWindowResize(WindowResizeEvent &e)
 
 bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 {
-    m_Renderer.setViewport(0, 0, e.getWidth(), e.getHeight());
+    Renderer::OnWindowResize(e.getWidth(), e.getHeight());
     return true;
 }
 
