@@ -25,18 +25,20 @@ void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float nearCl
 
 void PerspectiveCamera::SetPitchYaw(float pitch, float yaw)
 {
-    m_Pitch = glm::clamp(pitch, -89.0f, 89.0f);
+    m_Pitch = pitch;
     m_Yaw = yaw;
     RecalculateViewMatrix();
 }
 
 void PerspectiveCamera::RecalculateViewMatrix()
 {
-    // Convert pitch/yaw to forward vector
+    // prevents flipping when looking straight up or down
+    float pitch = glm::clamp(m_Pitch, -89.999f, 89.999f);
+
     glm::vec3 forward;
-    forward.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    forward.y = sin(glm::radians(m_Pitch));
-    forward.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    forward.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(pitch));
+    forward.y = sin(glm::radians(pitch));
+    forward.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(pitch));
     m_Forward = glm::normalize(forward);
 
     glm::vec3 worldUp = {0.0f, 1.0f, 0.0f};

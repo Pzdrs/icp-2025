@@ -79,18 +79,26 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
     }
 
     float xoffset = e.getX() - m_LastX;
-    float yoffset = (m_InvertMouse ? e.getY() - m_LastY : m_LastY - e.getY());
+    float yoffset = e.getY() - m_LastY; // raw delta, moving mouse up = negative Y
 
-    m_LastX = e.getX();
-    m_LastY = e.getY();
+    if (!m_InvertMouse)
+        yoffset = -yoffset;
 
     xoffset *= m_MouseSensitivity;
     yoffset *= m_MouseSensitivity;
 
     m_Yaw += xoffset;
-    m_Pitch += yoffset;
+    m_Pitch = glm::clamp(m_Pitch + yoffset, -90.0f, 90.0f);
+
+    if (m_Yaw > 180.0f)
+        m_Yaw -= 360.0f;
+    if (m_Yaw < -180.0f)
+        m_Yaw += 360.0f;
 
     m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
+
+    m_LastX = e.getX();
+    m_LastY = e.getY();
     return true;
 }
 
