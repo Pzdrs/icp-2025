@@ -14,7 +14,7 @@ void World::generate(const BlockRegistry &blockRegistry)
 {
     std::cout << "Generating world...\n";
     glm::ivec2 chunkPos(0, 0);
-    auto newChunk = std::make_unique<Chunk>();
+    auto newChunk = std::make_unique<Chunk>(chunkPos);
 
     for (int x = 0; x < Chunk::SIZE_XZ; x++)
         for (int y = 0; y < Chunk::SIZE_Y; y++)

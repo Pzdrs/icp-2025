@@ -3,11 +3,12 @@
 #include "render/renderer.hpp"
 #include "block.hpp"
 #include "render/buffer.hpp"
+#include <glm/glm.hpp>
 
 class Chunk
 {
 public:
-    Chunk();
+    Chunk(const glm::vec2 &worldPos);
     ~Chunk();
     static const int SIZE_XZ = 16;
     static const int SIZE_Y = 256;
@@ -17,5 +18,6 @@ public:
     bool isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
 
 private:
+    glm::vec2 worldPos;
     std::shared_ptr<VertexArray> va;
 };

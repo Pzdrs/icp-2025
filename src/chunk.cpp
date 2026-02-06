@@ -3,15 +3,16 @@
 #include <render/vertex.hpp>
 #include <atlas.hpp>
 #include <block.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Chunk::~Chunk()
 {
     std::cout << "Destroying Chunk\n";
 }
 
-Chunk::Chunk() : va(VertexArray::Create())
+Chunk::Chunk(const glm::vec2 &worldPos) : worldPos(worldPos), va(VertexArray::Create())
 {
-    std::cout << "Creating Chunk\n";
+    std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
 }
 
 glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRegistry &blockRegistry)
@@ -111,5 +112,6 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
 
 void Chunk::draw(const std::shared_ptr<Shader> &shader)
 {
-    Renderer::Submit(shader, va, glm::mat4(1.0f));
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldPos.x * SIZE_XZ, 0.0f, worldPos.y * SIZE_XZ));
+    Renderer::Submit(shader, va, model);    
 }
