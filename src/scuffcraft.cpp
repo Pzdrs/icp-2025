@@ -32,8 +32,8 @@ const unsigned int SCR_HEIGHT = 720;
 Scuffcraft::Scuffcraft()
 {
     s_Instance = this;
-    m_Window = std::unique_ptr<Window>(Window::create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
-    m_Window->setEventCallback(BIND_EVENT_FN(OnEvent));
+    m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
+    m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
     Renderer::Init();
 
@@ -83,7 +83,7 @@ void Scuffcraft::Run()
             layer->OnImGuiRender();
         m_ImGuiLayer->End();
 
-        m_Window->onUpdate();
+        m_Window->OnUpdate();
     }
 }
 
@@ -102,7 +102,7 @@ void Scuffcraft::PushOverlay(Layer *overlay)
 void Scuffcraft::Pause()
 {
     m_Paused = !m_Paused;
-    m_Window->setMouseLocked(!m_Paused);
+    m_Window->SetMouseLocked(!m_Paused);
 }
 
 bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)

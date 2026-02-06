@@ -12,22 +12,22 @@ static void GLFWErrorCallback(int error, const char *description)
     std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
 }
 
-Window *Window::create(const WindowProps &props)
+Window *Window::Create(const WindowProps &props)
 {
     return new MacOSWindow(props);
 }
 
 MacOSWindow::MacOSWindow(const WindowProps &props)
 {
-    init(props);
+    Init(props);
 }
 
 MacOSWindow::~MacOSWindow()
 {
-    shutdown();
+    Shutdown();
 }
 
-void MacOSWindow::init(const WindowProps &props)
+void MacOSWindow::Init(const WindowProps &props)
 {
     m_Data.title = props.title;
     m_Data.width = props.width;
@@ -55,7 +55,7 @@ void MacOSWindow::init(const WindowProps &props)
     m_Context->Init();
 
     glfwSetWindowUserPointer(m_Window, &m_Data);
-    setVSync(true);
+    SetVSync(true);
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
@@ -138,29 +138,29 @@ void MacOSWindow::init(const WindowProps &props)
         data.eventCallback(event); });
 }
 
-void *MacOSWindow::getNativeWindow() const
+void *MacOSWindow::GetNativeWindow() const
 {
     return m_Window;
 }
 
-void MacOSWindow::shutdown()
+void MacOSWindow::Shutdown()
 {
     glfwDestroyWindow(m_Window);
 }
 
-void MacOSWindow::onUpdate()
+void MacOSWindow::OnUpdate()
 {
     glfwPollEvents();
     m_Context->SwapBuffers();
 }
 
-void MacOSWindow::setVSync(bool enabled)
+void MacOSWindow::SetVSync(bool enabled)
 {
     glfwSwapInterval(enabled ? 1 : 0);
     m_Data.vSync = enabled;
 }
 
-void MacOSWindow::setMouseLocked(bool locked)
+void MacOSWindow::SetMouseLocked(bool locked)
 {
     if (locked)
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -168,7 +168,7 @@ void MacOSWindow::setMouseLocked(bool locked)
         glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-bool MacOSWindow::isVSync() const
+bool MacOSWindow::IsVSync() const
 {
     return m_Data.vSync;
 }

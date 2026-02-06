@@ -27,7 +27,7 @@ void ImGuiLayer::OnAttach()
     // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; 
 
-    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(app.GetWindow().getNativeWindow()), true);
+    ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow *>(app.GetWindow().GetNativeWindow()), true);
     ImGui_ImplOpenGL3_Init("#version 410");
 }
 

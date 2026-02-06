@@ -19,19 +19,19 @@ public:
 
     virtual ~Window() = default;
 
-    virtual void onUpdate() = 0;
+    virtual void OnUpdate() = 0;
 
-    virtual unsigned int getWidth() const = 0;
-    virtual unsigned int getHeight() const = 0;
-    virtual unsigned int getFramebufferWidth() const = 0;
-    virtual unsigned int getFramebufferHeight() const = 0;
+    virtual unsigned int GetWidth() const = 0;
+    virtual unsigned int GetHeight() const = 0;
+    virtual unsigned int GetFramebufferWidth() const = 0;
+    virtual unsigned int GetFramebufferHeight() const = 0;
 
-    virtual void setEventCallback(const EventCallbackFunc &callback) = 0;
-    virtual void setVSync(bool enabled) = 0;
-    virtual void setMouseLocked(bool locked) = 0; 
-    virtual bool isVSync() const = 0;
+    virtual void SetEventCallback(const EventCallbackFunc &callback) = 0;
+    virtual void SetVSync(bool enabled) = 0;
+    virtual void SetMouseLocked(bool locked) = 0; 
+    virtual bool IsVSync() const = 0;
 
-    virtual void *getNativeWindow() const = 0;
+    virtual void *GetNativeWindow() const = 0;
 
-    static Window *create(const WindowProps &props = WindowProps());
+    static Window *Create(const WindowProps &props = WindowProps());
 };

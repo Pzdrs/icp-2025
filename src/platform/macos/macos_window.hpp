@@ -11,23 +11,23 @@ public:
     MacOSWindow(const WindowProps &props);
     virtual ~MacOSWindow();
 
-    void onUpdate() override;
+    void OnUpdate() override;
 
-    unsigned int getWidth() const override { return m_Data.width; };
-    unsigned int getHeight() const override { return m_Data.height; };
+    unsigned int GetWidth() const override { return m_Data.width; };
+    unsigned int GetHeight() const override { return m_Data.height; };
 
-    unsigned int getFramebufferWidth() const override { return m_Data.fbWidth; };
-    unsigned int getFramebufferHeight() const override { return m_Data.fbHeight; };
+    unsigned int GetFramebufferWidth() const override { return m_Data.fbWidth; };
+    unsigned int GetFramebufferHeight() const override { return m_Data.fbHeight; };
 
-    inline void setEventCallback(const EventCallbackFunc &callback) override { m_Data.eventCallback = callback; };
-    void setVSync(bool enabled) override;
-    bool isVSync() const override;
-    void setMouseLocked(bool locked) override;
+    inline void SetEventCallback(const EventCallbackFunc &callback) override { m_Data.eventCallback = callback; };
+    void SetVSync(bool enabled) override;
+    bool IsVSync() const override;
+    void SetMouseLocked(bool locked) override;
 
-    void *getNativeWindow() const override;
+    void *GetNativeWindow() const override;
 private:
-    virtual void init(const WindowProps &props);
-    virtual void shutdown();
+    virtual void Init(const WindowProps &props);
+    virtual void Shutdown();
 private:
     GLFWwindow *m_Window;
     GraphicsContext *m_Context;

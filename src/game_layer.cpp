@@ -12,7 +12,7 @@ static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 
 GameLayer::GameLayer()
     : Layer("GameLayer"),
-      m_CameraController((float)Scuffcraft::Get().GetWindow().getWidth() / (float)Scuffcraft::Get().GetWindow().getHeight()),
+      m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_Shader("shaders/shader.vert", "shaders/shader.frag")
 {
     initAtlas(BLOCK_ATLAS);
