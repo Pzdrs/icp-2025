@@ -4,13 +4,15 @@
 #include <atlas.hpp>
 #include <block.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "world.hpp"
 
 Chunk::~Chunk()
 {
     std::cout << "Destroying Chunk\n";
 }
 
-Chunk::Chunk(const glm::vec2 &worldPos) : worldPos(worldPos), va(VertexArray::Create())
+Chunk::Chunk(const World &world, const glm::vec2 &worldPos)
+    : m_WorldPos(worldPos), m_World(world), va(VertexArray::Create())
 {
     std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
 }
@@ -35,10 +37,9 @@ glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRe
     return {u, v};
 }
 
-bool Chunk::isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const
+bool Chunk::IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const
 {
     glm::ivec3 d = FACE_DIRS[face];
-
     int nx = x + d.x;
     int ny = y + d.y;
     int nz = z + d.z;
@@ -52,7 +53,8 @@ bool Chunk::isFaceExposed(int x, int y, int z, int face, const BlockRegistry &bl
     return blocks[nx][ny][nz].type == blockRegistry.getID("air");
 }
 
-void Chunk::generateMesh(const BlockRegistry &blockRegistry)
+// TODO: cull chunk border faces
+void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -71,7 +73,7 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
-                    if (!isFaceExposed(x, y, z, face, blockRegistry))
+                    if (!IsFaceExposed(x, y, z, face, blockRegistry))
                         continue;
 
                     // Add 4 vertices per face
@@ -110,8 +112,8 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
-void Chunk::draw(const std::shared_ptr<Shader> &shader)
+void Chunk::Draw(const std::shared_ptr<Shader> &shader)
 {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(worldPos.x * SIZE_XZ, 0.0f, worldPos.y * SIZE_XZ));
-    Renderer::Submit(shader, va, model);    
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
+    Renderer::Submit(shader, va, model);
 }

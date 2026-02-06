@@ -17,7 +17,7 @@ GameLayer::GameLayer()
 {
     initAtlas(BLOCK_ATLAS);
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
-    m_World.generate(m_BlockRegistry);
+    m_World.Generate(m_BlockRegistry);
 
     m_CameraController.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     m_CameraController.SetPitchYaw(0.0f, -90.0f);
@@ -44,7 +44,7 @@ void GameLayer::OnUpdate(float dt)
 
     Renderer::BeginScene(m_CameraController.GetCamera());
 
-    m_World.draw(m_Shader);
+    m_World.Draw(m_Shader, m_BlockRegistry);
 
     Renderer::EndScene();
 }

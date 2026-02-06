@@ -20,10 +20,13 @@ struct IVec2Hash
 class World
 {
     static constexpr int WORLD_SIZE_XZ = 2;
+
 public:
-    void draw(const std::shared_ptr<Shader> &shader);
-    void generate(const BlockRegistry &blockRegistry);
+    void Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry);
+    void Generate(const BlockRegistry &blockRegistry);
+
+    Chunk *GetChunk(int x, int z) const;
 
 private:
-    std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> chunks;
+    std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> m_Chunks;
 };

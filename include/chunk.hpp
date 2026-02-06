@@ -5,19 +5,32 @@
 #include "render/buffer.hpp"
 #include <glm/glm.hpp>
 
+class World;
+
 class Chunk
 {
+
 public:
-    Chunk(const glm::vec2 &worldPos);
+    static constexpr int SIZE_XZ = 16;
+    static constexpr int SIZE_Y = 256;
+
+    Chunk(const World &world, const glm::vec2 &worldPos);
     ~Chunk();
-    static const int SIZE_XZ = 16;
-    static const int SIZE_Y = 256;
-    Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
-    void generateMesh(const BlockRegistry &blockRegistry);
-    void draw(const std::shared_ptr<Shader> &shader);
-    bool isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
+
+    void GenerateMesh(const BlockRegistry &blockRegistry);
+    void Draw(const std::shared_ptr<Shader> &shader);
+
+    void SetBlock(int x, int y, int z, BlockID type) { blocks[x][y][z].type = type; }
+    Block GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
 
 private:
-    glm::vec2 worldPos;
+    bool IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
+
+private:
+    Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
+
     std::shared_ptr<VertexArray> va;
+
+    const glm::vec2 m_WorldPos;
+    const World &m_World;
 };

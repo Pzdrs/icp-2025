@@ -3,15 +3,24 @@
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
 
-void World::draw(const std::shared_ptr<Shader> &shader)
+void World::Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry)
 {
-    for (auto &[pos, chunk] : chunks)
+    for (auto &[pos, chunk] : m_Chunks)
     {
-        chunk->draw(shader);
+        chunk->Draw(shader);
     }
 }
 
-void World::generate(const BlockRegistry &blockRegistry)
+Chunk *World::GetChunk(int x, int z) const
+{
+    glm::ivec2 pos(x, z);
+    auto it = m_Chunks.find(pos);
+    if (it != m_Chunks.end())
+        return it->second.get();
+    return nullptr;
+}
+
+void World::Generate(const BlockRegistry &blockRegistry)
 {
     std::cout << "Generating world...\n";
 
@@ -19,7 +28,7 @@ void World::generate(const BlockRegistry &blockRegistry)
         for (int wz = 0; wz < WORLD_SIZE_XZ; wz++)
         {
             glm::ivec2 chunkPos(wx, wz);
-            auto newChunk = std::make_unique<Chunk>(chunkPos);
+            auto newChunk = std::make_unique<Chunk>(*this, chunkPos);
 
             for (int x = 0; x < Chunk::SIZE_XZ; x++)
                 for (int z = 0; z < Chunk::SIZE_XZ; z++)
@@ -40,17 +49,17 @@ void World::generate(const BlockRegistry &blockRegistry)
                     for (int y = 0; y < Chunk::SIZE_Y; y++)
                     {
                         if (y < height - 4)
-                            newChunk->blocks[x][y][z] = Block{blockRegistry.getID("stone")};
+                            newChunk->SetBlock(x, y, z, blockRegistry.getID("stone"));
                         else if (y < height - 1)
-                            newChunk->blocks[x][y][z] = Block{blockRegistry.getID("dirt")};
+                            newChunk->SetBlock(x, y, z, blockRegistry.getID("dirt"));
                         else if (y == height - 1)
-                            newChunk->blocks[x][y][z] = Block{blockRegistry.getID("grass")};
+                            newChunk->SetBlock(x, y, z, blockRegistry.getID("grass"));
                         else
-                            newChunk->blocks[x][y][z] = Block{blockRegistry.getID("air")};
+                            newChunk->SetBlock(x, y, z, blockRegistry.getID("air"));
                     }
                 }
 
-            newChunk->generateMesh(blockRegistry);
-            chunks[chunkPos] = std::move(newChunk);
+            newChunk->GenerateMesh(blockRegistry);
+            m_Chunks[chunkPos] = std::move(newChunk);
         }
 }

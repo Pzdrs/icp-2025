@@ -89,6 +89,7 @@ static const unsigned int FACE_INDICES[6] = {
     0, 1, 2,
     2, 3, 0};
 
+// tied to the order of faces in the CUBE_VERTS array
 static const glm::ivec3 FACE_DIRS[6] = {
     {0, 0, -1}, // -Z
     {0, 0, 1},  // +Z
