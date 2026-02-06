@@ -9,6 +9,11 @@ public:
         s_RendererAPI->Init();
     }
 
+    inline static RendererCapabilities& GetCapabilities()
+    {
+       return s_RendererAPI->GetCapabilities();
+    }
+
     inline static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
     {
         s_RendererAPI->SetViewport(x, y, width, height);

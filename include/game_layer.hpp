@@ -21,6 +21,8 @@ public:
     virtual void OnImGuiRender() override;
     virtual void OnEvent(Event &event) override;
 
+    Camera &GetCamera() { return m_CameraController.GetCamera(); }
+
 private:
     FreeCameraController m_CameraController;
     BlockRegistry m_BlockRegistry;

@@ -2,9 +2,14 @@
 #include <render/buffer.hpp>
 #include "render/render_command.hpp"
 
+RendererCapabilities Renderer::s_Capabilities;
+Statistics Renderer::s_Stats;
+
 void Renderer::Init()
 {
     RenderCommand::Init();
+
+    s_Capabilities = RenderCommand::GetCapabilities();
 }
 
 void Renderer::OnWindowResize(uint32_t width, uint32_t height)
@@ -19,7 +24,7 @@ void Renderer::Shutdown()
 
 void Renderer::BeginScene()
 {
-    // Code to begin a new scene would go here
+    s_Stats.Reset();
 }
 
 void Renderer::EndScene()
@@ -30,4 +35,6 @@ void Renderer::EndScene()
 void Renderer::Submit(const std::shared_ptr<VertexArray> &vertexArray)
 {
     RenderCommand::DrawIndexed(vertexArray);
+    s_Stats.DrawCalls++;
+    s_Stats.TriangleCount += vertexArray->GetIndexBuffer()->GetCount() / 3;
 }

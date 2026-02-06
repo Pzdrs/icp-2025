@@ -5,6 +5,35 @@
 #include "render/vertex_array.hpp"
 #include "renderer_api.hpp"
 
+struct RendererCapabilities
+{
+    std::string GraphicsAPI;
+
+    std::string Vendor;
+    std::string DeviceName;
+
+    std::string DriverVersion;
+    std::string ShaderLanguage;
+
+    int APIMajor = 0;
+    int APIMinor = 0;
+};
+
+struct Statistics
+{
+    uint32_t DrawCalls = 0;
+    uint32_t TriangleCount = 0;
+
+    uint32_t GetTotalVertexCount() const { return TriangleCount * 3; }
+    uint32_t GetTotalIndexCount() const { return TriangleCount * 3; }
+
+    void Reset()
+    {
+        DrawCalls = 0;
+        TriangleCount = 0;
+    }
+};
+
 class Renderer
 {
 public:
@@ -19,4 +48,11 @@ public:
     static void Submit(const std::shared_ptr<VertexArray> &vertexArray);
 
     static RendererAPI::API CurrentAPI() { return RendererAPI::CurrentAPI(); }
+
+    static const RendererCapabilities &GetCapabilities() { return s_Capabilities; }
+    static const Statistics &GetStats() { return s_Stats; }
+
+private:
+    static RendererCapabilities s_Capabilities;
+    static Statistics s_Stats;
 };

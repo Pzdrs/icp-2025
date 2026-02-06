@@ -17,6 +17,7 @@
 #include <event/key_event.hpp>
 #include "imgui_layer.hpp"
 #include "game_layer.hpp"
+#include "debug_layer.hpp"
 #include "input.hpp"
 #include "render/render_command.hpp"
 #include "key_codes.hpp"
@@ -42,6 +43,9 @@ Scuffcraft::Scuffcraft()
 
     auto gameLayer = new GameLayer();
     PushLayer(gameLayer);
+
+    auto debugLayer = new DebugLayer(gameLayer->GetCamera());
+    PushOverlay(debugLayer);
 }
 
 Scuffcraft::~Scuffcraft()

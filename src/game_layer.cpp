@@ -54,7 +54,6 @@ void GameLayer::OnUpdate(float dt)
 
 void GameLayer::OnImGuiRender()
 {
-    ImGui::ShowDemoWindow();
 }
 
 void GameLayer::OnEvent(Event &event)
