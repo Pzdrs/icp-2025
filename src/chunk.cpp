@@ -51,18 +51,27 @@ bool Chunk::IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &bl
     int ny = y + d.y;
     int nz = z + d.z;
 
-    // Outside chunk = visible face
-    if (nx < 0 || nx >= SIZE_XZ ||
-        ny < 0 || ny >= SIZE_Y ||
-        nz < 0 || nz >= SIZE_XZ)
-        return true;
+    // Neighbor inside this chunk
+    if (nx >= 0 && nx < SIZE_XZ &&
+        ny >= 0 && ny < SIZE_Y &&
+        nz >= 0 && nz < SIZE_XZ)
+    {
+        return blocks[nx][ny][nz].type == blockRegistry.getID("air");
+    }
 
-    return blocks[nx][ny][nz].type == blockRegistry.getID("air");
+    // Neighbor outside this chunk: query world
+    const int worldX = static_cast<int>(m_WorldPos.x) * SIZE_XZ + x + d.x;
+    const int worldY = y + d.y;
+    const int worldZ = static_cast<int>(m_WorldPos.y) * SIZE_XZ + z + d.z;
+
+    return !m_World.IsSolid(worldX, worldY, worldZ, blockRegistry);
 }
 
 // TODO: cull chunk border faces
 void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
 {
+    va = VertexArray::Create();
+
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 

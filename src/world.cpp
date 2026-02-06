@@ -20,6 +20,81 @@ Chunk *World::GetChunk(int x, int z) const
     return nullptr;
 }
 
+bool World::InBoundsXZ(int worldX, int worldZ) const
+{
+    if (worldX < 0 || worldZ < 0)
+        return false;
+
+    const int worldSize = WORLD_SIZE_XZ * Chunk::SIZE_XZ;
+    return worldX < worldSize && worldZ < worldSize;
+}
+
+BlockID World::GetBlockID(int worldX, int worldY, int worldZ, const BlockRegistry &blockRegistry) const
+{
+    if (!InBoundsXZ(worldX, worldZ))
+        return blockRegistry.getID("air");
+
+    if (worldY < 0 || worldY >= Chunk::SIZE_Y)
+        return blockRegistry.getID("air");
+
+    const int chunkX = worldX / Chunk::SIZE_XZ;
+    const int chunkZ = worldZ / Chunk::SIZE_XZ;
+
+    const int localX = worldX - chunkX * Chunk::SIZE_XZ;
+    const int localZ = worldZ - chunkZ * Chunk::SIZE_XZ;
+
+    Chunk *chunk = GetChunk(chunkX, chunkZ);
+    if (!chunk)
+        return blockRegistry.getID("air");
+
+    return chunk->GetBlock(localX, worldY, localZ).type;
+}
+
+bool World::IsSolid(int worldX, int worldY, int worldZ, const BlockRegistry &blockRegistry) const
+{
+    BlockID id = GetBlockID(worldX, worldY, worldZ, blockRegistry);
+    const BlockDefinition &def = blockRegistry.get(id);
+    return def.isSolid;
+}
+
+bool World::SetBlock(int worldX, int worldY, int worldZ, BlockID type, const BlockRegistry &blockRegistry)
+{
+    if (!InBoundsXZ(worldX, worldZ))
+        return false;
+
+    if (worldY < 0 || worldY >= Chunk::SIZE_Y)
+        return false;
+
+    const int chunkX = worldX / Chunk::SIZE_XZ;
+    const int chunkZ = worldZ / Chunk::SIZE_XZ;
+
+    const int localX = worldX - chunkX * Chunk::SIZE_XZ;
+    const int localZ = worldZ - chunkZ * Chunk::SIZE_XZ;
+
+    Chunk *chunk = GetChunk(chunkX, chunkZ);
+    if (!chunk)
+        return false;
+
+    chunk->SetBlock(localX, worldY, localZ, type);
+    chunk->GenerateMesh(blockRegistry);
+
+    // Update neighbors if we touched a border.
+    if (localX == 0)
+        if (Chunk *left = GetChunk(chunkX - 1, chunkZ))
+            left->GenerateMesh(blockRegistry);
+    if (localX == Chunk::SIZE_XZ - 1)
+        if (Chunk *right = GetChunk(chunkX + 1, chunkZ))
+            right->GenerateMesh(blockRegistry);
+    if (localZ == 0)
+        if (Chunk *back = GetChunk(chunkX, chunkZ - 1))
+            back->GenerateMesh(blockRegistry);
+    if (localZ == Chunk::SIZE_XZ - 1)
+        if (Chunk *front = GetChunk(chunkX, chunkZ + 1))
+            front->GenerateMesh(blockRegistry);
+
+    return true;
+}
+
 void World::Generate(const BlockRegistry &blockRegistry)
 {
     std::cout << "Generating world...\n";

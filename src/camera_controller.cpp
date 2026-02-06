@@ -31,18 +31,21 @@ void FreeCameraController::OnUpdate(float dt)
 {
     tickZoom(dt);
 
-    if (Input::IsKeyPressed(Key::W))
-        m_CameraPosition += m_Camera.GetForward() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::S))
-        m_CameraPosition -= m_Camera.GetForward() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::A))
-        m_CameraPosition -= m_Camera.GetRight() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::D))
-        m_CameraPosition += m_Camera.GetRight() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::Space))
-        m_CameraPosition += m_Camera.GetUp() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::LeftShift))
-        m_CameraPosition -= m_Camera.GetUp() * m_CameraSpeed * dt;
+    if (m_EnableMovement)
+    {
+        if (Input::IsKeyPressed(Key::W))
+            m_CameraPosition += m_Camera.GetForward() * m_CameraSpeed * dt;
+        if (Input::IsKeyPressed(Key::S))
+            m_CameraPosition -= m_Camera.GetForward() * m_CameraSpeed * dt;
+        if (Input::IsKeyPressed(Key::A))
+            m_CameraPosition -= m_Camera.GetRight() * m_CameraSpeed * dt;
+        if (Input::IsKeyPressed(Key::D))
+            m_CameraPosition += m_Camera.GetRight() * m_CameraSpeed * dt;
+        if (Input::IsKeyPressed(Key::Space))
+            m_CameraPosition += m_Camera.GetUp() * m_CameraSpeed * dt;
+        if (Input::IsKeyPressed(Key::LeftShift))
+            m_CameraPosition -= m_Camera.GetUp() * m_CameraSpeed * dt;
+    }
 
     m_Camera.SetPosition(m_CameraPosition);
 }

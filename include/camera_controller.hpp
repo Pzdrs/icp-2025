@@ -73,6 +73,7 @@ public:
     void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
     void SetMouseSensitivity(float sensitivity) { m_MouseSensitivity = sensitivity; }
     void SetInvertMouse(bool invert) { m_InvertMouse = invert; }
+    void SetMovementEnabled(bool enabled) { m_EnableMovement = enabled; }
 
 private:
     bool OnMouseMoved(MouseMovedEvent &e);
@@ -91,6 +92,7 @@ private:
     float m_CameraSpeed;
     float m_MouseSensitivity;
     bool m_InvertMouse = false;
+    bool m_EnableMovement = true;
 
     enum class ZoomState
     {

@@ -27,6 +27,12 @@ public:
 
     Chunk *GetChunk(int x, int z) const;
 
+    BlockID GetBlockID(int worldX, int worldY, int worldZ, const BlockRegistry &blockRegistry) const;
+    bool IsSolid(int worldX, int worldY, int worldZ, const BlockRegistry &blockRegistry) const;
+    bool SetBlock(int worldX, int worldY, int worldZ, BlockID type, const BlockRegistry &blockRegistry);
+
+    bool InBoundsXZ(int worldX, int worldZ) const;
+
 private:
     std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> m_Chunks;
 };
