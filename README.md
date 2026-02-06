@@ -1,4 +1,6 @@
-# MRDKIIII
+# Scuffcraft
+
+A __very__ simple Minecraft-like 3D engine demo written in C++ using OpenGL.
 
 ## Installation
 
@@ -22,12 +24,13 @@ export VCPKG_ROOT=$(pwd)
 - [ ]  multiple threads + synchronisation 
 - [x]  3D GL Core profile + shaders version 4.6, enabled GL debug, used DSA (Direct State Access)
   - MacOS limited to 4.1 
-- [ ]  high performance => at least 60 FPS
+- [x]  high performance => at least 60 FPS
 - [ ]  allow VSync control, fullscreen vs. windowed switching (restore window position & size), screenshot, antialiasing toggle
+  - [x] vsync toggle
 - [x]  simple GUI: display (at least) GL version, profile, FPS
 - [x]  event processing: camera, object, app behaviour etc. controlled by mouse (both axes, wheel), keyboard, window resize, etc.
 - [ ]  multiple different independently moving 3D models, at leats two loaded from file
-- [ ]  free floating and first-person-view camera
+- [ ]  free floating and first-person-view camera  
 - [x]  at least three different textures (or subtextures from texture atlas etc.)
 - [ ]  3D positional audio (multiple sources, background sound)
 
