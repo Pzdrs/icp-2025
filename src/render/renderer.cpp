@@ -4,6 +4,7 @@
 
 RendererCapabilities Renderer::s_Capabilities;
 Statistics Renderer::s_Stats;
+std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 
 void Renderer::Init()
 {
@@ -22,8 +23,9 @@ void Renderer::Shutdown()
     // Cleanup code for Renderer would go here
 }
 
-void Renderer::BeginScene()
+void Renderer::BeginScene(const Camera &camera)
 {
+    s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
     s_Stats.Reset();
 }
 
@@ -32,9 +34,14 @@ void Renderer::EndScene()
     // Code to end the current scene would go here
 }
 
-void Renderer::Submit(const std::shared_ptr<VertexArray> &vertexArray)
+void Renderer::Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform)
 {
+    shader->use();
+    shader->setMat4("uViewProjection", s_SceneData->ViewProjectionMatrix);
+    shader->setMat4("uTransform", transform);
+    
     RenderCommand::DrawIndexed(vertexArray);
+
     s_Stats.DrawCalls++;
     s_Stats.TriangleCount += vertexArray->GetIndexBuffer()->GetCount() / 3;
 }

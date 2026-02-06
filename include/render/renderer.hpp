@@ -4,6 +4,8 @@
 #include "render/shader.hpp"
 #include "render/vertex_array.hpp"
 #include "renderer_api.hpp"
+#include "render/shader.hpp"
+#include <memory>
 
 struct RendererCapabilities
 {
@@ -42,10 +44,10 @@ public:
 
     static void OnWindowResize(uint32_t width, uint32_t height);
 
-    static void BeginScene();
+    static void BeginScene(const Camera &camera);
     static void EndScene();
 
-    static void Submit(const std::shared_ptr<VertexArray> &vertexArray);
+    static void Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform);
 
     static RendererAPI::API CurrentAPI() { return RendererAPI::CurrentAPI(); }
 
@@ -53,6 +55,13 @@ public:
     static const Statistics &GetStats() { return s_Stats; }
 
 private:
+    struct SceneData
+    {
+        glm::mat4 ViewProjectionMatrix;
+    };
+
+    static std::unique_ptr<SceneData> s_SceneData;
+
     static RendererCapabilities s_Capabilities;
     static Statistics s_Stats;
 };

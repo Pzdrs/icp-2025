@@ -2,7 +2,7 @@
 #include <iostream>
 #include "render/renderer.hpp"
 
-void World::draw(const Shader &shader)
+void World::draw(const std::shared_ptr<Shader> &shader)
 {
     for (auto &[pos, chunk] : chunks)
     {

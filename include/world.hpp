@@ -20,7 +20,7 @@ struct IVec2Hash
 class World
 {
 public:
-    void draw(const Shader &shader);
+    void draw(const std::shared_ptr<Shader> &shader);
     void generate(const BlockRegistry &blockRegistry);
 
 private:

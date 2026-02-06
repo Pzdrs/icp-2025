@@ -13,7 +13,7 @@ static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
-      m_Shader("shaders/shader.vert", "shaders/shader.frag")
+      m_Shader(std::make_shared<Shader>("shaders/shader.vert", "shaders/shader.frag"))
 {
     initAtlas(BLOCK_ATLAS);
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
@@ -42,10 +42,7 @@ void GameLayer::OnUpdate(float dt)
     RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     RenderCommand::Clear();
 
-    Renderer::BeginScene();
-
-    m_Shader.setMat4("uViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
-    m_Shader.setMat4("uTransform", glm::mat4(1.0f));
+    Renderer::BeginScene(m_CameraController.GetCamera());
 
     m_World.draw(m_Shader);
 

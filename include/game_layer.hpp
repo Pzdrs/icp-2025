@@ -8,6 +8,7 @@
 #include "world.hpp"
 #include "block.hpp"
 #include "render/shader.hpp"
+#include <memory>
 
 class GameLayer : public Layer
 {
@@ -27,5 +28,5 @@ private:
     FreeCameraController m_CameraController;
     BlockRegistry m_BlockRegistry;
     World m_World;
-    Shader m_Shader;
+    std::shared_ptr<Shader> m_Shader;
 };

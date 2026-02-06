@@ -109,8 +109,7 @@ void Chunk::generateMesh(const BlockRegistry &blockRegistry)
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
-void Chunk::draw(const Shader &shader)
+void Chunk::draw(const std::shared_ptr<Shader> &shader)
 {
-    shader.use();
-    Renderer::Submit(va);
+    Renderer::Submit(shader, va, glm::mat4(1.0f));
 }

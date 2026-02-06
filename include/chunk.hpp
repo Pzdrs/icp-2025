@@ -13,7 +13,7 @@ public:
     static const int SIZE_Y = 256;
     Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
     void generateMesh(const BlockRegistry &blockRegistry);
-    void draw(const Shader &shader);
+    void draw(const std::shared_ptr<Shader> &shader);
     bool isFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
 
 private:
