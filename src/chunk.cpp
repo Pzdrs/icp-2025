@@ -17,6 +17,13 @@ Chunk::Chunk(const World &world, const glm::vec2 &worldPos)
     std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
 }
 
+glm::ivec2 Chunk::GetChunkCoords(float worldX, float worldZ)
+{
+    int chunkX = static_cast<int>(std::floor(worldX / SIZE_XZ));
+    int chunkZ = static_cast<int>(std::floor(worldZ / SIZE_XZ));
+    return {chunkX, chunkZ};
+}
+
 glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRegistry &blockRegistry)
 {
     Face face = static_cast<Face>(faceIndex);

@@ -52,7 +52,9 @@ void DebugLayer::OnImGuiRender()
 
     ImGui::Separator();
 
-    ImGui::Text("Camera Pos: %.2f, %.2f, %.2f", m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
+    ImGui::Text("XYZ: %.2f, %.2f, %.2f", m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
+    glm::ivec2 chunkCoords = Chunk::GetChunkCoords(m_Camera.GetPosition().x, m_Camera.GetPosition().z);
+    ImGui::Text("Chunk: %d, %d", chunkCoords.x, chunkCoords.y);
     if (auto perspectiveCamera = dynamic_cast<const PerspectiveCamera *>(&m_Camera))
     {
         ImGui::Text("Pitch/Yaw: %.2f / %.2f", perspectiveCamera->GetPitch(), perspectiveCamera->GetYaw());

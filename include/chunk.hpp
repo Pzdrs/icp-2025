@@ -23,6 +23,8 @@ public:
     void SetBlock(int x, int y, int z, BlockID type) { blocks[x][y][z].type = type; }
     Block GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
 
+    static glm::ivec2 GetChunkCoords(float worldX, float worldZ);
+
 private:
     bool IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
 
