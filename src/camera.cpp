@@ -1,6 +1,7 @@
 #include "camera.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
-void CameraNew::SetPosition(const glm::vec3 &position)
+void Camera::SetPosition(const glm::vec3 &position)
 {
     m_Position = position;
     RecalculateViewMatrix();
@@ -11,7 +12,7 @@ void CameraNew::SetPosition(const glm::vec3 &position)
 /////////////////////////
 
 PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio, float nearClip, float farClip)
-    : CameraNew(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
+    : Camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 {
     RecalculateViewMatrix();
 }
@@ -55,7 +56,7 @@ void PerspectiveCamera::RecalculateViewMatrix()
 ///////////////////////
 
 OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-    : CameraNew(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
+    : Camera(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
 {
     m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }

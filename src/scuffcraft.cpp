@@ -135,9 +135,3 @@ bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
 
     return false;
 }
-
-// bool Scuffcraft::OnScroll(MouseScrolledEvent &e)
-// {
-//     camera.processMouseScroll(e.getYOffset());
-//     return true;
-// }

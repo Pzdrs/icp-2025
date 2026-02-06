@@ -1,6 +1,5 @@
 #include "camera_controller.hpp"
 #include "input.hpp"
-#include "key_codes.hpp"
 #include <iostream>
 
 void CameraController::SetPosition(const glm::vec3 &position)
@@ -30,20 +29,20 @@ void PerspectiveCameraController::SetPitchYaw(float pitch, float yaw)
 
 void FreeCameraController::OnUpdate(float dt)
 {
-    float velocity = 5.0f * dt;
+    tickZoom(dt);
 
     if (Input::IsKeyPressed(Key::W))
-        m_CameraPosition += m_Camera.GetForward() * velocity;
+        m_CameraPosition += m_Camera.GetForward() * m_CameraSpeed * dt;
     if (Input::IsKeyPressed(Key::S))
-        m_CameraPosition -= m_Camera.GetForward() * velocity;
+        m_CameraPosition -= m_Camera.GetForward() * m_CameraSpeed * dt;
     if (Input::IsKeyPressed(Key::A))
-        m_CameraPosition -= m_Camera.GetRight() * velocity;
+        m_CameraPosition -= m_Camera.GetRight() * m_CameraSpeed * dt;
     if (Input::IsKeyPressed(Key::D))
-        m_CameraPosition += m_Camera.GetRight() * velocity;
+        m_CameraPosition += m_Camera.GetRight() * m_CameraSpeed * dt;
     if (Input::IsKeyPressed(Key::Space))
-        m_CameraPosition += m_Camera.GetUp() * velocity;
+        m_CameraPosition += m_Camera.GetUp() * m_CameraSpeed * dt;
     if (Input::IsKeyPressed(Key::LeftShift))
-        m_CameraPosition -= m_Camera.GetUp() * velocity;
+        m_CameraPosition -= m_Camera.GetUp() * m_CameraSpeed * dt;
 
     m_Camera.SetPosition(m_CameraPosition);
 }
@@ -51,7 +50,7 @@ void FreeCameraController::OnUpdate(float dt)
 void FreeCameraController::OnResize(float width, float height)
 {
     m_AspectRatio = width / height;
-    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, 0.1f, 100.0f);
+    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
 }
 
 void FreeCameraController::OnEvent(Event &e)
@@ -60,6 +59,8 @@ void FreeCameraController::OnEvent(Event &e)
     dispatcher.dispatch<WindowResizeEvent>(std::bind(&FreeCameraController::OnWindowResize, this, std::placeholders::_1));
     dispatcher.dispatch<MouseMovedEvent>(std::bind(&FreeCameraController::OnMouseMoved, this, std::placeholders::_1));
     dispatcher.dispatch<MouseScrolledEvent>(std::bind(&FreeCameraController::OnMouseScrolled, this, std::placeholders::_1));
+    dispatcher.dispatch<KeyPressedEvent>(std::bind(&FreeCameraController::OnKeyPressed, this, std::placeholders::_1));
+    dispatcher.dispatch<KeyReleasedEvent>(std::bind(&FreeCameraController::OnKeyReleased, this, std::placeholders::_1));
 }
 
 bool FreeCameraController::OnWindowResize(WindowResizeEvent &e)
@@ -78,22 +79,77 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
     }
 
     float xoffset = e.getX() - m_LastX;
-    float yoffset = m_LastY - e.getY(); // reversed since y-coordinates go from bottom to top
+    float yoffset = (m_InvertMouse ? e.getY() - m_LastY : m_LastY - e.getY());
 
     m_LastX = e.getX();
     m_LastY = e.getY();
-    xoffset *= 0.1f;
-    yoffset *= 0.1f;
+
+    xoffset *= m_MouseSensitivity;
+    yoffset *= m_MouseSensitivity;
+
     m_Yaw += xoffset;
     m_Pitch += yoffset;
+
     m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
     return true;
 }
 
 bool FreeCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 {
+    if (m_ZoomState != ZoomState::ZOOMED_IN)
+        return true;
+
     m_FieldOfView -= e.getYOffset();
     m_FieldOfView = glm::clamp(m_FieldOfView, MIN_FOV, NETURAL_FOV);
-    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, 0.1f, 100.0f);
+    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
     return true;
+}
+
+bool FreeCameraController::OnKeyPressed(KeyPressedEvent &e)
+{
+    if (e.getKeyCode() == ZOOM_KEY)
+    {
+        m_ZoomState = ZoomState::ZOOMING_IN;
+        return true;
+    }
+    return false;
+}
+
+bool FreeCameraController::OnKeyReleased(KeyReleasedEvent &e)
+{
+    if (e.getKeyCode() == ZOOM_KEY)
+    {
+        m_ZoomState = ZoomState::ZOOMING_OUT;
+        return true;
+    }
+    return false;
+}
+
+void FreeCameraController::tickZoom(float dt)
+{
+    if (m_ZoomState == ZoomState::ZOOMED_IN || m_ZoomState == ZoomState::ZOOMED_OUT)
+        return;
+
+    if (m_ZoomState == ZoomState::ZOOMING_IN)
+    {
+        m_FieldOfView += (ZOOM_FOV - m_FieldOfView) * ZOOM_EASE;
+
+        if (fabs(m_FieldOfView - ZOOM_FOV) < ZOOM_SNAP_EPSILON)
+        {
+            m_FieldOfView = ZOOM_FOV;
+            m_ZoomState = ZoomState::ZOOMED_IN;
+        }
+    }
+    else if (m_ZoomState == ZoomState::ZOOMING_OUT)
+    {
+        m_FieldOfView += (NETURAL_FOV - m_FieldOfView) * ZOOM_EASE;
+
+        if (fabs(m_FieldOfView - NETURAL_FOV) < ZOOM_SNAP_EPSILON)
+        {
+            m_FieldOfView = NETURAL_FOV;
+            m_ZoomState = ZoomState::ZOOMED_OUT;
+        }
+    }
+
+    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
 }
