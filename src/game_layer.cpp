@@ -11,11 +11,14 @@ static const std::string BLOCK_ATLAS = "resources/blocks.png";
 static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 
 GameLayer::GameLayer()
-    : Layer("GameLayer"), m_CameraController(60.0f, (float)1280 / (float)720, 0.1f, 100.0f), m_Shader("shaders/shader.vert", "shaders/shader.frag")
+    : Layer("GameLayer"), m_CameraController((float)1280 / (float)720), m_Shader("shaders/shader.vert", "shaders/shader.frag")
 {
     initAtlas(BLOCK_ATLAS);
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
     m_World.generate(m_BlockRegistry);
+
+    m_CameraController.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    m_CameraController.SetPitchYaw(0.0f, -90.0f);
 }
 
 GameLayer::~GameLayer()

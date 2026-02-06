@@ -82,67 +82,67 @@ public:
         updateCameraVectors();
     }
 
-    glm::mat4 getViewMatrix()
-    {
-        return glm::lookAt(position, position + front, up);
-    }
+    // glm::mat4 getViewMatrix()
+    // {
+    //     return glm::lookAt(position, position + front, up);
+    // }
 
-    glm::mat4 getProjectionMatrixf(float near, float far)
-    {
-        return glm::perspective(glm::radians(fov), aspectRation, near, far);
-    }
+    // glm::mat4 getProjectionMatrixf(float near, float far)
+    // {
+    //     return glm::perspective(glm::radians(fov), aspectRation, near, far);
+    // }
 
-    void processKeyboard(MovementDirection direction, float deltaTime)
-    {
-        float velocity = movementSpeed * deltaTime;
+    // void processKeyboard(MovementDirection direction, float deltaTime)
+    // {
+    //     float velocity = movementSpeed * deltaTime;
 
-        if (direction == MovementDirection::FORWARD)
-            position += front * velocity;
-        else if (direction == MovementDirection::BACKWARD)
-            position -= front * velocity;
-        else if (direction == MovementDirection::LEFT)
-            position -= right * velocity;
-        else if (direction == MovementDirection::RIGHT)
-            position += right * velocity;
-        else if (direction == MovementDirection::UP)
-            position += up * velocity;
-        else if (direction == MovementDirection::DOWN)
-            position -= up * velocity;
-    }
+    //     if (direction == MovementDirection::FORWARD)
+    //         position += front * velocity;
+    //     else if (direction == MovementDirection::BACKWARD)
+    //         position -= front * velocity;
+    //     else if (direction == MovementDirection::LEFT)
+    //         position -= right * velocity;
+    //     else if (direction == MovementDirection::RIGHT)
+    //         position += right * velocity;
+    //     else if (direction == MovementDirection::UP)
+    //         position += up * velocity;
+    //     else if (direction == MovementDirection::DOWN)
+    //         position -= up * velocity;
+    // }
 
-    void setAspectRatio(float ratio)
-    {
-        aspectRation = ratio;
-    }
+    // void setAspectRatio(float ratio)
+    // {
+    //     aspectRation = ratio;
+    // }
 
-    void processMouseMovement(float xoffset, float yoffset)
-    {
-        xoffset *= mouseSensitivity;
-        yoffset *= mouseSensitivity;
+    // void processMouseMovement(float xoffset, float yoffset)
+    // {
+    //     xoffset *= mouseSensitivity;
+    //     yoffset *= mouseSensitivity;
 
-        yaw += xoffset;
-        pitch += yoffset;
+    //     yaw += xoffset;
+    //     pitch += yoffset;
 
-        // lock the pitch in <-89, 89> degrees
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
+    //     // lock the pitch in <-89, 89> degrees
+    //     if (pitch > 89.0f)
+    //         pitch = 89.0f;
+    //     if (pitch < -89.0f)
+    //         pitch = -89.0f;
 
-        updateCameraVectors();
-    }
+    //     updateCameraVectors();
+    // }
 
-    void processMouseScroll(float yoffset)
-    {
-        if (zoomState != ZoomState::ZOOMED_IN)
-            return;
+    // void processMouseScroll(float yoffset)
+    // {
+    //     if (zoomState != ZoomState::ZOOMED_IN)
+    //         return;
 
-        fov -= (float)yoffset;
-        if (fov < ZOOM_SCROLL_MIN)
-            fov = ZOOM_SCROLL_MIN;
-        if (fov > ZOOMED_OUT)
-            fov = ZOOMED_OUT;
-    }
+    //     fov -= (float)yoffset;
+    //     if (fov < ZOOM_SCROLL_MIN)
+    //         fov = ZOOM_SCROLL_MIN;
+    //     if (fov > ZOOMED_OUT)
+    //         fov = ZOOMED_OUT;
+    // }
 
     void zoomIn()
     {

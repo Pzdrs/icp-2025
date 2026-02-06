@@ -3,9 +3,25 @@
 #include "key_codes.hpp"
 #include <iostream>
 
-PerspectiveCameraController::PerspectiveCameraController(float fov, float aspectRatio, float nearClip, float farClip)
+void CameraController::SetPosition(const glm::vec3 &position)
+{
+    m_CameraPosition = position;
+    GetCamera().SetPosition(position);
+}
+
+PerspectiveCameraController::PerspectiveCameraController(float aspectRatio, float fov, float nearClip, float farClip)
     : m_Camera(fov, aspectRatio, nearClip, farClip)
 {
+    m_FieldOfView = fov;
+    m_AspectRatio = aspectRatio;
+}
+
+void PerspectiveCameraController::SetPitchYaw(float pitch, float yaw)
+{
+    m_Pitch = pitch;
+    m_Yaw = yaw;
+
+    m_Camera.SetPitchYaw(pitch, yaw);
 }
 
 ////////////////////////
@@ -35,7 +51,7 @@ void FreeCameraController::OnUpdate(float dt)
 void FreeCameraController::OnResize(float width, float height)
 {
     m_AspectRatio = width / height;
-    m_Camera.SetProjection(60.0f, m_AspectRatio, 0.1f, 100.0f);
+    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, 0.1f, 100.0f);
 }
 
 void FreeCameraController::OnEvent(Event &e)
@@ -43,6 +59,7 @@ void FreeCameraController::OnEvent(Event &e)
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowResizeEvent>(std::bind(&FreeCameraController::OnWindowResize, this, std::placeholders::_1));
     dispatcher.dispatch<MouseMovedEvent>(std::bind(&FreeCameraController::OnMouseMoved, this, std::placeholders::_1));
+    dispatcher.dispatch<MouseScrolledEvent>(std::bind(&FreeCameraController::OnMouseScrolled, this, std::placeholders::_1));
 }
 
 bool FreeCameraController::OnWindowResize(WindowResizeEvent &e)
@@ -70,5 +87,13 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
     m_Yaw += xoffset;
     m_Pitch += yoffset;
     m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
+    return true;
+}
+
+bool FreeCameraController::OnMouseScrolled(MouseScrolledEvent &e)
+{
+    m_FieldOfView -= e.getYOffset();
+    m_FieldOfView = glm::clamp(m_FieldOfView, MIN_FOV, NETURAL_FOV);
+    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, 0.1f, 100.0f);
     return true;
 }
