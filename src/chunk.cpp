@@ -11,7 +11,7 @@ Chunk::~Chunk()
     std::cout << "Destroying Chunk\n";
 }
 
-Chunk::Chunk(const World &world, const glm::vec2 &worldPos)
+Chunk::Chunk(const World &world, const glm::ivec2 &worldPos)
     : m_WorldPos(worldPos), m_World(world), va(VertexArray::Create())
 {
     std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
@@ -60,9 +60,9 @@ bool Chunk::IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &bl
     }
 
     // Neighbor outside this chunk: query world
-    const int worldX = static_cast<int>(m_WorldPos.x) * SIZE_XZ + x + d.x;
+    const int worldX = m_WorldPos.x * SIZE_XZ + x + d.x;
     const int worldY = y + d.y;
-    const int worldZ = static_cast<int>(m_WorldPos.y) * SIZE_XZ + z + d.z;
+    const int worldZ = m_WorldPos.y * SIZE_XZ + z + d.z;
 
     return !m_World.IsSolid(worldX, worldY, worldZ, blockRegistry);
 }

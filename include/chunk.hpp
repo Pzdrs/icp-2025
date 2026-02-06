@@ -14,7 +14,7 @@ public:
     static constexpr int SIZE_XZ = 16;
     static constexpr int SIZE_Y = 256;
 
-    Chunk(const World &world, const glm::vec2 &worldPos);
+    Chunk(const World &world, const glm::ivec2 &worldPos);
     ~Chunk();
 
     void GenerateMesh(const BlockRegistry &blockRegistry);
@@ -33,6 +33,6 @@ private:
 
     std::shared_ptr<VertexArray> va;
 
-    const glm::vec2 m_WorldPos;
+    const glm::ivec2 m_WorldPos;
     const World &m_World;
 };

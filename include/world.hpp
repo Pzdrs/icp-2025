@@ -19,11 +19,10 @@ struct IVec2Hash
 
 class World
 {
-    static constexpr int WORLD_SIZE_XZ = 2;
-
 public:
     void Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry);
     void Generate(const BlockRegistry &blockRegistry);
+    void Update(const BlockRegistry &blockRegistry, const glm::vec3 &playerPos, int viewDistance);
 
     Chunk *GetChunk(int x, int z) const;
 
@@ -34,5 +33,9 @@ public:
     bool InBoundsXZ(int worldX, int worldZ) const;
 
 private:
+    void EnsureChunk(int chunkX, int chunkZ, const BlockRegistry &blockRegistry);
+    void GenerateChunk(const glm::ivec2 &chunkPos, const BlockRegistry &blockRegistry);
+    static int FloorDiv(int a, int b);
+
     std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> m_Chunks;
 };

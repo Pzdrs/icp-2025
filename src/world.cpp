@@ -2,6 +2,8 @@
 #include <iostream>
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
+#include <vector>
+#include <cmath>
 
 void World::Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry)
 {
@@ -22,11 +24,18 @@ Chunk *World::GetChunk(int x, int z) const
 
 bool World::InBoundsXZ(int worldX, int worldZ) const
 {
-    if (worldX < 0 || worldZ < 0)
-        return false;
+    (void)worldX;
+    (void)worldZ;
+    return true;
+}
 
-    const int worldSize = WORLD_SIZE_XZ * Chunk::SIZE_XZ;
-    return worldX < worldSize && worldZ < worldSize;
+int World::FloorDiv(int a, int b)
+{
+    int q = a / b;
+    int r = a % b;
+    if (r != 0 && ((r < 0) != (b < 0)))
+        q--;
+    return q;
 }
 
 BlockID World::GetBlockID(int worldX, int worldY, int worldZ, const BlockRegistry &blockRegistry) const
@@ -37,8 +46,8 @@ BlockID World::GetBlockID(int worldX, int worldY, int worldZ, const BlockRegistr
     if (worldY < 0 || worldY >= Chunk::SIZE_Y)
         return blockRegistry.getID("air");
 
-    const int chunkX = worldX / Chunk::SIZE_XZ;
-    const int chunkZ = worldZ / Chunk::SIZE_XZ;
+    const int chunkX = FloorDiv(worldX, Chunk::SIZE_XZ);
+    const int chunkZ = FloorDiv(worldZ, Chunk::SIZE_XZ);
 
     const int localX = worldX - chunkX * Chunk::SIZE_XZ;
     const int localZ = worldZ - chunkZ * Chunk::SIZE_XZ;
@@ -65,8 +74,8 @@ bool World::SetBlock(int worldX, int worldY, int worldZ, BlockID type, const Blo
     if (worldY < 0 || worldY >= Chunk::SIZE_Y)
         return false;
 
-    const int chunkX = worldX / Chunk::SIZE_XZ;
-    const int chunkZ = worldZ / Chunk::SIZE_XZ;
+    const int chunkX = FloorDiv(worldX, Chunk::SIZE_XZ);
+    const int chunkZ = FloorDiv(worldZ, Chunk::SIZE_XZ);
 
     const int localX = worldX - chunkX * Chunk::SIZE_XZ;
     const int localZ = worldZ - chunkZ * Chunk::SIZE_XZ;
@@ -97,44 +106,80 @@ bool World::SetBlock(int worldX, int worldY, int worldZ, BlockID type, const Blo
 
 void World::Generate(const BlockRegistry &blockRegistry)
 {
-    std::cout << "Generating world...\n";
+    std::cout << "Generating initial chunks...\n";
+    EnsureChunk(0, 0, blockRegistry);
+}
 
-    for (int wx = 0; wx < WORLD_SIZE_XZ; wx++)
-        for (int wz = 0; wz < WORLD_SIZE_XZ; wz++)
+void World::Update(const BlockRegistry &blockRegistry, const glm::vec3 &playerPos, int viewDistance)
+{
+    const int playerChunkX = FloorDiv(static_cast<int>(std::floor(playerPos.x)), Chunk::SIZE_XZ);
+    const int playerChunkZ = FloorDiv(static_cast<int>(std::floor(playerPos.z)), Chunk::SIZE_XZ);
+
+    for (int dz = -viewDistance; dz <= viewDistance; dz++)
+        for (int dx = -viewDistance; dx <= viewDistance; dx++)
         {
-            glm::ivec2 chunkPos(wx, wz);
-            auto newChunk = std::make_unique<Chunk>(*this, chunkPos);
-
-            for (int x = 0; x < Chunk::SIZE_XZ; x++)
-                for (int z = 0; z < Chunk::SIZE_XZ; z++)
-                {
-                    // Compute world-space coordinates
-                    int worldX = chunkPos.x * Chunk::SIZE_XZ + x;
-                    int worldZ = chunkPos.y * Chunk::SIZE_XZ + z;
-
-                    // Sample Perlin noise [-1,1]
-                    float noise = glm::perlin(glm::vec2(worldX, worldZ) * 0.05f);
-
-                    // Map noise to height
-                    int baseHeight = 8;
-                    int amplitude = 6;
-                    int height = baseHeight + static_cast<int>(noise * amplitude);
-                    height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
-
-                    for (int y = 0; y < Chunk::SIZE_Y; y++)
-                    {
-                        if (y < height - 4)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("stone"));
-                        else if (y < height - 1)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("dirt"));
-                        else if (y == height - 1)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("grass"));
-                        else
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("air"));
-                    }
-                }
-
-            newChunk->GenerateMesh(blockRegistry);
-            m_Chunks[chunkPos] = std::move(newChunk);
+            const int cx = playerChunkX + dx;
+            const int cz = playerChunkZ + dz;
+            EnsureChunk(cx, cz, blockRegistry);
         }
+
+    // Unload far chunks
+    std::vector<glm::ivec2> toRemove;
+    for (auto &entry : m_Chunks)
+    {
+        const glm::ivec2 &pos = entry.first;
+        const int distX = std::abs(pos.x - playerChunkX);
+        const int distZ = std::abs(pos.y - playerChunkZ);
+        if (distX > viewDistance + 1 || distZ > viewDistance + 1)
+            toRemove.push_back(pos);
+    }
+
+    for (const auto &pos : toRemove)
+        m_Chunks.erase(pos);
+}
+
+void World::EnsureChunk(int chunkX, int chunkZ, const BlockRegistry &blockRegistry)
+{
+    glm::ivec2 pos(chunkX, chunkZ);
+    if (m_Chunks.find(pos) != m_Chunks.end())
+        return;
+
+    GenerateChunk(pos, blockRegistry);
+}
+
+void World::GenerateChunk(const glm::ivec2 &chunkPos, const BlockRegistry &blockRegistry)
+{
+    auto newChunk = std::make_unique<Chunk>(*this, chunkPos);
+
+    for (int x = 0; x < Chunk::SIZE_XZ; x++)
+        for (int z = 0; z < Chunk::SIZE_XZ; z++)
+        {
+            // Compute world-space coordinates
+            int worldX = chunkPos.x * Chunk::SIZE_XZ + x;
+            int worldZ = chunkPos.y * Chunk::SIZE_XZ + z;
+
+            // Sample Perlin noise [-1,1]
+            float noise = glm::perlin(glm::vec2(worldX, worldZ) * 0.05f);
+
+            // Map noise to height
+            int baseHeight = 8;
+            int amplitude = 6;
+            int height = baseHeight + static_cast<int>(noise * amplitude);
+            height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
+
+            for (int y = 0; y < Chunk::SIZE_Y; y++)
+            {
+                if (y < height - 4)
+                    newChunk->SetBlock(x, y, z, blockRegistry.getID("stone"));
+                else if (y < height - 1)
+                    newChunk->SetBlock(x, y, z, blockRegistry.getID("dirt"));
+                else if (y == height - 1)
+                    newChunk->SetBlock(x, y, z, blockRegistry.getID("grass"));
+                else
+                    newChunk->SetBlock(x, y, z, blockRegistry.getID("air"));
+            }
+        }
+
+    newChunk->GenerateMesh(blockRegistry);
+    m_Chunks[chunkPos] = std::move(newChunk);
 }

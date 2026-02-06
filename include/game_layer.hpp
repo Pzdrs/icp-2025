@@ -57,4 +57,6 @@ private:
 
     bool m_LastLeftMouse = false;
     bool m_LastRightMouse = false;
+
+    int m_ViewDistance = 4;
 };

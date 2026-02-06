@@ -27,8 +27,10 @@ GameLayer::GameLayer()
     m_CameraController.SetMovementEnabled(false);
 
     // Spawn the player roughly in the middle of the world
-    const int spawnX = Chunk::SIZE_XZ / 2;
-    const int spawnZ = Chunk::SIZE_XZ / 2;
+    const int spawnX = 0;
+    const int spawnZ = 0;
+    m_PlayerPos = glm::vec3((float)spawnX + 0.5f, 0.0f, (float)spawnZ + 0.5f);
+    m_World.Update(m_BlockRegistry, m_PlayerPos, m_ViewDistance);
     const float groundY = FindGroundY(spawnX, spawnZ);
     m_PlayerPos = glm::vec3((float)spawnX + 0.5f, groundY, (float)spawnZ + 0.5f);
 
@@ -51,6 +53,8 @@ void GameLayer::OnDetach()
 void GameLayer::OnUpdate(float dt)
 {
     m_CameraController.OnUpdate(dt);
+
+    m_World.Update(m_BlockRegistry, m_PlayerPos, m_ViewDistance);
 
     // Movement input (XZ plane)
     glm::vec3 forward = m_CameraController.GetCamera().GetForward();
