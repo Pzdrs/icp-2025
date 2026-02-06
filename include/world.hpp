@@ -19,6 +19,7 @@ struct IVec2Hash
 
 class World
 {
+    static constexpr int WORLD_SIZE_XZ = 2;
 public:
     void draw(const std::shared_ptr<Shader> &shader);
     void generate(const BlockRegistry &blockRegistry);
