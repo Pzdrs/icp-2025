@@ -20,6 +20,27 @@ Chunk *World::GetChunk(int x, int z) const
     return nullptr;
 }
 
+std::string GetBlock(int x, int y, int z)
+{
+    // Sample Perlin noise [-1,1]
+    float noise = glm::perlin(glm::vec2(x, z) * 0.05f);
+
+    // Map noise to height
+    int baseHeight = 8;
+    int amplitude = 6;
+    int height = baseHeight + static_cast<int>(noise * amplitude);
+    height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
+
+    if (y < height - 4)
+        return "stone";
+    else if (y < height - 1)
+        return "dirt";
+    else if (y == height - 1)
+        return "grass";
+    else
+        return "air";
+}
+
 void World::Generate(const BlockRegistry &blockRegistry)
 {
     std::cout << "Generating world...\n";
@@ -33,29 +54,12 @@ void World::Generate(const BlockRegistry &blockRegistry)
             for (int x = 0; x < Chunk::SIZE_XZ; x++)
                 for (int z = 0; z < Chunk::SIZE_XZ; z++)
                 {
-                    // Compute world-space coordinates
                     int worldX = chunkPos.x * Chunk::SIZE_XZ + x;
                     int worldZ = chunkPos.y * Chunk::SIZE_XZ + z;
 
-                    // Sample Perlin noise [-1,1]
-                    float noise = glm::perlin(glm::vec2(worldX, worldZ) * 0.05f);
-
-                    // Map noise to height
-                    int baseHeight = 8;
-                    int amplitude = 6;
-                    int height = baseHeight + static_cast<int>(noise * amplitude);
-                    height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
-
                     for (int y = 0; y < Chunk::SIZE_Y; y++)
                     {
-                        if (y < height - 4)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("stone"));
-                        else if (y < height - 1)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("dirt"));
-                        else if (y == height - 1)
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("grass"));
-                        else
-                            newChunk->SetBlock(x, y, z, blockRegistry.getID("air"));
+                        newChunk->SetBlock(x, y, z, blockRegistry.getID(GetBlock(worldX, y, worldZ)));
                     }
                 }
 
