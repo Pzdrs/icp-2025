@@ -96,6 +96,13 @@ bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)
 
 bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 {
+    if (e.getWidth() == 0 || e.getHeight() == 0)
+    {
+        m_Minimized = true;
+        return false;
+    }
+
+    m_Minimized = false;
     Renderer::OnWindowResize(e.getWidth(), e.getHeight());
     return true;
 }

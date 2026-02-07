@@ -14,6 +14,7 @@ public:
     Scuffcraft();
     virtual ~Scuffcraft();
 
+    void Run();
     void OnEvent(Event &e);
 
     void PushLayer(Layer *layer);
@@ -21,8 +22,6 @@ public:
 
     inline static Scuffcraft &Get() { return *s_Instance; }
     inline Window &GetWindow() { return *m_Window; }
-
-    void Run();
 
 private:
     bool OnWindowsClose(WindowCloseEvent &e);
@@ -32,6 +31,7 @@ private:
     ImGuiLayer *m_ImGuiLayer;
     Scope<Window> m_Window;
     bool m_Running = true;
+    bool m_Minimized = false;
 
     float m_DeltaTime = 0.0f;
     float m_LastFrameTime = 0.0f;
