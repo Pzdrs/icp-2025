@@ -5,7 +5,6 @@
 #include "scuffcraft.hpp"
 #include <imgui.h>
 #include "chunk.hpp"
-#include "atlas.hpp"
 #include "render/render_command.hpp"
 
 static const std::string BLOCK_ATLAS = "resources/blocks.png";
@@ -14,9 +13,9 @@ static const std::string BLOCK_MANIFEST = "resources/blocks.json";
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
-      m_Shader(Shader::Create("shaders/shader.vert", "shaders/shader.frag"))
+      m_Shader(Shader::Create("shaders/shader.vert", "shaders/shader.frag")),
+      m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS))
 {
-    initAtlas(BLOCK_ATLAS);
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
     m_World.Generate(m_BlockRegistry);
 

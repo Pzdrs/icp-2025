@@ -41,6 +41,11 @@ void OpenGLShader::Unbind() const
     glUseProgram(0);
 }
 
+void OpenGLShader::SetInt(const std::string &name, int value)
+{
+    glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
+}
+
 void OpenGLShader::SetMat4(const std::string &name, const glm::mat4 &value)
 {
     glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));

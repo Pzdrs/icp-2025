@@ -2,10 +2,18 @@
 #include "chunk.hpp"
 
 #include <render/vertex.hpp>
-#include <atlas.hpp>
 #include <block.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "world.hpp"
+#include <render/texture.hpp>
+
+struct UVRect
+{
+    float u0, v0; // bottom-left
+    float u1, v1; // top-right
+};
+
+UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight);
 
 Chunk::~Chunk()
 {
@@ -124,4 +132,22 @@ void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
     Renderer::Submit(shader, va, model);
+}
+
+// Get UV coordinates for a sprite at (col, row)
+UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight)
+{
+    float uSize = (float)spriteSize / atlasWidth;
+    float vSize = (float)spriteSize / atlasHeight;
+
+    int rows = atlasHeight / spriteSize;
+    int flippedRow = rows - 1 - row;
+
+    // OpenGL UV origin is bottom-left
+    float u0 = col * uSize;
+    float v0 = flippedRow * vSize;
+    float u1 = u0 + uSize;
+    float v1 = v0 + vSize;
+
+    return {u0, v0, u1, v1};
 }

@@ -8,6 +8,7 @@
 #include "world.hpp"
 #include "block.hpp"
 #include "render/shader.hpp"
+#include "render/texture.hpp"
 
 class GameLayer : public Layer
 {
@@ -33,4 +34,5 @@ private:
     BlockRegistry m_BlockRegistry;
     World m_World;
     Ref<Shader> m_Shader;
+    Ref<Texture2D> m_BlockAtlas;
 };

@@ -38,6 +38,7 @@ void Renderer::EndScene()
 void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform)
 {
     shader->Bind();
+    shader->SetInt("uTexture", 0);
     shader->SetMat4("uViewProjection", s_SceneData->ViewProjectionMatrix);
     shader->SetMat4("uTransform", transform);
 

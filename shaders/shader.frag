@@ -5,9 +5,9 @@ in vec2 vTexCoord;
 
 out vec4 fColor;
 
-uniform sampler2D atlas;
+uniform sampler2D uTexture;
 
 void main()
 { 
-    fColor = texture(atlas, vTexCoord) + vec4(vColor, 1.0);
+    fColor = texture(uTexture, vTexCoord) + vec4(vColor, 1.0);
 }
