@@ -4,9 +4,9 @@
 #include "world.hpp"
 #include "event/event.hpp"
 #include "event/application_event.hpp"
-#include "layer.hpp"
-#include "layer_stack.hpp"
-#include "imgui_layer.hpp"
+#include "layer/layer.hpp"
+#include "layer/layer_stack.hpp"
+#include "layer/imgui_layer.hpp"
 
 class Scuffcraft
 {

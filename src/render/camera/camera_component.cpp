@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "camera_component.hpp"
+#include "render/camera/camera_component.hpp"
 #include <glm/glm.hpp>
 
 ZoomCameraComponent::ZoomCameraComponent(float zoomedOutFOV, float zoomedInFOV, float scrollZoomMinFOV, float snapEpsilon, float ease, KeyCode zoomKey)

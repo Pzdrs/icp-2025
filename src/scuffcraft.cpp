@@ -3,11 +3,11 @@
 #include <GLFW/glfw3.h>
 
 #include "scuffcraft.hpp"
-#include <event/mouse_event.hpp>
-#include <event/key_event.hpp>
-#include "imgui_layer.hpp"
-#include "game_layer.hpp"
-#include "debug_layer.hpp"
+#include "event/mouse_event.hpp"
+#include "event/key_event.hpp"
+#include "layer/imgui_layer.hpp"
+#include "layer/game_layer.hpp"
+#include "layer/debug_layer.hpp"
 #include "input.hpp"
 #include "key_codes.hpp"
 

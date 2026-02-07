@@ -1,11 +1,11 @@
 #pragma once
-#include "camera.hpp"
+#include "render/camera/camera.hpp"
 #include "event/event.hpp"
 #include "event/mouse_event.hpp"
 #include "event/application_event.hpp"
 #include "event/key_event.hpp"
 #include "key_codes.hpp"
-#include "camera_component.hpp"
+#include "render/camera/camera_component.hpp"
 
 class CameraController
 {

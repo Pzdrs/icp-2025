@@ -1,9 +1,9 @@
 #include "pch.hpp"
-#include "imgui_layer.hpp"
+#include "layer/imgui_layer.hpp"
 #include <imgui.h>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <scuffcraft.hpp>
+#include "scuffcraft.hpp"
 #include <ImGuizmo.h>
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")

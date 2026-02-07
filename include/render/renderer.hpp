@@ -1,10 +1,10 @@
 #pragma once
-#include <camera.hpp>
 #include <glm/glm.hpp>
 #include "render/shader.hpp"
 #include "render/vertex_array.hpp"
 #include "renderer_api.hpp"
 #include "render/shader.hpp"
+#include "render/camera/camera.hpp"
 
 struct RendererCapabilities
 {

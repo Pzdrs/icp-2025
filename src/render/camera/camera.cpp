@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "camera.hpp"
+#include "render/camera/camera.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
 void Camera::SetPosition(const glm::vec3 &position)

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "layer.hpp"
-#include "camera.hpp"
+#include "layer/layer.hpp"
+#include "render/camera/camera.hpp"
 
-class DebugLayer : public Layer {
+class DebugLayer : public Layer
+{
 public:
     DebugLayer(const Camera &camera);
     ~DebugLayer();
@@ -14,6 +15,7 @@ public:
     virtual void OnUpdate(float dt) override;
     virtual void OnImGuiRender() override;
     virtual void OnEvent(Event &event) override;
+
 private:
     float m_FrameTime;
     const Camera &m_Camera;

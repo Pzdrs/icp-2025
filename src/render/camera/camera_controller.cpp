@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "camera_controller.hpp"
+#include "render/camera/camera_controller.hpp"
 #include "input.hpp"
 
 void CameraController::SetPosition(const glm::vec3 &position)
@@ -141,6 +141,6 @@ bool FreeCameraController::OnKeyReleased(KeyReleasedEvent &e)
 {
     if (m_Paused)
         return false;
-        
+
     return m_ZoomComponent.OnKeyReleased(e);
 }
