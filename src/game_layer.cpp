@@ -56,5 +56,20 @@ void GameLayer::OnImGuiRender()
 
 void GameLayer::OnEvent(Event &event)
 {
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(GameLayer::OnKeyPressed));
+
     m_CameraController.OnEvent(event);
+}
+
+bool GameLayer::OnKeyPressed(KeyPressedEvent &e)
+{
+    if (e.getKeyCode() == Key::Escape)
+    {
+        m_Paused = !m_Paused;
+        Scuffcraft::Get().GetWindow().SetMouseLocked(!m_Paused);
+        m_CameraController.SetPaused(m_Paused);
+        return true;
+    }
+    return false;
 }

@@ -16,11 +16,15 @@ public:
 
     void SetPosition(const glm::vec3 &position);
 
+    void SetPaused(bool paused) { m_Paused = paused; }
+    bool IsPaused() const { return m_Paused; }
+
     virtual Camera &GetCamera() = 0;
 
 protected:
     float m_AspectRatio;
     glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
+    bool m_Paused = false;
 };
 
 class PerspectiveCameraController : public CameraController

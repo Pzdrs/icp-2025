@@ -24,6 +24,11 @@ public:
     Camera &GetCamera() { return m_CameraController.GetCamera(); }
 
 private:
+    bool OnKeyPressed(KeyPressedEvent &e);
+
+private:
+    bool m_Paused = false;
+
     FreeCameraController m_CameraController;
     BlockRegistry m_BlockRegistry;
     World m_World;

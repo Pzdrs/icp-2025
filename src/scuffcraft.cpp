@@ -21,6 +21,8 @@ Scuffcraft::Scuffcraft()
     s_Instance = this;
     m_Window = Scope<Window>(Window::Create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
     m_Window->SetEventCallback(BIND_EVENT_FN(Scuffcraft::OnEvent));
+    m_Window->SetVSync(true);
+    m_Window->SetMouseLocked(true);
 
     Renderer::Init();
 
@@ -45,9 +47,6 @@ void Scuffcraft::OnEvent(Event &e)
 
     dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(Scuffcraft::OnFramebufferResize));
     dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Scuffcraft::OnWindowsClose));
-
-    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(Scuffcraft::OnMouseMoved));
-    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(Scuffcraft::OnKeyPressed));
 
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
@@ -89,39 +88,14 @@ void Scuffcraft::PushOverlay(Layer *overlay)
     overlay->OnAttach();
 }
 
-void Scuffcraft::Pause()
-{
-    m_Paused = !m_Paused;
-    m_Window->SetMouseLocked(!m_Paused);
-}
-
 bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)
 {
     m_Running = false;
     return true;
 }
 
-// so the camera doesn't process mouse movement when the game is paused
-bool Scuffcraft::OnMouseMoved(MouseMovedEvent &e)
-{
-    if (m_Paused)
-        return true;
-    return false;
-}
-
 bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 {
     Renderer::OnWindowResize(e.getWidth(), e.getHeight());
     return true;
-}
-
-bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
-{
-    if (e.getKeyCode() == Key::Escape)
-    {
-        Pause();
-        return true;
-    }
-
-    return false;
 }

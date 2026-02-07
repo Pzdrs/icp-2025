@@ -29,6 +29,9 @@ void PerspectiveCameraController::SetPitchYaw(float pitch, float yaw)
 
 void FreeCameraController::OnUpdate(float dt)
 {
+    if (m_Paused)
+        return;
+
     float newFov = m_ZoomComponent.Update(m_FieldOfView, dt);
     if (newFov != m_FieldOfView)
     {
@@ -81,26 +84,30 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
         m_LastX = e.getX();
         m_LastY = e.getY();
         m_FirstMouse = false;
+        return true;
     }
 
-    float xoffset = e.getX() - m_LastX;
-    float yoffset = e.getY() - m_LastY; // raw delta, moving mouse up = negative Y
+    if (!m_Paused)
+    {
+        float xoffset = e.getX() - m_LastX;
+        float yoffset = e.getY() - m_LastY; // raw delta, moving mouse up = negative Y
 
-    if (!m_InvertMouse)
-        yoffset = -yoffset;
+        if (!m_InvertMouse)
+            yoffset = -yoffset;
 
-    xoffset *= m_MouseSensitivity;
-    yoffset *= m_MouseSensitivity;
+        xoffset *= m_MouseSensitivity;
+        yoffset *= m_MouseSensitivity;
 
-    m_Yaw += xoffset;
-    m_Pitch = glm::clamp(m_Pitch + yoffset, -90.0f, 90.0f);
+        m_Yaw += xoffset;
+        m_Pitch = glm::clamp(m_Pitch + yoffset, -90.0f, 90.0f);
 
-    if (m_Yaw > 180.0f)
-        m_Yaw -= 360.0f;
-    if (m_Yaw < -180.0f)
-        m_Yaw += 360.0f;
+        if (m_Yaw > 180.0f)
+            m_Yaw -= 360.0f;
+        if (m_Yaw < -180.0f)
+            m_Yaw += 360.0f;
 
-    m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
+        m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
+    }
 
     m_LastX = e.getX();
     m_LastY = e.getY();
@@ -109,6 +116,9 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
 
 bool FreeCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 {
+    if (m_Paused)
+        return false;
+
     float newFov = m_ZoomComponent.OnMouseScrolled(e, m_FieldOfView);
     if (newFov != m_FieldOfView)
     {
@@ -121,10 +131,16 @@ bool FreeCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 
 bool FreeCameraController::OnKeyPressed(KeyPressedEvent &e)
 {
+    if (m_Paused)
+        return false;
+
     return m_ZoomComponent.OnKeyPressed(e);
 }
 
 bool FreeCameraController::OnKeyReleased(KeyReleasedEvent &e)
 {
+    if (m_Paused)
+        return false;
+        
     return m_ZoomComponent.OnKeyReleased(e);
 }
