@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include "core.hpp"
 
 enum class ShaderDataType
 {
@@ -151,7 +152,7 @@ public:
     virtual const BufferLayout &GetLayout() const = 0;
     virtual void SetLayout(const BufferLayout &layout) = 0;
 
-    static std::unique_ptr<VertexBuffer> Create(const void *data, uint32_t size);
+    static Scope<VertexBuffer> Create(const void *data, uint32_t size);
 };
 class IndexBuffer
 {
@@ -163,5 +164,5 @@ public:
 
     virtual uint32_t GetCount() const = 0;
 
-    static std::unique_ptr<IndexBuffer> Create(const uint32_t *indices, uint32_t count);
+    static Scope<IndexBuffer> Create(const uint32_t *indices, uint32_t count);
 };

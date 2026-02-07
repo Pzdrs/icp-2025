@@ -1,6 +1,7 @@
 #include "camera_controller.hpp"
 #include "input.hpp"
 #include <iostream>
+#include <core.hpp>
 
 void CameraController::SetPosition(const glm::vec3 &position)
 {
@@ -61,11 +62,11 @@ void FreeCameraController::OnResize(float width, float height)
 void FreeCameraController::OnEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
-    dispatcher.dispatch<WindowResizeEvent>(std::bind(&FreeCameraController::OnWindowResize, this, std::placeholders::_1));
-    dispatcher.dispatch<MouseMovedEvent>(std::bind(&FreeCameraController::OnMouseMoved, this, std::placeholders::_1));
-    dispatcher.dispatch<MouseScrolledEvent>(std::bind(&FreeCameraController::OnMouseScrolled, this, std::placeholders::_1));
-    dispatcher.dispatch<KeyPressedEvent>(std::bind(&FreeCameraController::OnKeyPressed, this, std::placeholders::_1));
-    dispatcher.dispatch<KeyReleasedEvent>(std::bind(&FreeCameraController::OnKeyReleased, this, std::placeholders::_1));
+    dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(FreeCameraController::OnWindowResize));
+    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(FreeCameraController::OnMouseMoved));
+    dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(FreeCameraController::OnMouseScrolled));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(FreeCameraController::OnKeyPressed));
+    dispatcher.dispatch<KeyReleasedEvent>(BIND_EVENT_FN(FreeCameraController::OnKeyReleased));
 }
 
 bool FreeCameraController::OnWindowResize(WindowResizeEvent &e)

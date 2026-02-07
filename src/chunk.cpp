@@ -119,7 +119,7 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
 }
 
-void Chunk::Draw(const std::shared_ptr<Shader> &shader)
+void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
     Renderer::Submit(shader, va, model);

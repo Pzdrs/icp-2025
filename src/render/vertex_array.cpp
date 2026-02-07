@@ -2,7 +2,7 @@
 #include "render/renderer.hpp"
 #include "../platform/opengl/opengl_vertex_array.hpp"
 
-std::shared_ptr<VertexArray> VertexArray::Create()
+Ref<VertexArray> VertexArray::Create()
 {
     switch (Renderer::CurrentAPI())
     {

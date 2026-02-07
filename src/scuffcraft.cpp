@@ -22,8 +22,7 @@
 #include "render/render_command.hpp"
 #include "key_codes.hpp"
 #include <camera_controller.hpp>
-
-#define BIND_EVENT_FN(x) std::bind(&Scuffcraft::x, this, std::placeholders::_1)
+#include <core.hpp>
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
@@ -33,8 +32,8 @@ const unsigned int SCR_HEIGHT = 720;
 Scuffcraft::Scuffcraft()
 {
     s_Instance = this;
-    m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
-    m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+    m_Window = Scope<Window>(Window::Create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
+    m_Window->SetEventCallback(BIND_EVENT_FN(Scuffcraft::OnEvent));
 
     Renderer::Init();
 
@@ -57,11 +56,11 @@ void Scuffcraft::OnEvent(Event &e)
 {
     EventDispatcher dispatcher(e);
 
-    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(OnFramebufferResize));
-    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowsClose));
+    dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(Scuffcraft::OnFramebufferResize));
+    dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Scuffcraft::OnWindowsClose));
 
-    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(OnMouseMoved));
-    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
+    dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(Scuffcraft::OnMouseMoved));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(Scuffcraft::OnKeyPressed));
 
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
@@ -118,7 +117,7 @@ bool Scuffcraft::OnWindowsClose(WindowCloseEvent &e)
 // so the camera doesn't process mouse movement when the game is paused
 bool Scuffcraft::OnMouseMoved(MouseMovedEvent &e)
 {
-    if(m_Paused)
+    if (m_Paused)
         return true;
     return false;
 }

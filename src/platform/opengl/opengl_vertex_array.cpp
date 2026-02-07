@@ -58,7 +58,7 @@ void OpenGLVertexArray::Unbind() const
     glBindVertexArray(0);
 }
 
-void OpenGLVertexArray::AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuffer)
+void OpenGLVertexArray::AddVertexBuffer(Scope<VertexBuffer> vertexBuffer)
 {
 
     if (vertexBuffer->GetLayout().GetElements().size() == 0)
@@ -133,7 +133,7 @@ void OpenGLVertexArray::AddVertexBuffer(std::unique_ptr<VertexBuffer> vertexBuff
     m_VertexBuffers.push_back(std::move(vertexBuffer));
 }
 
-void OpenGLVertexArray::SetIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer)
+void OpenGLVertexArray::SetIndexBuffer(Scope<IndexBuffer> indexBuffer)
 {
     glBindVertexArray(m_RendererID);
     indexBuffer->Bind();

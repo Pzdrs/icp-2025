@@ -5,6 +5,7 @@
 #include "chunk.hpp"
 #include <iostream>
 #include "block.hpp"
+#include "core.hpp"
 
 struct IVec2Hash
 {
@@ -22,11 +23,11 @@ class World
     static constexpr int WORLD_SIZE_XZ = 10;
 
 public:
-    void Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry);
+    void Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry);
     void Generate(const BlockRegistry &blockRegistry);
 
     Chunk *GetChunk(int x, int z) const;
 
 private:
-    std::unordered_map<glm::ivec2, std::unique_ptr<Chunk>, IVec2Hash> m_Chunks;
+    std::unordered_map<glm::ivec2, Scope<Chunk>, IVec2Hash> m_Chunks;
 };

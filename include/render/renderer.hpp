@@ -6,6 +6,7 @@
 #include "renderer_api.hpp"
 #include "render/shader.hpp"
 #include <memory>
+#include "core.hpp"
 
 struct RendererCapabilities
 {
@@ -47,7 +48,7 @@ public:
     static void BeginScene(const Camera &camera);
     static void EndScene();
 
-    static void Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
+    static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
 
     static RendererAPI::API CurrentAPI() { return RendererAPI::CurrentAPI(); }
 
@@ -60,7 +61,7 @@ private:
         glm::mat4 ViewProjectionMatrix;
     };
 
-    static std::unique_ptr<SceneData> s_SceneData;
+    static Scope<SceneData> s_SceneData;
 
     static RendererCapabilities s_Capabilities;
     static Statistics s_Stats;

@@ -4,7 +4,7 @@
 
 RendererCapabilities Renderer::s_Capabilities;
 Statistics Renderer::s_Stats;
-std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
+Scope<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 
 void Renderer::Init()
 {
@@ -34,12 +34,12 @@ void Renderer::EndScene()
     // Code to end the current scene would go here
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform)
+void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform)
 {
     shader->Bind();
     shader->SetMat4("uViewProjection", s_SceneData->ViewProjectionMatrix);
     shader->SetMat4("uTransform", transform);
-    
+
     RenderCommand::DrawIndexed(vertexArray);
 
     s_Stats.DrawCalls++;

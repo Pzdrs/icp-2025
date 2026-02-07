@@ -28,5 +28,5 @@ private:
     FreeCameraController m_CameraController;
     BlockRegistry m_BlockRegistry;
     World m_World;
-    std::shared_ptr<Shader> m_Shader;
+    Ref<Shader> m_Shader;
 };

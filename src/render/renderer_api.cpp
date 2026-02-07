@@ -3,7 +3,7 @@
 
 RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
 
-std::unique_ptr<RendererAPI> RendererAPI::Create()
+Scope<RendererAPI> RendererAPI::Create()
 {
     switch (s_API)
     {

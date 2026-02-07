@@ -3,7 +3,7 @@
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
 
-void World::Draw(const std::shared_ptr<Shader> &shader, const BlockRegistry &blockRegistry)
+void World::Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry)
 {
     for (auto &[pos, chunk] : m_Chunks)
     {
