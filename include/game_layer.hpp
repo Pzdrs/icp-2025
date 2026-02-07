@@ -33,6 +33,6 @@ private:
     FreeCameraController m_CameraController;
     BlockRegistry m_BlockRegistry;
     World m_World;
-    Ref<Shader> m_Shader;
+    ShaderLibrary m_ShaderLibrary;
     Ref<Texture2D> m_BlockAtlas;
 };

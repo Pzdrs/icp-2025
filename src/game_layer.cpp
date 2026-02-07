@@ -13,10 +13,10 @@ static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
-      m_Shader(Shader::Create("assets/shaders/texture.glsl")),
       m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS))
 {
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
+    m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
     m_World.Generate(m_BlockRegistry);
 
     m_CameraController.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -44,7 +44,7 @@ void GameLayer::OnUpdate(float dt)
 
     Renderer::BeginScene(m_CameraController.GetCamera());
 
-    m_World.Draw(m_Shader, m_BlockRegistry);
+    m_World.Draw(m_ShaderLibrary.Get("BlockShader"), m_BlockRegistry);
 
     Renderer::EndScene();
 }
