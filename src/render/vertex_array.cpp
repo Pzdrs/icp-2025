@@ -10,7 +10,7 @@ Ref<VertexArray> VertexArray::Create()
     case RendererAPI::API::None:
         return nullptr;
     case RendererAPI::API::OpenGL:
-        return std::make_shared<OpenGLVertexArray>();
+        return CreateRef<OpenGLVertexArray>();
     }
 
     // assert

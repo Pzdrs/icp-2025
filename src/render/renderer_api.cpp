@@ -12,7 +12,7 @@ Scope<RendererAPI> RendererAPI::Create()
         // assert
         return nullptr;
     case RendererAPI::API::OpenGL:
-        return std::make_unique<OpenGLRendererAPI>();
+        return CreateScope<OpenGLRendererAPI>();
     }
 
     // assert

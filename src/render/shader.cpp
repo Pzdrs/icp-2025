@@ -10,7 +10,7 @@ Ref<Shader> Shader::Create(const std::string &vertexPath, const std::string &fra
     case RendererAPI::API::None:
         return nullptr;
     case RendererAPI::API::OpenGL:
-        return std::make_shared<OpenGLShader>(vertexPath, fragmentPath);
+        return CreateRef<OpenGLShader>(vertexPath, fragmentPath);
     }
     return nullptr;
 }
