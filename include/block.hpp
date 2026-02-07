@@ -1,8 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <unordered_map>
-#include <vector>
+
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

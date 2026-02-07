@@ -1,5 +1,6 @@
+#include "pch.hpp"
 #include "chunk.hpp"
-#include <iostream>
+
 #include <render/vertex.hpp>
 #include <atlas.hpp>
 #include <block.hpp>

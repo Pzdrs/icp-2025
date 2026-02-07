@@ -1,7 +1,5 @@
 #pragma once
 #include "buffer.hpp"
-#include <memory>
-#include "core.hpp"
 
 class VertexArray
 {

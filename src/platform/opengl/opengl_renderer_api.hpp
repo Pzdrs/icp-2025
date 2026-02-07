@@ -2,7 +2,6 @@
 
 #include "render/renderer_api.hpp"
 #include <render/renderer.hpp>
-#include <memory>
 
 class OpenGLRendererAPI : public RendererAPI
 {

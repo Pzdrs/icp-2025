@@ -1,5 +1,6 @@
+#include "pch.hpp"
 #include "world.hpp"
-#include <iostream>
+
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
 

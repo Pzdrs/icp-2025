@@ -1,8 +1,9 @@
+#include "pch.hpp"
 #include "macos_window.hpp"
 #include "event/application_event.hpp"
 #include "event/key_event.hpp"
 #include "event/mouse_event.hpp"
-#include <iostream>
+
 #include "../opengl/opengl_context.hpp"
 
 static bool s_GLFWInitialized = false;

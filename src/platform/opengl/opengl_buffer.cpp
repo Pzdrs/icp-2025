@@ -1,6 +1,6 @@
+#include "pch.hpp"
 #include "opengl_buffer.hpp"
 #include <glad/glad.h>
-#include <iostream>
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(const void *data, uint32_t size)
 {

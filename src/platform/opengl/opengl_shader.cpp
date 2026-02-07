@@ -1,10 +1,7 @@
+#include "pch.hpp"
 #include "opengl_shader.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
-#include <iostream>
 
 std::string ReadShaderFile(const std::string &filepath);
 unsigned int CompileShader(unsigned int type, const std::string &source);

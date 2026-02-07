@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "layer_stack.hpp"
 
 LayerStack::~LayerStack()

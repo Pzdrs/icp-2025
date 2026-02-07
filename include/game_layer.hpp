@@ -8,7 +8,6 @@
 #include "world.hpp"
 #include "block.hpp"
 #include "render/shader.hpp"
-#include <memory>
 
 class GameLayer : public Layer
 {

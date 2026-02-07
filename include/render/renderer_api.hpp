@@ -1,9 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <glm/glm.hpp>
 #include "vertex_array.hpp"
-#include "core.hpp"
 
 struct RendererCapabilities;
 

@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "render/vertex_array.hpp"
 #include "render/renderer.hpp"
 #include "../platform/opengl/opengl_vertex_array.hpp"

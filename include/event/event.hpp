@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+
 #include <functional>
 
 enum class EventType
@@ -30,7 +30,7 @@ enum EventCategory
 };
 
 #define EVENT_CLASS_TYPE(type)                                                  \
-    static EventType getStaticType() { return EventType::type; }              \
+    static EventType getStaticType() { return EventType::type; }                \
     virtual EventType getEventType() const override { return getStaticType(); } \
     virtual const char *getName() const override { return #type; }
 
@@ -66,13 +66,16 @@ public:
         : m_Event(event) {}
 
     template <typename T>
-    bool dispatch(EventFunc<T> func) {
-        if (m_Event.getEventType() == T::getStaticType()) {
+    bool dispatch(EventFunc<T> func)
+    {
+        if (m_Event.getEventType() == T::getStaticType())
+        {
             m_Event.m_Handled = func(*(T *)&m_Event);
             return true;
         }
         return false;
     }
+
 private:
     Event &m_Event;
 };

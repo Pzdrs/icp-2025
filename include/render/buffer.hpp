@@ -1,7 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <vector>
-#include "core.hpp"
 
 enum class ShaderDataType
 {

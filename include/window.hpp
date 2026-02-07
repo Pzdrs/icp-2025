@@ -1,6 +1,5 @@
 #pragma once
 #include "event/event.hpp"
-#include <functional>
 
 struct WindowProps
 {

@@ -1,6 +1,5 @@
+#include "pch.hpp"
 #include "block.hpp"
-#include <fstream>
-#include <iostream>
 
 bool isSideFace(Face face)
 {

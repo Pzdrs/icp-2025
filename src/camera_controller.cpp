@@ -1,7 +1,6 @@
+#include "pch.hpp"
 #include "camera_controller.hpp"
 #include "input.hpp"
-#include <iostream>
-#include <core.hpp>
 
 void CameraController::SetPosition(const glm::vec3 &position)
 {

@@ -1,11 +1,9 @@
 #pragma once
 
-#include <unordered_map>
 #include <glm/glm.hpp>
 #include "chunk.hpp"
-#include <iostream>
+
 #include "block.hpp"
-#include "core.hpp"
 
 struct IVec2Hash
 {

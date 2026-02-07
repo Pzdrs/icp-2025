@@ -4,7 +4,6 @@
 #include "block.hpp"
 #include "render/buffer.hpp"
 #include <glm/glm.hpp>
-#include "core.hpp"
 
 class World;
 

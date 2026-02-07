@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(icp-fuckfest VERSION 0.0.1 LANGUAGES CXX)
+project(scuffcraft VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,11 +15,12 @@ find_package(imguizmo CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
-add_executable(icp-fuckfest ${SOURCES})
+add_executable(scuffcraft ${SOURCES})
 
-target_include_directories(icp-fuckfest PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_precompile_headers(scuffcraft PRIVATE ${PROJECT_SOURCE_DIR}/include/pch.hpp)
+target_include_directories(scuffcraft PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(icp-fuckfest PRIVATE
+target_link_libraries(scuffcraft PRIVATE
     glad::glad
     glfw              
     glm::glm          

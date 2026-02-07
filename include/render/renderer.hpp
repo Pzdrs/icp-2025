@@ -5,8 +5,6 @@
 #include "render/vertex_array.hpp"
 #include "renderer_api.hpp"
 #include "render/shader.hpp"
-#include <memory>
-#include "core.hpp"
 
 struct RendererCapabilities
 {

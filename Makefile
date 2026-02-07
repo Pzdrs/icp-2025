@@ -1,6 +1,6 @@
 VCPKG_ROOT ?= $(HOME)/vcpkg
 BUILD_DIR = build
-BINARY_NAME = icp-fuckfest
+BINARY_NAME = scuffcraft 
 
 .PHONY: all configure build clean
 

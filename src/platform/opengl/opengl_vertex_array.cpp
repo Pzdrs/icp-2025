@@ -1,6 +1,6 @@
+#include "pch.hpp"
 #include "opengl_vertex_array.hpp"
 #include <glad/glad.h>
-#include <iostream>
 
 static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 {

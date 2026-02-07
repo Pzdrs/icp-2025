@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "camera_component.hpp"
 #include <glm/glm.hpp>
 

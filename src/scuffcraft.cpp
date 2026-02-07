@@ -1,28 +1,15 @@
-#include <glad/glad.h>
+#include "pch.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <string>
-#include <iostream>
-#include <assert.h>
-#include <render/shader.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <render/vertex.hpp>
-#include <atlas.hpp>
-#include <camera.hpp>
+
 #include "scuffcraft.hpp"
-#include <world.hpp>
 #include <event/mouse_event.hpp>
 #include <event/key_event.hpp>
 #include "imgui_layer.hpp"
 #include "game_layer.hpp"
 #include "debug_layer.hpp"
 #include "input.hpp"
-#include "render/render_command.hpp"
 #include "key_codes.hpp"
-#include <camera_controller.hpp>
-#include <core.hpp>
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
