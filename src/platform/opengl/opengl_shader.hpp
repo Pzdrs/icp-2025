@@ -1,11 +1,12 @@
 #pragma once
 
 #include "render/shader.hpp"
+#include <glad/glad.h>
 
 class OpenGLShader : public Shader
 {
 public:
-    OpenGLShader(const std::string &vertexPath, const std::string &fragmentPath);
+    OpenGLShader(const std::string &path);
     virtual ~OpenGLShader();
 
     virtual void Bind() const override;
@@ -15,5 +16,12 @@ public:
     virtual void SetMat4(const std::string &name, const glm::mat4 &value) override;
 
 private:
+    std::string ReadFile(const std::string &filepath);
+    std::unordered_map<GLenum, std::string> PreProcess(const std::string &source);
+
+    void CompileAndLink(const std::unordered_map<GLenum, std::string> &shaderSources);
+
+private:
     uint32_t m_RendererID;
+    std::string m_FilePath, m_Name;
 };

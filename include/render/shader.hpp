@@ -13,5 +13,5 @@ public:
     virtual void SetInt(const std::string &name, int value) = 0;
     virtual void SetMat4(const std::string &name, const glm::mat4 &value) = 0;
 
-    static Ref<Shader> Create(const std::string &vertexPath, const std::string &fragmentPath);
+    static Ref<Shader> Create(const std::string &path);
 };
