@@ -1,87 +1,15 @@
 #include "render/shader.hpp"
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
-#include <iostream>
-#include <assert.h>
-#include <glm/gtc/type_ptr.hpp>
+#include "render/renderer.hpp"
+#include "../platform/opengl/opengl_shader.hpp"
 
-std::string ReadShaderFile(const std::string &filepath)
+std::shared_ptr<Shader> Shader::Create(const std::string &vertexPath, const std::string &fragmentPath)
 {
-    std::ifstream file(filepath, std::ios::in); // open file for reading
-    if (!file.is_open())
+    switch (Renderer::CurrentAPI())
     {
-        throw std::runtime_error("Failed to open shader file: " + filepath);
+        case RendererAPI::API::None:
+            return nullptr;
+        case RendererAPI::API::OpenGL:
+            return std::make_shared<OpenGLShader>(vertexPath, fragmentPath);
     }
-
-    std::stringstream buffer; // create a stringstream
-    buffer << file.rdbuf();   // read the entire file into the stream
-    return buffer.str();      // return the contents as a string
-}
-
-unsigned int CompileShader(unsigned int type, const std::string &source)
-{
-    unsigned int id = glCreateShader(type);
-    const char *src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-
-    if (result == GL_FALSE)
-    {
-        int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char *message = (char *)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "Failed to compile shader!" << std::endl;
-        std::cout << message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
-}
-
-Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath)
-{
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, ReadShaderFile(vertexPath));
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, ReadShaderFile(fragmentPath));
-
-    assert(vs != 0 && fs != 0);
-
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-
-    m_RendererID = program;
-}
-
-Shader::~Shader()
-{
-    glUseProgram(0);
-    glDeleteProgram(m_RendererID);
-}
-
-void Shader::setBool(const std::string &name, bool value) const
-{
-    glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), (int)value);
-}
-void Shader::setInt(const std::string &name, int value) const
-{
-    glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
-}
-void Shader::setFloat(const std::string &name, float value) const
-{
-    glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);
-}
-void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
-{
-    glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    return nullptr;
 }

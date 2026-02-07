@@ -36,9 +36,9 @@ void Renderer::EndScene()
 
 void Renderer::Submit(const std::shared_ptr<Shader> &shader, const std::shared_ptr<VertexArray> &vertexArray, const glm::mat4 &transform)
 {
-    shader->use();
-    shader->setMat4("uViewProjection", s_SceneData->ViewProjectionMatrix);
-    shader->setMat4("uTransform", transform);
+    shader->Bind();
+    shader->SetMat4("uViewProjection", s_SceneData->ViewProjectionMatrix);
+    shader->SetMat4("uTransform", transform);
     
     RenderCommand::DrawIndexed(vertexArray);
 
