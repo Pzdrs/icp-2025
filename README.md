@@ -43,3 +43,7 @@ export VCPKG_ROOT=$(pwd)
 - [ ]  scripting (useful)
 - [ ]  correct collisions
 - [ ]  some other nice complicated effect...
+
+## Credits
+
+*Heavily* inspired by the early stages of [Hazel](https://github.com/TheCherno/Hazel). vzivote bych to sam takhle scalable nenapsal jebe?
