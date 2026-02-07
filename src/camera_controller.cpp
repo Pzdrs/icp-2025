@@ -29,7 +29,12 @@ void PerspectiveCameraController::SetPitchYaw(float pitch, float yaw)
 
 void FreeCameraController::OnUpdate(float dt)
 {
-    tickZoom(dt);
+    float newFov = m_ZoomComponent.Update(m_FieldOfView, dt);
+    if (newFov != m_FieldOfView)
+    {
+        m_FieldOfView = newFov;
+        m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
+    }
 
     if (Input::IsKeyPressed(Key::W))
         m_CameraPosition += m_Camera.GetForward() * m_CameraSpeed * dt;
@@ -104,60 +109,22 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
 
 bool FreeCameraController::OnMouseScrolled(MouseScrolledEvent &e)
 {
-    if (m_ZoomState != ZoomState::ZOOMED_IN)
+    float newFov = m_ZoomComponent.OnMouseScrolled(e, m_FieldOfView);
+    if (newFov != m_FieldOfView)
+    {
+        m_FieldOfView = newFov;
+        m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
         return true;
-
-    m_FieldOfView -= e.getYOffset();
-    m_FieldOfView = glm::clamp(m_FieldOfView, MIN_FOV, NETURAL_FOV);
-    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
-    return true;
+    }
+    return false;
 }
 
 bool FreeCameraController::OnKeyPressed(KeyPressedEvent &e)
 {
-    if (e.getKeyCode() == ZOOM_KEY)
-    {
-        m_ZoomState = ZoomState::ZOOMING_IN;
-        return true;
-    }
-    return false;
+    return m_ZoomComponent.OnKeyPressed(e);
 }
 
 bool FreeCameraController::OnKeyReleased(KeyReleasedEvent &e)
 {
-    if (e.getKeyCode() == ZOOM_KEY)
-    {
-        m_ZoomState = ZoomState::ZOOMING_OUT;
-        return true;
-    }
-    return false;
-}
-
-void FreeCameraController::tickZoom(float dt)
-{
-    if (m_ZoomState == ZoomState::ZOOMED_IN || m_ZoomState == ZoomState::ZOOMED_OUT)
-        return;
-
-    if (m_ZoomState == ZoomState::ZOOMING_IN)
-    {
-        m_FieldOfView += (ZOOM_FOV - m_FieldOfView) * ZOOM_EASE;
-
-        if (fabs(m_FieldOfView - ZOOM_FOV) < ZOOM_SNAP_EPSILON)
-        {
-            m_FieldOfView = ZOOM_FOV;
-            m_ZoomState = ZoomState::ZOOMED_IN;
-        }
-    }
-    else if (m_ZoomState == ZoomState::ZOOMING_OUT)
-    {
-        m_FieldOfView += (NETURAL_FOV - m_FieldOfView) * ZOOM_EASE;
-
-        if (fabs(m_FieldOfView - NETURAL_FOV) < ZOOM_SNAP_EPSILON)
-        {
-            m_FieldOfView = NETURAL_FOV;
-            m_ZoomState = ZoomState::ZOOMED_OUT;
-        }
-    }
-
-    m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
+    return m_ZoomComponent.OnKeyReleased(e);
 }

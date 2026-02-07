@@ -5,6 +5,7 @@
 #include "event/application_event.hpp"
 #include "event/key_event.hpp"
 #include "key_codes.hpp"
+#include "camera_component.hpp"
 
 class CameraController
 {
@@ -25,14 +26,13 @@ protected:
 class PerspectiveCameraController : public CameraController
 {
 protected:
-    static constexpr float NETURAL_FOV = 70.0f;
-    static constexpr float MIN_FOV = 1.0f;
+    static constexpr float DEFAULT_FOV = 70.0f;
 
     static constexpr float NEAR_CLIP = 0.1f;
     static constexpr float FAR_CLIP = 100.0f;
 
 public:
-    PerspectiveCameraController(float aspectRatio, float fov = NETURAL_FOV, float nearClip = NEAR_CLIP, float farClip = FAR_CLIP);
+    PerspectiveCameraController(float aspectRatio, float fov = DEFAULT_FOV, float nearClip = NEAR_CLIP, float farClip = FAR_CLIP);
     virtual ~PerspectiveCameraController() = default;
 
     void SetPitchYaw(float pitch, float yaw);
@@ -54,16 +54,12 @@ protected:
     static constexpr float DEFAULT_CAMERA_SPEED = 5.0f;
     static constexpr float DEFAULT_MOUSE_SENSITIVITY = 0.1f;
 
-    static constexpr float ZOOM_FOV = 15.0f;
-    static constexpr float ZOOM_SNAP_EPSILON = 0.01f;
-    static constexpr float ZOOM_EASE = 0.12f;
-    static constexpr KeyCode ZOOM_KEY = Key::LeftSuper;
-
 public:
-    FreeCameraController(float aspectRatio, float fov = NETURAL_FOV, float nearClip = NEAR_CLIP, float farClip = FAR_CLIP)
+    FreeCameraController(float aspectRatio, float fov = DEFAULT_FOV, float nearClip = NEAR_CLIP, float farClip = FAR_CLIP)
         : PerspectiveCameraController(aspectRatio, fov, nearClip, farClip),
           m_CameraSpeed(DEFAULT_CAMERA_SPEED),
-          m_MouseSensitivity(DEFAULT_MOUSE_SENSITIVITY) {}
+          m_MouseSensitivity(DEFAULT_MOUSE_SENSITIVITY),
+          m_ZoomComponent(fov) {}
     virtual ~FreeCameraController() = default;
 
     void OnUpdate(float dt) override;
@@ -74,6 +70,8 @@ public:
     void SetMouseSensitivity(float sensitivity) { m_MouseSensitivity = sensitivity; }
     void SetInvertMouse(bool invert) { m_InvertMouse = invert; }
 
+    ZoomCameraComponent &GetZoomComponent() { return m_ZoomComponent; }
+
 private:
     bool OnMouseMoved(MouseMovedEvent &e);
     bool OnMouseScrolled(MouseScrolledEvent &e);
@@ -81,23 +79,14 @@ private:
     bool OnKeyPressed(KeyPressedEvent &e);
     bool OnKeyReleased(KeyReleasedEvent &e);
 
-    void tickZoom(float dt);
-
 private:
+    ZoomCameraComponent m_ZoomComponent;
+
     bool m_FirstMouse = true;
-    float m_LastX = 0.0; 
+    float m_LastX = 0.0;
     float m_LastY = 0.0;
 
     float m_CameraSpeed;
     float m_MouseSensitivity;
     bool m_InvertMouse = false;
-
-    enum class ZoomState
-    {
-        ZOOMED_OUT,
-        ZOOMING_IN,
-        ZOOMED_IN,
-        ZOOMING_OUT
-    };
-    ZoomState m_ZoomState = ZoomState::ZOOMED_OUT;
 };
