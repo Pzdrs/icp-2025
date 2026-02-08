@@ -26,7 +26,7 @@ public:
     static glm::ivec2 GetChunkCoords(float worldX, float worldZ);
 
 private:
-    bool IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const;
+    bool IsFaceExposed(int x, int y, int z, int face, BlockID type, const BlockRegistry &blockRegistry) const;
 
 private:
     Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];

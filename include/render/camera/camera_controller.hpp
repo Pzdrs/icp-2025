@@ -33,7 +33,7 @@ protected:
     static constexpr float DEFAULT_FOV = 70.0f;
 
     static constexpr float NEAR_CLIP = 0.1f;
-    static constexpr float FAR_CLIP = 100.0f;
+    static constexpr float FAR_CLIP = 500.0f;
 
 public:
     PerspectiveCameraController(float aspectRatio, float fov = DEFAULT_FOV, float nearClip = NEAR_CLIP, float farClip = FAR_CLIP);
@@ -55,7 +55,7 @@ protected:
 class FreeCameraController : public PerspectiveCameraController
 {
 protected:
-    static constexpr float DEFAULT_CAMERA_SPEED = 5.0f;
+    static constexpr float DEFAULT_CAMERA_SPEED = 20.0f;
     static constexpr float DEFAULT_MOUSE_SENSITIVITY = 0.1f;
 
 public:

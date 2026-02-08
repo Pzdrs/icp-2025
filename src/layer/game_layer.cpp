@@ -21,8 +21,8 @@ GameLayer::GameLayer()
     auto gen = OverworldGenerator(0, m_BlockRegistry);
     m_World.Generate(gen);
 
-    m_CameraController.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-    m_CameraController.SetPitchYaw(0.0f, -90.0f);
+    m_CameraController.SetPosition(glm::vec3(160.0f, 400.0f, 200.0f));
+    m_CameraController.SetPitchYaw(-90.0f, 0.0f);
 }
 
 GameLayer::~GameLayer()

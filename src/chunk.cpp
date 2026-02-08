@@ -53,7 +53,7 @@ glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRe
     return {u, v};
 }
 
-bool Chunk::IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &blockRegistry) const
+bool Chunk::IsFaceExposed(int x, int y, int z, int face, BlockID type, const BlockRegistry &blockRegistry) const
 {
     glm::ivec3 d = FACE_DIRS[face];
     int nx = x + d.x;
@@ -66,7 +66,14 @@ bool Chunk::IsFaceExposed(int x, int y, int z, int face, const BlockRegistry &bl
         nz < 0 || nz >= SIZE_XZ)
         return true;
 
-    return blocks[nx][ny][nz].type == blockRegistry.getID("air");
+    BlockID neighborType = blocks[nx][ny][nz].type;
+    BlockDefinition nDef = blockRegistry.get(neighborType);
+
+    // water
+    if (blockRegistry.get(type).id == "water" && nDef.id == "water")
+        return false;
+
+    return nDef.isSolid == false;
 }
 
 // TODO: cull chunk border faces
@@ -81,7 +88,9 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
         for (int y = 0; y < SIZE_Y; y++)
             for (int z = 0; z < SIZE_XZ; z++)
             {
-                if (blocks[x][y][z].type == blockRegistry.getID("air"))
+                BlockID type = blocks[x][y][z].type;
+
+                if (type == blockRegistry.getID("air"))
                     continue;
 
                 glm::vec3 blockPos(x, y, z);
@@ -89,7 +98,7 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
-                    if (!IsFaceExposed(x, y, z, face, blockRegistry))
+                    if (!IsFaceExposed(x, y, z, face, type, blockRegistry))
                         continue;
 
                     // Add 4 vertices per face
@@ -97,10 +106,10 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
                     {
                         Vertex vert;
                         vert.position = CUBE_VERTS[face][v] + blockPos;
-                        vert.color = {0.0f, 0.0f, 0.0f};
+                        vert.color = {0.0f, 0.0f, 0.0f, blockRegistry.get(type).alpha};
 
                         int uvIndex = FACE_UV_MAP[face][v];
-                        vert.texCoord = getBlockUV(blocks[x][y][z].type, face, uvIndex, blockRegistry);
+                        vert.texCoord = getBlockUV(type, face, uvIndex, blockRegistry);
 
                         vertices.push_back(vert);
                     }
@@ -118,7 +127,7 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
 
     vb->SetLayout({
         {ShaderDataType::Float3, "a_Position"},
-        {ShaderDataType::Float3, "a_Color"},
+        {ShaderDataType::Float4, "a_Color"},
         {ShaderDataType::Float2, "a_TexCoord"},
     });
     va->AddVertexBuffer(std::move(vb));
