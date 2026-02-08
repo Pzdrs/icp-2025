@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "chunk.hpp"
-
+#include "world_generator.hpp"
 #include "block.hpp"
 
 struct IVec2Hash
@@ -22,7 +22,7 @@ class World
 
 public:
     void Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry);
-    void Generate(const BlockRegistry &blockRegistry);
+    void Generate(const WorldGenerator &generator);
 
     Chunk *GetChunk(int x, int z) const;
 

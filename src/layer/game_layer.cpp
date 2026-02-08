@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include "chunk.hpp"
 #include "render/render_command.hpp"
+#include "world_generator.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
@@ -17,7 +18,8 @@ GameLayer::GameLayer()
 {
     loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    m_World.Generate(m_BlockRegistry);
+    auto gen = OverworldGenerator(0, m_BlockRegistry);
+    m_World.Generate(gen);
 
     m_CameraController.SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     m_CameraController.SetPitchYaw(0.0f, -90.0f);

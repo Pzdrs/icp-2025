@@ -3,6 +3,7 @@
 
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
+#include <world_generator.hpp>
 
 void World::Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry)
 {
@@ -21,28 +22,7 @@ Chunk *World::GetChunk(int x, int z) const
     return nullptr;
 }
 
-std::string GetBlock(int x, int y, int z)
-{
-    // Sample Perlin noise [-1,1]
-    float noise = glm::perlin(glm::vec2(x, z) * 0.05f);
-
-    // Map noise to height
-    int baseHeight = 8;
-    int amplitude = 6;
-    int height = baseHeight + static_cast<int>(noise * amplitude);
-    height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
-
-    if (y < height - 4)
-        return "stone";
-    else if (y < height - 1)
-        return "dirt";
-    else if (y == height - 1)
-        return "grass";
-    else
-        return "air";
-}
-
-void World::Generate(const BlockRegistry &blockRegistry)
+void World::Generate(const WorldGenerator &generator)
 {
     std::cout << "Generating world...\n";
 
@@ -60,11 +40,11 @@ void World::Generate(const BlockRegistry &blockRegistry)
 
                     for (int y = 0; y < Chunk::SIZE_Y; y++)
                     {
-                        newChunk->SetBlock(x, y, z, blockRegistry.getID(GetBlock(worldX, y, worldZ)));
+                        newChunk->SetBlock(x, y, z, generator.GetBlock(worldX, y, worldZ).type);
                     }
                 }
 
-            newChunk->GenerateMesh(blockRegistry);
+            newChunk->GenerateMesh(generator.GetBlockRegistry());
             m_Chunks[chunkPos] = std::move(newChunk);
         }
 }
