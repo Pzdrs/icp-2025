@@ -37,6 +37,7 @@ float NoiseTerrainShaper::GetHeight(int x, int z) const
 Block OverworldGenerator::GetBlock(int x, int y, int z) const
 {
     int surfaceY = m_TerrainShaper.GetHeight(x, z);
+    return {m_BlockRegistry.getID("grass")}; // default to air
 
     if (y < surfaceY - 4)
     {

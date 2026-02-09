@@ -18,7 +18,7 @@ struct IVec2Hash
 
 class World
 {
-    static constexpr int WORLD_SIZE_XZ = 20;
+    static constexpr int WORLD_SIZE_XZ = 2;
 
 public:
     void Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry);

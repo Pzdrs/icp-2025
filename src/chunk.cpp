@@ -53,18 +53,29 @@ glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRe
     return {u, v};
 }
 
-bool Chunk::IsFaceExposed(int x, int y, int z, int face, BlockID type, const BlockRegistry &blockRegistry) const
+bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, int face, BlockID type, const BlockRegistry &blockRegistry) const
 {
     glm::ivec3 d = FACE_DIRS[face];
-    int nx = x + d.x;
+    int nx = chunkX + d.x;
     int ny = y + d.y;
-    int nz = z + d.z;
+    int nz = chunkZ + d.z;
 
-    // Outside chunk = visible face
-    if (nx < 0 || nx >= SIZE_XZ ||
-        ny < 0 || ny >= SIZE_Y ||
-        nz < 0 || nz >= SIZE_XZ)
+    // Outside chunk vertically = visible face
+    if (ny < 0 || ny >= SIZE_Y)
         return true;
+
+    // Outside chunk horizontally = check neighbor chunk
+    if (nx < 0 || nx >= SIZE_XZ ||
+        nz < 0 || nz >= SIZE_XZ)
+    {
+        // get neighbor chunk
+        Chunk *neighborChunk = m_World.GetChunk(m_WorldPos.x + d.x, m_WorldPos.y + d.z);
+        if (!neighborChunk) {
+            std::cout << "no neighbor chunk at (" << m_WorldPos.x + d.x << ", " << m_WorldPos.y + d.z << ")\n";
+            return true;
+        }
+        return true;
+    }
 
     BlockID neighborType = blocks[nx][ny][nz].type;
     BlockDefinition nDef = blockRegistry.get(neighborType);
