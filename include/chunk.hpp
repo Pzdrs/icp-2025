@@ -2,6 +2,7 @@
 #include "render/vertex_array.hpp"
 #include "render/renderer.hpp"
 #include "block.hpp"
+#include "block_registry.hpp"
 #include "render/buffer.hpp"
 #include <glm/glm.hpp>
 
@@ -20,16 +21,16 @@ public:
     void GenerateMesh(const BlockRegistry &blockRegistry);
     void Draw(const Ref<Shader> &shader);
 
-    void SetBlock(int x, int y, int z, BlockID type) { blocks[x][y][z].type = type; }
-    Block GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
+    void SetBlock(int x, int y, int z, Block::ID type) { blocks[x][y][z].type = type; }
+    Block::State GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
 
     static glm::ivec2 GetChunkCoords(float worldX, float worldZ);
 
 private:
-    bool IsFaceExposed(int x, int y, int z, int face, BlockID type, const BlockRegistry &blockRegistry) const;
+    bool IsFaceExposed(int x, int y, int z, Block::Face face, Block::ID type, const BlockRegistry &blockRegistry) const;
 
 private:
-    Block blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
+    Block::State blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
 
     Ref<VertexArray> va;
 

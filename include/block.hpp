@@ -2,101 +2,50 @@
 
 #include <glm/glm.hpp>
 
-#include <nlohmann/json.hpp>
+#include "render/texture.hpp"
+#include "render/sub_texture.hpp"
 
-using json = nlohmann::json;
-
-// using uint16 so chunks don't have to store a string id per block
-using BlockID = uint16_t;
-
-enum class Face : uint8_t
+namespace Block
 {
-    FACE_BACK,
-    FACE_FRONT,
-    FACE_LEFT,
-    FACE_RIGHT,
-    FACE_UP,
-    FACE_DOWN,
-};
+    using ID = uint16_t;
 
-struct AtlasCoord
-{
-    unsigned int u;
-    unsigned int v;
-};
-
-struct BlockTexture
-{
-    AtlasCoord top, side, bottom;
-
-    bool isValid() const
+    struct State
     {
-        return !(top.u == 0 && top.v == 0 &&
-                 side.u == 0 && side.v == 0 &&
-                 bottom.u == 0 && bottom.v == 0);
-    }
-};
+        ID type;
+    };
 
-struct Block
-{
-    BlockID type;
-};
+    struct Texture
+    {
+        Ref<SubTexture2D> top, side, bottom;
+    };
 
-// CUBE VERTICES
-// --------------------------------
+    enum class Face : uint8_t
+    {
+        FACE_BACK,
+        FACE_FRONT,
+        FACE_LEFT,
+        FACE_RIGHT,
+        FACE_UP,
+        FACE_DOWN,
+    };
 
-static const glm::vec3 CUBE_VERTS[6][4] = {
-    // Back face (z = 0)
-    {{1, 0, 0},   // back top left
-     {0, 0, 0},   // back top right
-     {0, -1, 0},  // back bottom right
-     {1, -1, 0}}, // back bottom left
+    enum class TextureFace : uint8_t
+    {
+        SIDE,
+        TOP,
+        BOTTOM
+    };
 
-    // Front face (z = 1)
-    {{0, 0, 1},
-     {1, 0, 1},
-     {1, -1, 1},
-     {0, -1, 1}},
+    // Returns the position of the vertex for the given face and vertex index (0-3)
+    glm::vec3 GetVertexPosition(Face face, int vertex);
+    // Returns the index of the vertex in the face's vertex array
+    unsigned int GetFaceIndex(int index);
+    // Converts a block face to the corresponding texture face (e.g. top face uses the block's top texture)
+    TextureFace FaceToTextureFace(Face face);
+    // Returns the direction vector for the given face (e.g. back face returns (0, 0, -1))
+    glm::ivec3 GetFaceDirection(Face face);
 
-    // Left face (x = 0)
-    {{0, 0, 0},
-     {0, 0, 1},
-     {0, -1, 1},
-     {0, -1, 0}},
-
-    // Right face (x = 1)
-    {{1, 0, 1},
-     {1, 0, 0},
-     {1, -1, 0},
-     {1, -1, 1}},
-
-    // Top face (y = 0)
-    {{0, 0, 0},
-     {1, 0, 0},
-     {1, 0, 1},
-     {0, 0, 1}},
-
-    // Bottom face (y = -1)
-    {{0, -1, 1},
-     {1, -1, 1},
-     {1, -1, 0},
-     {0, -1, 0}},
-};
-
-// CW winding
-static const unsigned int FACE_INDICES[6] = {
-    0, 1, 2,
-    2, 3, 0};
-
-// tied to the order of faces in the CUBE_VERTS array
-static const glm::ivec3 FACE_DIRS[6] = {
-    {0, 0, -1}, // -Z
-    {0, 0, 1},  // +Z
-    {-1, 0, 0}, // -X
-    {1, 0, 0},  // +X
-    {0, 1, 0},  // +Y
-    {0, -1, 0}  // -Y
-};
+}
 
 // FACE TEXTURE COORDINATES
 // --------------------------------
@@ -124,39 +73,3 @@ static const int FACE_UV_MAP[6][4] =
         {0, 1, 2, 3},
         // -Y (bottom)
         {0, 1, 2, 3}};
-
-struct BlockDefinition
-{
-    std::string id, name;
-
-    bool isSolid;
-    float alpha;
-
-    BlockTexture texture;
-};
-
-class BlockRegistry
-{
-public:
-    BlockID registerBlock(const BlockDefinition &def);
-
-    const BlockDefinition &get(BlockID id) const;
-
-    const BlockDefinition &get(const std::string &stringID) const;
-
-    BlockID getID(const std::string &stringID) const;
-
-    size_t size() const { return blocks.size(); }
-
-private:
-    std::vector<BlockDefinition> blocks;
-    std::unordered_map<std::string, BlockID> idLookup;
-};
-
-bool isSideFace(Face face);
-
-BlockTexture getBlockTexture(const BlockID type, const BlockRegistry &blockRegistry);
-
-BlockDefinition parseBlock(const json &j);
-
-void loadBlockDefinitions(const std::string &manifestPath, BlockRegistry &registry);

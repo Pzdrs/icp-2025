@@ -14,9 +14,10 @@ static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
-      m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS))
+      m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS)),
+      m_BlockRegistry(m_BlockAtlas)
 {
-    loadBlockDefinitions(BLOCK_MANIFEST, m_BlockRegistry);
+    m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
     auto gen = OverworldGenerator(0, m_BlockRegistry);
     m_World.Generate(gen);

@@ -6,14 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "world.hpp"
 #include <render/texture.hpp>
-
-struct UVRect
-{
-    float u0, v0; // bottom-left
-    float u1, v1; // top-right
-};
-
-UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight);
+#include "block_registry.hpp"
 
 Chunk::~Chunk()
 {
@@ -33,29 +26,18 @@ glm::ivec2 Chunk::GetChunkCoords(float worldX, float worldZ)
     return {chunkX, chunkZ};
 }
 
-glm::vec2 getBlockUV(BlockID type, int faceIndex, int vertexIndex, const BlockRegistry &blockRegistry)
+glm::vec2 getFaceUV(const Ref<SubTexture2D> &subTexture, int vertexIndex)
 {
-    Face face = static_cast<Face>(faceIndex);
-    BlockTexture tex = getBlockTexture(type, blockRegistry);
-    // actual UVs on the atlas
-    UVRect uv;
-    if (isSideFace(face))
-        uv = getSpriteUV(tex.side.u, tex.side.v, 16, 1024, 1024);
-    else if (face == Face::FACE_UP)
-        uv = getSpriteUV(tex.top.u, tex.top.v, 16, 1024, 1024);
-    else // face == 5
-        uv = getSpriteUV(tex.bottom.u, tex.bottom.v, 16, 1024, 1024);
-
     const glm::vec2 &c = FACE_UVS[vertexIndex];
-    float u = c.x ? uv.u1 : uv.u0;
-    float v = c.y ? uv.v1 : uv.v0;
+    float u = c.x ? subTexture->GetTexCoords()[2].x : subTexture->GetTexCoords()[0].x;
+    float v = c.y ? subTexture->GetTexCoords()[2].y : subTexture->GetTexCoords()[0].y;
 
     return {u, v};
 }
 
-bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, int face, BlockID type, const BlockRegistry &blockRegistry) const
+bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block::ID type, const BlockRegistry &blockRegistry) const
 {
-    glm::ivec3 d = FACE_DIRS[face];
+    glm::ivec3 d = Block::GetFaceDirection(face);
     int nx = chunkX + d.x;
     int ny = y + d.y;
     int nz = chunkZ + d.z;
@@ -70,18 +52,19 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, int face, BlockID type,
     {
         // get neighbor chunk
         Chunk *neighborChunk = m_World.GetChunk(m_WorldPos.x + d.x, m_WorldPos.y + d.z);
-        if (!neighborChunk) {
-            std::cout << "no neighbor chunk at (" << m_WorldPos.x + d.x << ", " << m_WorldPos.y + d.z << ")\n";
+        if (!neighborChunk)
+        {
+            // std::cout << "no neighbor chunk at (" << m_WorldPos.x + d.x << ", " << m_WorldPos.y + d.z << ")\n";
             return true;
         }
         return true;
     }
 
-    BlockID neighborType = blocks[nx][ny][nz].type;
-    BlockDefinition nDef = blockRegistry.get(neighborType);
+    Block::ID neighborType = blocks[nx][ny][nz].type;
+    BlockDefinition nDef = blockRegistry.Get(neighborType);
 
     // water
-    if (blockRegistry.get(type).id == "water" && nDef.id == "water")
+    if (blockRegistry.Get(type).id == "water" && nDef.id == "water")
         return false;
 
     return nDef.isSolid == false;
@@ -99,35 +82,41 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
         for (int y = 0; y < SIZE_Y; y++)
             for (int z = 0; z < SIZE_XZ; z++)
             {
-                BlockID type = blocks[x][y][z].type;
+                Block::ID type = blocks[x][y][z].type;
 
-                if (type == blockRegistry.getID("air"))
+                if (type == blockRegistry.GetID("air"))
                     continue;
 
                 glm::vec3 blockPos(x, y, z);
+                float alpha = blockRegistry.Get(type).alpha;
 
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
-                    if (!IsFaceExposed(x, y, z, face, type, blockRegistry))
+
+                    Block::Face blockFace = static_cast<Block::Face>(face);
+
+                    if (!IsFaceExposed(x, y, z, blockFace, type, blockRegistry))
                         continue;
+
+                    Ref<SubTexture2D> faceTex = blockRegistry.GetFaceTexture(type, Block::FaceToTextureFace(blockFace));
 
                     // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
                     {
                         Vertex vert;
-                        vert.position = CUBE_VERTS[face][v] + blockPos;
-                        vert.color = {0.0f, 0.0f, 0.0f, blockRegistry.get(type).alpha};
+                        vert.position = Block::GetVertexPosition(blockFace, v) + blockPos;
+                        vert.color = {0.0f, 0.0f, 0.0f, alpha};
 
                         int uvIndex = FACE_UV_MAP[face][v];
-                        vert.texCoord = getBlockUV(type, face, uvIndex, blockRegistry);
+                        vert.texCoord = getFaceUV(faceTex, uvIndex);
 
                         vertices.push_back(vert);
                     }
 
                     // Add 6 indices per face
                     for (int i = 0; i < 6; i++)
-                        indices.push_back(indexOffset + FACE_INDICES[i]);
+                        indices.push_back(indexOffset + Block::GetFaceIndex(i));
 
                     indexOffset += 4;
                 }
@@ -152,22 +141,4 @@ void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
     Renderer::Submit(shader, va, model);
-}
-
-// Get UV coordinates for a sprite at (col, row)
-UVRect getSpriteUV(int col, int row, int spriteSize, int atlasWidth, int atlasHeight)
-{
-    float uSize = (float)spriteSize / atlasWidth;
-    float vSize = (float)spriteSize / atlasHeight;
-
-    int rows = atlasHeight / spriteSize;
-    int flippedRow = rows - 1 - row;
-
-    // OpenGL UV origin is bottom-left
-    float u0 = col * uSize;
-    float v0 = flippedRow * vSize;
-    float u1 = u0 + uSize;
-    float v1 = v0 + vSize;
-
-    return {u0, v0, u1, v1};
 }

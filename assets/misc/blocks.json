@@ -11,9 +11,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [30, 18],
-      "top": [30, 18],
-      "bottom": [30, 18]
+      "side": [30, 45],
+      "top": [30, 45],
+      "bottom": [30, 45]
     }
   },
   {
@@ -22,9 +22,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [17, 10],
-      "top": [17, 10],
-      "bottom": [17, 10]
+      "side": [17, 53],
+      "top": [17, 53],
+      "bottom": [17, 53]
     }
   },
   {
@@ -33,9 +33,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [20, 6],
-      "top": [21, 5],
-      "bottom": [17, 10]
+      "side": [20, 57],
+      "top": [21, 58],
+      "bottom": [17, 53]
     }
   },
   {
@@ -44,9 +44,20 @@
     "solid": false,
     "alpha": 0.5,
     "textures": {
-      "side": [8, 4],
-      "top": [15, 20],
-      "bottom": [15, 20]
+      "side": [8, 59],
+      "top": [15, 43],
+      "bottom": [15, 43]
+    }
+  },
+  {
+    "id": "diamond_block",
+    "name": "Diamond Block",
+    "solid": true,
+    "alpha": 1.0,
+    "textures": {
+      "side": [17, 56],
+      "top": [17, 56],
+      "bottom": [17, 56]
     }
   }
 ]

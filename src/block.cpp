@@ -1,86 +1,86 @@
 #include "pch.hpp"
 #include "block.hpp"
 
-bool isSideFace(Face face)
+using namespace Block;
+
+static const glm::vec3 CUBE_VERTS[6][4] = {
+    // Back face (z = 0)
+    {{1, 0, 0},   // back top left
+     {0, 0, 0},   // back top right
+     {0, -1, 0},  // back bottom right
+     {1, -1, 0}}, // back bottom left
+
+    // Front face (z = 1)
+    {{0, 0, 1},
+     {1, 0, 1},
+     {1, -1, 1},
+     {0, -1, 1}},
+
+    // Left face (x = 0)
+    {{0, 0, 0},
+     {0, 0, 1},
+     {0, -1, 1},
+     {0, -1, 0}},
+
+    // Right face (x = 1)
+    {{1, 0, 1},
+     {1, 0, 0},
+     {1, -1, 0},
+     {1, -1, 1}},
+
+    // Top face (y = 0)
+    {{0, 0, 0},
+     {1, 0, 0},
+     {1, 0, 1},
+     {0, 0, 1}},
+
+    // Bottom face (y = -1)
+    {{0, -1, 1},
+     {1, -1, 1},
+     {1, -1, 0},
+     {0, -1, 0}},
+};
+
+// CW winding
+static const unsigned int FACE_INDICES[6] = {
+    0, 1, 2,
+    2, 3, 0};
+
+// tied to the order of faces in the CUBE_VERTS array
+static const glm::ivec3 FACE_DIRS[6] = {
+    {0, 0, -1}, // -Z
+    {0, 0, 1},  // +Z
+    {-1, 0, 0}, // -X
+    {1, 0, 0},  // +X
+    {0, 1, 0},  // +Y
+    {0, -1, 0}  // -Y
+};
+
+const std::unordered_map<Face, TextureFace> FACE_TO_TEXTURE_FACE = {
+    {Face::FACE_BACK, TextureFace::SIDE},
+    {Face::FACE_FRONT, TextureFace::SIDE},
+    {Face::FACE_LEFT, TextureFace::SIDE},
+    {Face::FACE_RIGHT, TextureFace::SIDE},
+    {Face::FACE_UP, TextureFace::TOP},
+    {Face::FACE_DOWN, TextureFace::BOTTOM},
+};
+
+glm::vec3 Block::GetVertexPosition(Face face, int vertex)
 {
-    return face == Face::FACE_BACK || face == Face::FACE_FRONT || face == Face::FACE_LEFT || face == Face::FACE_RIGHT;
+    return CUBE_VERTS[static_cast<int>(face)][vertex];
 }
 
-BlockTexture getBlockTexture(const BlockID type, const BlockRegistry &blockRegistry)
+unsigned int Block::GetFaceIndex(int index)
 {
-    return blockRegistry.get(type).texture;
+    return FACE_INDICES[index];
 }
 
-BlockID BlockRegistry::registerBlock(const BlockDefinition &def)
+Block::TextureFace Block::FaceToTextureFace(Face face)
 {
-    BlockID id = static_cast<BlockID>(blocks.size());
-    blocks.push_back(def);
-    idLookup[def.id] = id;
-    return id;
+    return FACE_TO_TEXTURE_FACE.at(face);
 }
 
-const BlockDefinition &BlockRegistry::get(BlockID id) const
+glm::ivec3 Block::GetFaceDirection(Face face)
 {
-    return blocks[id];
-}
-
-const BlockDefinition &BlockRegistry::get(const std::string &stringID) const
-{
-    BlockID id = idLookup.at(stringID);
-    return blocks[id];
-}
-
-BlockID BlockRegistry::getID(const std::string &stringID) const
-{
-    return idLookup.at(stringID);
-}
-
-BlockDefinition parseBlock(const json &j)
-{
-    BlockDefinition b;
-
-    b.id = j.at("id").get<std::string>();
-    b.name = j.at("name").get<std::string>();
-    b.isSolid = j.at("solid").get<bool>();
-    b.alpha = j.at("alpha").get<float>();
-
-    if (j.contains("textures"))
-    {
-        const auto &t = j.at("textures");
-
-        b.texture.side = {
-            t.at("side")[0].get<uint16_t>(),
-            t.at("side")[1].get<uint16_t>()};
-
-        b.texture.top = {
-            t.at("top")[0].get<uint16_t>(),
-            t.at("top")[1].get<uint16_t>()};
-
-        b.texture.bottom = {
-            t.at("bottom")[0].get<uint16_t>(),
-            t.at("bottom")[1].get<uint16_t>()};
-    }
-
-    return b;
-}
-
-void loadBlockDefinitions(const std::string &manifestPath, BlockRegistry &blockRegistry)
-{
-    std::ifstream file(manifestPath);
-    if (!file.is_open())
-    {
-        std::cerr << "Failed to open block manifest: " << manifestPath << std::endl;
-        return;
-    }
-
-    json j;
-    file >> j;
-
-    for (const auto &blockJson : j)
-    {
-        BlockDefinition blockDef = parseBlock(blockJson);
-        blockRegistry.registerBlock(blockDef);
-    }
-
-    std::cout << "Loaded " << blockRegistry.size() << " block definitions.\n";
+    return FACE_DIRS[static_cast<int>(face)];
 }

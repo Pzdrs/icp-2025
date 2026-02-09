@@ -34,28 +34,28 @@ float NoiseTerrainShaper::GetHeight(int x, int z) const
     return height;
 }
 
-Block OverworldGenerator::GetBlock(int x, int y, int z) const
+Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
 {
     int surfaceY = m_TerrainShaper.GetHeight(x, z);
-    return {m_BlockRegistry.getID("grass")}; // default to air
+    return {m_BlockRegistry.GetID("grass")}; // default to air
 
     if (y < surfaceY - 4)
     {
-        return {m_BlockRegistry.getID("stone")};
+        return {m_BlockRegistry.GetID("stone")};
     }
     else if (y < surfaceY - 1)
     {
-        return {m_BlockRegistry.getID("dirt")};
+        return {m_BlockRegistry.GetID("dirt")};
     }
     else if (y == surfaceY - 1)
     {
-        return {m_BlockRegistry.getID("grass")};
+        return {m_BlockRegistry.GetID("grass")};
     }
     else
     {
         if (y < m_SeaLevel)
-            return {m_BlockRegistry.getID("water")};
+            return {m_BlockRegistry.GetID("water")};
         else
-            return {m_BlockRegistry.getID("air")};
+            return {m_BlockRegistry.GetID("air")};
     }
 }

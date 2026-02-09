@@ -1,6 +1,7 @@
 #pragma once
 
 #include "block.hpp"
+#include "block_registry.hpp"
 #include "fast_noise_light.hpp"
 #include "spline.hpp"
 
@@ -65,7 +66,7 @@ public:
         : m_Seed(seed), m_BlockRegistry(blockRegistry) {}
     virtual ~WorldGenerator() = default;
 
-    virtual Block GetBlock(int x, int y, int z) const = 0;
+    virtual Block::State GetBlock(int x, int y, int z) const = 0;
 
     inline GeneratorSeed GetSeed() const { return m_Seed; }
     inline BlockRegistry GetBlockRegistry() const { return m_BlockRegistry; }
@@ -82,7 +83,7 @@ public:
         : WorldGenerator(seed, blockRegistry), m_TerrainShaper(seed) {}
     virtual ~OverworldGenerator() = default;
 
-    virtual Block GetBlock(int x, int y, int z) const override;
+    virtual Block::State GetBlock(int x, int y, int z) const override;
 
 protected:
     int m_SeaLevel = 62;
