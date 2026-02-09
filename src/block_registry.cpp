@@ -7,9 +7,9 @@ Block::ID BlockRegistry::RegisterBlock(const BlockDefinition &def)
     m_Blocks.push_back(def);
     m_IDLookup[def.id] = id;
     m_BlockTextures[id] = Block::Texture{
-        .top = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.topTex.x, def.topTex.y}, {16, 16}),
-        .side = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.sideTex.x, def.sideTex.y}, {16, 16}),
-        .bottom = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.bottomTex.x, def.bottomTex.y}, {16, 16}),
+        .top = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.topTex.x, def.topTex.y}, m_SpriteSize),
+        .side = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.sideTex.x, def.sideTex.y}, m_SpriteSize),
+        .bottom = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.bottomTex.x, def.bottomTex.y}, m_SpriteSize),
     };
     return id;
 }

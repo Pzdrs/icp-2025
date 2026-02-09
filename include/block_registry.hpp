@@ -20,10 +20,8 @@ struct BlockDefinition
 class BlockRegistry
 {
 public:
-    BlockRegistry(const Ref<Texture2D> &blockAtlas)
-        : m_BlockAtlas(blockAtlas)
-    {
-    }
+    BlockRegistry(const Ref<Texture2D> &blockAtlas, const glm::vec2 &spriteSize)
+        : m_BlockAtlas(blockAtlas), m_SpriteSize(spriteSize) {}
 
     Block::ID RegisterBlock(const BlockDefinition &def);
 
@@ -43,6 +41,7 @@ private:
 
 private:
     Ref<Texture2D> m_BlockAtlas;
+    glm::vec2 m_SpriteSize;
 
     std::vector<BlockDefinition> m_Blocks;
     std::unordered_map<std::string, Block::ID> m_IDLookup;

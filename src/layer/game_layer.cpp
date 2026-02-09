@@ -15,7 +15,7 @@ GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS)),
-      m_BlockRegistry(m_BlockAtlas)
+      m_BlockRegistry(m_BlockAtlas, {16, 16})
 {
     m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
