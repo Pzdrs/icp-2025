@@ -52,10 +52,12 @@ void MacOSWindow::Init(const WindowProps &props)
 
     m_Window = glfwCreateWindow((int)props.width, (int)props.height, m_Data.title.c_str(), nullptr, nullptr);
 
+    glfwSetWindowUserPointer(m_Window, &m_Data);
+    // initialize framebuffer size (screenshots need this)
+    glfwGetFramebufferSize(m_Window, (int *)&m_Data.fbWidth, (int *)&m_Data.fbHeight);
+
     m_Context = new OpenGLContext(m_Window);
     m_Context->Init();
-
-    glfwSetWindowUserPointer(m_Window, &m_Data);
 
     glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
                               {
@@ -184,7 +186,7 @@ void MacOSWindow::SetFullscreen(bool fullscreen)
         GLFWmonitor *monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
         glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-}
+    }
     else
     {
         glfwSetWindowMonitor(m_Window, nullptr, m_Data.windowedX, m_Data.windowedY, m_Data.windowedWidth, m_Data.windowedHeight, 0);

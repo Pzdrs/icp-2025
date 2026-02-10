@@ -17,10 +17,11 @@ public:
 
     unsigned int GetFramebufferWidth() const override { return m_Data.fbWidth; };
     unsigned int GetFramebufferHeight() const override { return m_Data.fbHeight; };
+    
+    bool IsVSync() const override;
 
     inline void SetEventCallback(const EventCallbackFunc &callback) override { m_Data.eventCallback = callback; };
     void SetVSync(bool enabled) override;
-    bool IsVSync() const override;
     void SetMouseLocked(bool locked) override;
     void SetFullscreen(bool fullscreen) override;
 

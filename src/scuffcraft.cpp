@@ -10,6 +10,7 @@
 #include "layer/debug_layer.hpp"
 #include "input.hpp"
 #include "key_codes.hpp"
+#include "screenshot.hpp"
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
@@ -47,6 +48,7 @@ void Scuffcraft::OnEvent(Event &e)
 
     dispatcher.dispatch<FramebufferResizeEvent>(BIND_EVENT_FN(Scuffcraft::OnFramebufferResize));
     dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Scuffcraft::OnWindowsClose));
+    dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(Scuffcraft::OnKeyPressed));
 
     for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
     {
@@ -105,4 +107,10 @@ bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
     m_Minimized = false;
     Renderer::OnWindowResize(e.getWidth(), e.getHeight());
     return true;
+}
+
+bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
+{
+   
+    return false;
 }

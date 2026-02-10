@@ -3,6 +3,7 @@
 #include "block.hpp"
 #include "world.hpp"
 #include "event/event.hpp"
+#include "event/key_event.hpp"
 #include "event/application_event.hpp"
 #include "layer/layer.hpp"
 #include "layer/layer_stack.hpp"
@@ -26,6 +27,7 @@ public:
 private:
     bool OnWindowsClose(WindowCloseEvent &e);
     bool OnFramebufferResize(FramebufferResizeEvent &e);
+    bool OnKeyPressed(KeyPressedEvent &e);
 
 private:
     ImGuiLayer *m_ImGuiLayer;

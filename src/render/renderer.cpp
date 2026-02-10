@@ -2,6 +2,7 @@
 #include "render/renderer.hpp"
 #include <render/buffer.hpp>
 #include "render/render_command.hpp"
+#include "screenshot.hpp"
 
 RendererCapabilities Renderer::s_Capabilities;
 Statistics Renderer::s_Stats;
@@ -46,4 +47,12 @@ void Renderer::Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexA
 
     s_Stats.DrawCalls++;
     s_Stats.TriangleCount += vertexArray->GetIndexBuffer()->GetCount() / 3;
+}
+
+Screenshot Renderer::CaptureScreenshot(const unsigned int width, const unsigned int height)
+{
+    return {
+        width,
+        height,
+        RenderCommand::CaptureScreenshot(width, height)};
 }

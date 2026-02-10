@@ -25,6 +25,8 @@ public:
 
     virtual void DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_t indexCount = 0) = 0;
 
+    virtual std::vector<unsigned char> CaptureScreenshot(const unsigned int width, const unsigned int height) = 0;
+
     static API CurrentAPI() { return s_API; }
     static Scope<RendererAPI> Create();
 

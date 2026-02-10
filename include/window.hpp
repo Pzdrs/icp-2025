@@ -11,6 +11,8 @@ struct WindowProps
         : width(w), height(h), title(t) {}
 };
 
+
+
 class Window
 {
 public:
@@ -24,11 +26,12 @@ public:
     virtual unsigned int GetHeight() const = 0;
     virtual unsigned int GetFramebufferWidth() const = 0;
     virtual unsigned int GetFramebufferHeight() const = 0;
+    
+    virtual bool IsVSync() const = 0;
 
     virtual void SetEventCallback(const EventCallbackFunc &callback) = 0;
     virtual void SetVSync(bool enabled) = 0;
     virtual void SetMouseLocked(bool locked) = 0; 
-    virtual bool IsVSync() const = 0;
     virtual void SetFullscreen(bool fullscreen) = 0;
 
     virtual void *GetNativeWindow() const = 0;

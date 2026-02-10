@@ -27,6 +27,8 @@ public:
 private:
     bool OnKeyPressed(KeyPressedEvent &e);
 
+    void SetPaused(bool paused);
+
 private:
     bool m_Paused = false;
     bool m_Fullscreen = false;

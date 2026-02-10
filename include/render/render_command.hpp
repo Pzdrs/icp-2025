@@ -29,11 +29,14 @@ public:
         s_RendererAPI->Clear();
     }
     inline static void DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_t indexCount = 0)
-
     {
         s_RendererAPI->DrawIndexed(vertexArray, indexCount);
     }
 
+    inline static std::vector<unsigned char> CaptureScreenshot(const unsigned int width, const unsigned int height)
+    {
+        return s_RendererAPI->CaptureScreenshot(width, height);
+    }
 private:
     static Scope<RendererAPI> s_RendererAPI;
 };

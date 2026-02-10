@@ -6,6 +6,8 @@
 #include "render/shader.hpp"
 #include "render/camera/camera.hpp"
 
+struct Screenshot;
+
 struct RendererCapabilities
 {
     std::string GraphicsAPI;
@@ -35,6 +37,7 @@ struct Statistics
     }
 };
 
+
 class Renderer
 {
 public:
@@ -45,6 +48,8 @@ public:
 
     static void BeginScene(const Camera &camera);
     static void EndScene();
+
+    static Screenshot CaptureScreenshot(const unsigned int width, const unsigned int height);
 
     static void Submit(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
 

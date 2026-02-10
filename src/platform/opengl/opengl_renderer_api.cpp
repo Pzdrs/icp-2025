@@ -48,3 +48,18 @@ void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_
     uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
+
+std::vector<unsigned char> OpenGLRendererAPI::CaptureScreenshot(const unsigned int width, const unsigned int height)
+{
+    std::vector<unsigned char> pixels(width * height * 4);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadBuffer(GL_FRONT); // or GL_BACK if before swap
+    glReadPixels(
+        0, 0,
+        width, height,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        pixels.data());
+    return pixels;
+}

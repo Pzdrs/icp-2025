@@ -8,6 +8,7 @@
 #include "render/render_command.hpp"
 #include "world_generator.hpp"
 #include "input.hpp"
+#include <screenshot.hpp>
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
@@ -22,7 +23,6 @@ GameLayer::GameLayer()
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
     auto gen = OverworldGenerator(0, m_BlockRegistry);
     m_World.Generate(gen);
-
 }
 
 GameLayer::~GameLayer()
@@ -53,6 +53,12 @@ void GameLayer::OnUpdate(float dt)
 
 void GameLayer::OnImGuiRender()
 {
+    ImGui::Begin("Controls");
+    ImGui::Text("WASD to move, mouse to look around");
+    ImGui::Text("Press Left Alt + C to take a screenshot");
+    ImGui::Text("Press Left Alt + Enter to toggle fullscreen");
+    ImGui::Text("Press Escape to pause/unpause");
+    ImGui::End();
 }
 
 void GameLayer::OnEvent(Event &event)
@@ -63,13 +69,18 @@ void GameLayer::OnEvent(Event &event)
     m_CameraController.OnEvent(event);
 }
 
+void GameLayer::SetPaused(bool paused)
+{
+    m_Paused = paused;
+    Scuffcraft::Get().GetWindow().SetMouseLocked(!paused);
+    m_CameraController.SetPaused(paused);
+}
+
 bool GameLayer::OnKeyPressed(KeyPressedEvent &e)
 {
     if (e.getKeyCode() == Key::Escape)
     {
-        m_Paused = !m_Paused;
-        Scuffcraft::Get().GetWindow().SetMouseLocked(!m_Paused);
-        m_CameraController.SetPaused(m_Paused);
+        SetPaused(!m_Paused);
         return true;
     }
 
@@ -77,6 +88,16 @@ bool GameLayer::OnKeyPressed(KeyPressedEvent &e)
     {
         m_Fullscreen = !m_Fullscreen;
         Scuffcraft::Get().GetWindow().SetFullscreen(m_Fullscreen);
+        m_CameraController.ResetMouse();
+        return true;
+    }
+
+    if (e.getKeyCode() == Key::C && Input::IsKeyPressed(Key::LeftAlt))
+    {
+        SetPaused(true);
+        // threading candidate
+        ScreenshotManager::Capture(Scuffcraft::Get().GetWindow());
+        SetPaused(false);
         m_CameraController.ResetMouse();
         return true;
     }
