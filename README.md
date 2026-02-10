@@ -25,9 +25,11 @@ export VCPKG_ROOT=$(pwd)
 - [x]  3D GL Core profile + shaders version 4.6, enabled GL debug, used DSA (Direct State Access)
   - MacOS limited to 4.1 
 - [x]  high performance => at least 60 FPS
-- [ ]  allow VSync control, fullscreen vs. windowed switching (restore window position & size), screenshot, antialiasing toggle
+- [x]  allow VSync control, fullscreen vs. windowed switching (restore window position & size), screenshot, antialiasing toggle
   - [x] vsync toggle
   - [x] fullscreen toggle (with alt+enter)
+  - [x] screenshot (with alt+c)
+  - [x] antialiasing toggle (with debug menu) - disabled by default, looks better that way
 - [x]  simple GUI: display (at least) GL version, profile, FPS
 - [x]  event processing: camera, object, app behaviour etc. controlled by mouse (both axes, wheel), keyboard, window resize, etc.
 - [ ]  multiple different independently moving 3D models, at leats two loaded from file

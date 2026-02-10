@@ -2,6 +2,7 @@
 #include "layer/debug_layer.hpp"
 #include <imgui.h>
 #include "render/renderer.hpp"
+#include "render/render_command.hpp"
 #include "scuffcraft.hpp"
 
 DebugLayer::DebugLayer(const Camera &camera)
@@ -47,6 +48,11 @@ void DebugLayer::OnImGuiRender()
     if (ImGui::Checkbox("VSync", &vsync))
     {
         Scuffcraft::Get().GetWindow().SetVSync(vsync);
+    }
+    bool multisampling = RenderCommand::IsMultisamplingEnabled();
+    if (ImGui::Checkbox("Antialiasing (MSAA)", &multisampling))
+    {
+        RenderCommand::SetMultisampling(multisampling);
     }
     ImGui::Text("Draw Calls: %d", Renderer::GetStats().DrawCalls);
     ImGui::Text("Triangles: %d", Renderer::GetStats().TriangleCount);

@@ -12,8 +12,8 @@ class Chunk
 {
 
 public:
-    static constexpr int SIZE_XZ = 1;
-    static constexpr int SIZE_Y = 1;
+    static constexpr int SIZE_XZ = 16;
+    static constexpr int SIZE_Y = 256;
 
     Chunk(const World &world, const glm::vec2 &worldPos);
     ~Chunk();

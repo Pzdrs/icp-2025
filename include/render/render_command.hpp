@@ -24,6 +24,16 @@ public:
         s_RendererAPI->SetClearColor(color);
     }
 
+    inline static void SetMultisampling(bool enabled)
+    {
+        s_RendererAPI->SetMultisampling(enabled);
+    }
+
+    inline static bool IsMultisamplingEnabled()
+    {
+        return s_RendererAPI->IsMultisamplingEnabled();
+    }
+
     inline static void Clear()
     {
         s_RendererAPI->Clear();
