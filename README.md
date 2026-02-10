@@ -27,6 +27,7 @@ export VCPKG_ROOT=$(pwd)
 - [x]  high performance => at least 60 FPS
 - [ ]  allow VSync control, fullscreen vs. windowed switching (restore window position & size), screenshot, antialiasing toggle
   - [x] vsync toggle
+  - [x] fullscreen toggle (with alt+enter)
 - [x]  simple GUI: display (at least) GL version, profile, FPS
 - [x]  event processing: camera, object, app behaviour etc. controlled by mouse (both axes, wheel), keyboard, window resize, etc.
 - [ ]  multiple different independently moving 3D models, at leats two loaded from file

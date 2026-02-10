@@ -171,3 +171,22 @@ bool MacOSWindow::IsVSync() const
 {
     return m_Data.vSync;
 }
+
+void MacOSWindow::SetFullscreen(bool fullscreen)
+{
+    if (fullscreen)
+    {
+        glfwGetWindowPos(m_Window, &m_Data.windowedX, &m_Data.windowedY);
+        glfwGetWindowSize(m_Window,
+                          (int *)&m_Data.windowedWidth,
+                          (int *)&m_Data.windowedHeight);
+
+        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+        glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+}
+    else
+    {
+        glfwSetWindowMonitor(m_Window, nullptr, m_Data.windowedX, m_Data.windowedY, m_Data.windowedWidth, m_Data.windowedHeight, 0);
+    }
+}

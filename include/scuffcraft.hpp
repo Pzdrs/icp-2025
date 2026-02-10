@@ -32,6 +32,7 @@ private:
     Scope<Window> m_Window;
     bool m_Running = true;
     bool m_Minimized = false;
+    bool m_Fullscreen = false;
 
     float m_DeltaTime = 0.0f;
     float m_LastFrameTime = 0.0f;

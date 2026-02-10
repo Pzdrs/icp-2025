@@ -7,6 +7,7 @@
 #include "chunk.hpp"
 #include "render/render_command.hpp"
 #include "world_generator.hpp"
+#include "input.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
@@ -69,6 +70,14 @@ bool GameLayer::OnKeyPressed(KeyPressedEvent &e)
         m_Paused = !m_Paused;
         Scuffcraft::Get().GetWindow().SetMouseLocked(!m_Paused);
         m_CameraController.SetPaused(m_Paused);
+        return true;
+    }
+
+    if (e.getKeyCode() == Key::Enter && Input::IsKeyPressed(Key::LeftAlt))
+    {
+        m_Fullscreen = !m_Fullscreen;
+        Scuffcraft::Get().GetWindow().SetFullscreen(m_Fullscreen);
+        m_CameraController.ResetMouse();
         return true;
     }
     return false;

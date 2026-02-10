@@ -73,6 +73,7 @@ public:
     void SetCameraSpeed(float speed) { m_CameraSpeed = speed; }
     void SetMouseSensitivity(float sensitivity) { m_MouseSensitivity = sensitivity; }
     void SetInvertMouse(bool invert) { m_InvertMouse = invert; }
+    void ResetMouse() { m_FirstMouse = true; }
 
     ZoomCameraComponent &GetZoomComponent() { return m_ZoomComponent; }
 

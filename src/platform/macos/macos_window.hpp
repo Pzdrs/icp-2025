@@ -4,7 +4,6 @@
 #include "window.hpp"
 #include <render/graphics_context.hpp>
 
-
 class MacOSWindow : public Window
 {
 public:
@@ -23,11 +22,14 @@ public:
     void SetVSync(bool enabled) override;
     bool IsVSync() const override;
     void SetMouseLocked(bool locked) override;
+    void SetFullscreen(bool fullscreen) override;
 
     void *GetNativeWindow() const override;
+
 private:
     virtual void Init(const WindowProps &props);
     virtual void Shutdown();
+
 private:
     GLFWwindow *m_Window;
     GraphicsContext *m_Context;
@@ -38,6 +40,11 @@ private:
         unsigned int width, height;
         unsigned int fbWidth, fbHeight;
         bool vSync;
+
+        int windowedX = 0;
+        int windowedY = 0;
+        unsigned int windowedWidth = 0;
+        unsigned int windowedHeight = 0;
 
         EventCallbackFunc eventCallback;
     };
