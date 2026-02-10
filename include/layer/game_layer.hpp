@@ -33,7 +33,7 @@ private:
     bool m_Paused = false;
     bool m_Fullscreen = false;
 
-    FreeCameraController m_CameraController;
+    CreativeCameraController m_CameraController;
     Ref<Texture2D> m_BlockAtlas;
     BlockRegistry m_BlockRegistry;
     World m_World;

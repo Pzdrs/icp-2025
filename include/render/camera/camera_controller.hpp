@@ -23,7 +23,6 @@ public:
 
 protected:
     float m_AspectRatio;
-    glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
     bool m_Paused = false;
 };
 
@@ -84,7 +83,7 @@ private:
     bool OnKeyPressed(KeyPressedEvent &e);
     bool OnKeyReleased(KeyReleasedEvent &e);
 
-private:
+protected:
     ZoomCameraComponent m_ZoomComponent;
 
     bool m_FirstMouse = true;
@@ -94,4 +93,12 @@ private:
     float m_CameraSpeed;
     float m_MouseSensitivity;
     bool m_InvertMouse = false;
+};
+
+class CreativeCameraController : public FreeCameraController
+{
+public:
+    using FreeCameraController::FreeCameraController;
+
+    void OnUpdate(float dt) override;
 };

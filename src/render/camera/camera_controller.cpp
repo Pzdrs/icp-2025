@@ -4,7 +4,6 @@
 
 void CameraController::SetPosition(const glm::vec3 &position)
 {
-    m_CameraPosition = position;
     GetCamera().SetPosition(position);
 }
 
@@ -39,20 +38,22 @@ void FreeCameraController::OnUpdate(float dt)
         m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
     }
 
-    if (Input::IsKeyPressed(Key::W))
-        m_CameraPosition += m_Camera.GetForward() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::S))
-        m_CameraPosition -= m_Camera.GetForward() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::A))
-        m_CameraPosition -= m_Camera.GetRight() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::D))
-        m_CameraPosition += m_Camera.GetRight() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::Space))
-        m_CameraPosition += m_Camera.GetUp() * m_CameraSpeed * dt;
-    if (Input::IsKeyPressed(Key::LeftShift))
-        m_CameraPosition -= m_Camera.GetUp() * m_CameraSpeed * dt;
+    glm::vec3 newPos = m_Camera.GetPosition();
 
-    m_Camera.SetPosition(m_CameraPosition);
+    if (Input::IsKeyPressed(Key::W))
+        newPos += m_Camera.GetForward() * m_CameraSpeed * dt;
+    if (Input::IsKeyPressed(Key::S))
+        newPos -= m_Camera.GetForward() * m_CameraSpeed * dt;
+    if (Input::IsKeyPressed(Key::A))
+        newPos -= m_Camera.GetRight() * m_CameraSpeed * dt;
+    if (Input::IsKeyPressed(Key::D))
+        newPos += m_Camera.GetRight() * m_CameraSpeed * dt;
+    if (Input::IsKeyPressed(Key::Space))
+        newPos += m_Camera.GetUp() * m_CameraSpeed * dt;
+    if (Input::IsKeyPressed(Key::LeftShift))
+        newPos -= m_Camera.GetUp() * m_CameraSpeed * dt;
+
+    m_Camera.SetPosition(newPos);
 }
 
 void FreeCameraController::OnResize(float width, float height)
@@ -143,4 +144,51 @@ bool FreeCameraController::OnKeyReleased(KeyReleasedEvent &e)
         return false;
 
     return m_ZoomComponent.OnKeyReleased(e);
+}
+
+// pitch +-90 nefunguje S/W nevim co s tim
+void CreativeCameraController::OnUpdate(float dt)
+{
+    if (m_Paused)
+        return;
+
+    float newFov = m_ZoomComponent.Update(m_FieldOfView, dt);
+    if (newFov != m_FieldOfView)
+    {
+        m_FieldOfView = newFov;
+        m_Camera.SetProjection(m_FieldOfView, m_AspectRatio, NEAR_CLIP, FAR_CLIP);
+    }
+
+    glm::vec3 forward = m_Camera.GetForward();
+    glm::vec3 forwardXZ(forward.x, 0.0f, forward.z);
+
+    // Guard against looking straight up/down
+    if (glm::dot(forwardXZ, forwardXZ) > 0.0001f)
+        forwardXZ = glm::normalize(forwardXZ);
+
+    glm::vec3 right = glm::normalize(
+        glm::cross(forwardXZ, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    glm::vec3 moveDir(0.0f);
+
+    if (Input::IsKeyPressed(Key::W))
+        moveDir += forwardXZ;
+    if (Input::IsKeyPressed(Key::S))
+        moveDir -= forwardXZ;
+    if (Input::IsKeyPressed(Key::A))
+        moveDir -= right;
+    if (Input::IsKeyPressed(Key::D))
+        moveDir += right;
+
+    if (Input::IsKeyPressed(Key::Space))
+        moveDir.y += 1.0f;
+    if (Input::IsKeyPressed(Key::LeftShift))
+        moveDir.y -= 1.0f;
+
+    // Normalize to prevent diagonal speed boost
+    if (glm::dot(moveDir, moveDir) > 0.0001f)
+        moveDir = glm::normalize(moveDir);
+
+    // Apply speed once
+    m_Camera.SetPosition(moveDir * m_CameraSpeed * dt + m_Camera.GetPosition());
 }
