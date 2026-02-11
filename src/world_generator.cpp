@@ -4,6 +4,16 @@
 #include "glm/gtc/noise.hpp"
 #include "chunk.hpp"
 
+Scope<TerrainShaper> TerrainShaper::CreateNoiseShaper(GeneratorSeed seed)
+{
+    return CreateScope<NoiseTerrainShaper>(seed);
+}
+
+Scope<TerrainShaper> TerrainShaper::CreateSuperflatShaper(GeneratorSeed seed)
+{
+    return CreateScope<SuperflatTerrainShaper>(seed);
+}
+
 void NoiseTerrainShaper::InitNoise()
 {
     m_ContinentalnessNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -36,8 +46,8 @@ float NoiseTerrainShaper::GetHeight(int x, int z) const
 
 Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
 {
-    int surfaceY = m_TerrainShaper.GetHeight(x, z);
-    return {m_BlockRegistry.GetID("grass")}; // default to air
+    int surfaceY = m_TerrainShaper->GetHeight(x, z);
+    // return {m_BlockRegistry.GetID("grass")}; // default to air
 
     if (y < surfaceY - 4)
     {

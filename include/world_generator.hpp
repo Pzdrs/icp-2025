@@ -12,7 +12,11 @@ class TerrainShaper
 public:
     TerrainShaper(GeneratorSeed seed) : m_Seed(seed) {}
     virtual ~TerrainShaper() = default;
+
     virtual float GetHeight(int x, int z) const = 0;
+
+    static Scope<TerrainShaper> CreateNoiseShaper(GeneratorSeed seed);
+    static Scope<TerrainShaper> CreateSuperflatShaper(GeneratorSeed seed);
 
 protected:
     GeneratorSeed m_Seed;
@@ -59,6 +63,18 @@ private:
     tk::spline m_ContinentalnessSpline, m_ErosionSpline, m_PVSpline;
 };
 
+class SuperflatTerrainShaper : public TerrainShaper
+{
+public:
+    SuperflatTerrainShaper(GeneratorSeed seed) : TerrainShaper(seed) {}
+    virtual ~SuperflatTerrainShaper() = default;
+
+    virtual float GetHeight(int x, int z) const override { return m_Height; }
+
+protected:
+    int m_Height = 64;
+};
+
 class WorldGenerator
 {
 public:
@@ -79,13 +95,13 @@ protected:
 class OverworldGenerator : public WorldGenerator
 {
 public:
-    OverworldGenerator(GeneratorSeed seed, BlockRegistry blockRegistry)
-        : WorldGenerator(seed, blockRegistry), m_TerrainShaper(seed) {}
+    OverworldGenerator(GeneratorSeed seed, Scope<TerrainShaper> terrainShaper, BlockRegistry blockRegistry)
+        : WorldGenerator(seed, blockRegistry), m_TerrainShaper(std::move(terrainShaper)) {}
     virtual ~OverworldGenerator() = default;
 
     virtual Block::State GetBlock(int x, int y, int z) const override;
 
 protected:
     int m_SeaLevel = 62;
-    NoiseTerrainShaper m_TerrainShaper;
+    Scope<TerrainShaper> m_TerrainShaper;
 };

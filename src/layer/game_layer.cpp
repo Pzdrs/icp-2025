@@ -21,7 +21,7 @@ GameLayer::GameLayer()
 {
     m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    auto gen = OverworldGenerator(0, m_BlockRegistry);
+    auto gen = OverworldGenerator(0, TerrainShaper::CreateSuperflatShaper(0), m_BlockRegistry); 
     m_World.Generate(gen);
 }
 
@@ -58,6 +58,8 @@ void GameLayer::OnImGuiRender()
     ImGui::Text("Press Left Alt + C to take a screenshot");
     ImGui::Text("Press Left Alt + Enter to toggle fullscreen");
     ImGui::Text("Press Escape to pause/unpause");
+    ImGui::Text("Press Super (Command/Windows key) to zoom");
+    ImGui::Text("Scroll to zoom in/out after holding Super");
     ImGui::End();
 }
 
