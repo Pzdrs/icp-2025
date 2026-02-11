@@ -6,7 +6,7 @@
 #include <imgui.h>
 #include "chunk.hpp"
 #include "render/render_command.hpp"
-#include "world_generator.hpp"
+#include "worldgen/world_generator.hpp"
 #include "input.hpp"
 #include <screenshot.hpp>
 
@@ -21,7 +21,11 @@ GameLayer::GameLayer()
 {
     m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    auto gen = OverworldGenerator(0, TerrainShaper::CreateSuperflatShaper(0), m_BlockRegistry); 
+    auto gen = OverworldGenerator(
+        0,
+        TerrainShaper::CreateNoiseShaper(0),
+        SurfaceDecorator::CreateOverworldDecorator(0, m_BlockRegistry),
+        m_BlockRegistry);
     m_World.Generate(gen);
 }
 

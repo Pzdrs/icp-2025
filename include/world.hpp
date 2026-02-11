@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "chunk.hpp"
-#include "world_generator.hpp"
+#include "worldgen/world_generator.hpp"
 #include "block.hpp"
 
 struct IVec2Hash

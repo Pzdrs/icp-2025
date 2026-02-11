@@ -1,8 +1,7 @@
 #include "pch.hpp"
-#include "world_generator.hpp"
-#include "glm/glm.hpp"
-#include "glm/gtc/noise.hpp"
+#include "worldgen/terrain_shaper.hpp"
 #include "chunk.hpp"
+#include "glm/glm.hpp"
 
 Scope<TerrainShaper> TerrainShaper::CreateNoiseShaper(GeneratorSeed seed)
 {
@@ -42,30 +41,4 @@ float NoiseTerrainShaper::GetHeight(int x, int z) const
     int height = m_ContinentalnessSpline(noise);
     height = glm::clamp(height, 1, Chunk::SIZE_Y - 1);
     return height;
-}
-
-Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
-{
-    int surfaceY = m_TerrainShaper->GetHeight(x, z);
-    // return {m_BlockRegistry.GetID("grass")}; // default to air
-
-    if (y < surfaceY - 4)
-    {
-        return {m_BlockRegistry.GetID("stone")};
-    }
-    else if (y < surfaceY - 1)
-    {
-        return {m_BlockRegistry.GetID("dirt")};
-    }
-    else if (y == surfaceY - 1)
-    {
-        return {m_BlockRegistry.GetID("grass")};
-    }
-    else
-    {
-        if (y < m_SeaLevel)
-            return {m_BlockRegistry.GetID("water")};
-        else
-            return {m_BlockRegistry.GetID("air")};
-    }
 }

@@ -1,11 +1,6 @@
 #pragma once
-
-#include "block.hpp"
-#include "block_registry.hpp"
 #include "fast_noise_light.hpp"
 #include "spline.hpp"
-
-using GeneratorSeed = uint64_t;
 
 class TerrainShaper
 {
@@ -73,35 +68,4 @@ public:
 
 protected:
     int m_Height = 64;
-};
-
-class WorldGenerator
-{
-public:
-    WorldGenerator(GeneratorSeed seed, BlockRegistry blockRegistry)
-        : m_Seed(seed), m_BlockRegistry(blockRegistry) {}
-    virtual ~WorldGenerator() = default;
-
-    virtual Block::State GetBlock(int x, int y, int z) const = 0;
-
-    inline GeneratorSeed GetSeed() const { return m_Seed; }
-    inline BlockRegistry GetBlockRegistry() const { return m_BlockRegistry; }
-
-protected:
-    BlockRegistry m_BlockRegistry;
-    GeneratorSeed m_Seed;
-};
-
-class OverworldGenerator : public WorldGenerator
-{
-public:
-    OverworldGenerator(GeneratorSeed seed, Scope<TerrainShaper> terrainShaper, BlockRegistry blockRegistry)
-        : WorldGenerator(seed, blockRegistry), m_TerrainShaper(std::move(terrainShaper)) {}
-    virtual ~OverworldGenerator() = default;
-
-    virtual Block::State GetBlock(int x, int y, int z) const override;
-
-protected:
-    int m_SeaLevel = 62;
-    Scope<TerrainShaper> m_TerrainShaper;
 };

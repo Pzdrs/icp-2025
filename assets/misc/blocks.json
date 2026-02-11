@@ -59,5 +59,16 @@
       "top": [17, 56],
       "bottom": [17, 56]
     }
+  },
+  {
+    "id": "gravel",
+    "name": "Gravel",
+    "solid": true,
+    "alpha": 1.0,
+    "textures": {
+      "side": [20, 51],
+      "top": [20, 51],
+      "bottom": [20, 51]
+    }
   }
 ]

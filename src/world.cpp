@@ -3,7 +3,6 @@
 
 #include "render/renderer.hpp"
 #include <glm/gtc/noise.hpp>
-#include <world_generator.hpp>
 
 void World::Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry)
 {
