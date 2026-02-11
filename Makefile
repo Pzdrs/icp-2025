@@ -10,7 +10,7 @@ configure:
 	cmake -S . -B $(BUILD_DIR) \
 		-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
 
-build: configure
+build: 
 	cmake --build $(BUILD_DIR)
 
 clean:
