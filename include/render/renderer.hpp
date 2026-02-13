@@ -64,8 +64,8 @@ private:
         glm::mat4 ViewProjectionMatrix;
     };
 
-    static Scope<SceneData> s_SceneData;
+    inline static Scope<SceneData> s_SceneData = CreateScope<SceneData>();
 
-    static RendererCapabilities s_Capabilities;
-    static Statistics s_Stats;
+    inline static RendererCapabilities s_Capabilities;
+    inline static Statistics s_Stats;
 };

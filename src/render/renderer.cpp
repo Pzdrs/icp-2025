@@ -4,10 +4,6 @@
 #include "render/render_command.hpp"
 #include "screenshot.hpp"
 
-RendererCapabilities Renderer::s_Capabilities;
-Statistics Renderer::s_Stats;
-Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
-
 void Renderer::Init()
 {
     RenderCommand::Init();
