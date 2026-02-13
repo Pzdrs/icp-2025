@@ -34,7 +34,7 @@ private:
     bool m_Fullscreen = false;
 
     CreativeCameraController m_CameraController;
-    Ref<Texture2D> m_BlockAtlas;
+    AssetHandle m_BlockAtlasHandle;
     BlockRegistry m_BlockRegistry;
     World m_World;
     ShaderLibrary m_ShaderLibrary;

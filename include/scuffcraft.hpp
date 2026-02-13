@@ -8,6 +8,7 @@
 #include "layer/layer.hpp"
 #include "layer/layer_stack.hpp"
 #include "layer/imgui_layer.hpp"
+#include "asset/asset_manager.hpp"
 
 class Scuffcraft
 {
@@ -20,6 +21,8 @@ public:
 
     void PushLayer(Layer *layer);
     void PushOverlay(Layer *overlay);
+
+    inline AssetManager &GetAssetManager() { return *m_AssetManager; }
 
     inline static Scuffcraft &Get() { return *s_Instance; }
     inline Window &GetWindow() { return *m_Window; }
@@ -40,6 +43,8 @@ private:
     float m_LastFrameTime = 0.0f;
 
     LayerStack m_LayerStack;
+
+    Scope<AssetManager> m_AssetManager;
 
 private:
     static Scuffcraft *s_Instance;

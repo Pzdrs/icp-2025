@@ -3,6 +3,7 @@
 #include "core.hpp"
 #include "render/texture.hpp"
 #include <block.hpp>
+#include "asset/asset.hpp"
 
 using json = nlohmann::json;
 
@@ -20,8 +21,8 @@ struct BlockDefinition
 class BlockRegistry
 {
 public:
-    BlockRegistry(const Ref<Texture2D> &blockAtlas, const glm::vec2 &spriteSize)
-        : m_BlockAtlas(blockAtlas), m_SpriteSize(spriteSize) {}
+    BlockRegistry(const AssetHandle atlasHandle, const glm::vec2 &spriteSize)
+        : m_BlockAtlasHandle(atlasHandle), m_SpriteSize(spriteSize) {}
 
     Block::ID RegisterBlock(const BlockDefinition &def);
 
@@ -40,7 +41,7 @@ private:
     BlockDefinition ParseBlock(const json &j);
 
 private:
-    Ref<Texture2D> m_BlockAtlas;
+    AssetHandle m_BlockAtlasHandle;
     glm::vec2 m_SpriteSize;
 
     std::vector<BlockDefinition> m_Blocks;

@@ -8,7 +8,7 @@
 #include "render/render_command.hpp"
 #include "worldgen/world_generator.hpp"
 #include "input.hpp"
-#include <screenshot.hpp>
+#include "screenshot.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
@@ -16,8 +16,8 @@ static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
-      m_BlockAtlas(Texture2D::Create(BLOCK_ATLAS)),
-      m_BlockRegistry(m_BlockAtlas, {16, 16})
+      m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
+      m_BlockRegistry(m_BlockAtlasHandle, {16, 16})
 {
     m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");

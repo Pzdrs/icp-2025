@@ -18,6 +18,7 @@ const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
 Scuffcraft::Scuffcraft()
+    : m_AssetManager(CreateScope<AssetManager>())
 {
     s_Instance = this;
     m_Window = Scope<Window>(Window::Create(WindowProps(SCR_WIDTH, SCR_HEIGHT, "Scuffcraft")));
@@ -111,6 +112,6 @@ bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 
 bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
 {
-   
+
     return false;
 }

@@ -1,15 +1,17 @@
 #include "pch.hpp"
 #include "block_registry.hpp"
+#include "scuffcraft.hpp"
 
 Block::ID BlockRegistry::RegisterBlock(const BlockDefinition &def)
 {
     Block::ID id = static_cast<Block::ID>(m_Blocks.size());
+    Ref<Texture2D> atlas = Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_BlockAtlasHandle);
     m_Blocks.push_back(def);
     m_IDLookup[def.id] = id;
     m_BlockTextures[id] = Block::Texture{
-        .top = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.topTex.x, def.topTex.y}, m_SpriteSize),
-        .side = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.sideTex.x, def.sideTex.y}, m_SpriteSize),
-        .bottom = SubTexture2D::CreateFromCoordinates(m_BlockAtlas, {def.bottomTex.x, def.bottomTex.y}, m_SpriteSize),
+        .top = SubTexture2D::CreateFromCoordinates(atlas, {def.topTex.x, def.topTex.y}, m_SpriteSize),
+        .side = SubTexture2D::CreateFromCoordinates(atlas, {def.sideTex.x, def.sideTex.y}, m_SpriteSize),
+        .bottom = SubTexture2D::CreateFromCoordinates(atlas, {def.bottomTex.x, def.bottomTex.y}, m_SpriteSize),
     };
     return id;
 }
