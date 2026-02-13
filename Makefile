@@ -11,7 +11,7 @@ configure:
 		-DCMAKE_TOOLCHAIN_FILE="$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake"
 
 build: 
-	cmake --build $(BUILD_DIR)
+	cmake --build $(BUILD_DIR) --parallel
 
 clean:
 	rm -rf $(BUILD_DIR)
