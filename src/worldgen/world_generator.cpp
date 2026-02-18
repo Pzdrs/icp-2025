@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "worldgen/world_generator.hpp"
 #include "chunk.hpp"
+#include "block_registry.hpp"
 
 Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
 {
@@ -9,14 +10,14 @@ Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
     if (y > surfaceY)
     {
         if (y < m_SeaLevel)
-            return {m_BlockRegistry->GetID("water")};
+            return {BlockRegistry::Get().GetID("water")};
         else
-            return {m_BlockRegistry->GetID("air")};
+            return {BlockRegistry::Get().GetID("air")};
     }
 
     auto decoratedBlock = m_SurfaceDecorator->GetBlock(x, y, z, surfaceY, m_SeaLevel);
     if (decoratedBlock)
         return *decoratedBlock;
 
-    return {m_BlockRegistry->GetID("stone")};
+    return {BlockRegistry::Get().GetID("stone")};
 }

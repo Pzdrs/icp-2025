@@ -27,6 +27,7 @@ public:
         std::cout << "Created BlockRegistry with atlas handle " << atlasHandle << " and sprite size (" << spriteSize.x << ", " << spriteSize.y << ")\n";
     }
 
+    ~BlockRegistry() = default;
     Block::ID RegisterBlock(const BlockDefinition &def);
 
     const BlockDefinition &Get(Block::ID id) const;
@@ -40,6 +41,22 @@ public:
 
     void LoadManifest(const std::string &manifestPath);
 
+    static void Init(const std::string &manifestPath, AssetHandle atlasHandle, const glm::vec2 &spriteSize)
+    {
+        if (s_Instance)
+            throw std::runtime_error("BlockRegistry already initialized!");
+
+        s_Instance = CreateScope<BlockRegistry>(atlasHandle, spriteSize);
+        s_Instance->LoadManifest(manifestPath);
+    }
+
+    static BlockRegistry &Get()
+    {
+        if (!s_Instance)
+            throw std::runtime_error("BlockRegistry not initialized! Call BlockRegistry::Init first.");
+        return *s_Instance;
+    }
+
 private:
     BlockDefinition ParseBlock(const json &j);
 
@@ -50,4 +67,6 @@ private:
     std::vector<BlockDefinition> m_Blocks;
     std::unordered_map<std::string, Block::ID> m_IDLookup;
     std::unordered_map<Block::ID, Block::Texture> m_BlockTextures;
+
+    inline static Scope<BlockRegistry> s_Instance = nullptr;
 };

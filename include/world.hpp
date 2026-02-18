@@ -18,6 +18,8 @@ struct IVec2Hash
     }
 };
 
+
+
 class ChunkManager
 {
 public:
@@ -30,6 +32,8 @@ public:
     bool HasChunk(const glm::ivec2 &pos) const { return m_Chunks.contains(pos) || m_PendingChunks.contains(pos); }
 
     Chunk *GetChunk(int x, int z) const;
+
+    void OnChunkGenerated(Scope<Chunk> chunk);
 
 private:
     void GenerateChunk(const glm::ivec2 &pos, const WorldGenerator &generator);
@@ -45,18 +49,20 @@ private:
 class World
 {
     static constexpr int WORLD_SIZE_XZ = 20;
-    static constexpr int RENDER_DISTANCE = 16;
+    static constexpr int RENDER_DISTANCE = 10;
 
 public:
     World(Scope<WorldGenerator> generator) : m_Generator(std::move(generator)) {}
     ~World() = default;
 
-    void Draw(const Ref<Shader> &shader, Ref<BlockRegistry> blockRegistry);
-    // void Generate(const WorldGenerator &generator);
+    void Draw(const Ref<Shader> &shader);
     void OnUpdate(const glm::vec3 &playerPos);
     void ProcessCompletedJobs();
 
-    Chunk *GetChunk(int x, int z) const;
+    ChunkManager &GetChunkManager() { return m_ChunkManager; }
+
+private:
+    void UnloadFarChunks(const glm::ivec2 &playerChunk);
 
 private:
     Scope<WorldGenerator> m_Generator;

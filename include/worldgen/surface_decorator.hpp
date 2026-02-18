@@ -6,22 +6,21 @@
 class SurfaceDecorator
 {
 public:
-    SurfaceDecorator(GeneratorSeed seed, Ref<BlockRegistry> blockRegistry) : m_Seed(seed), m_BlockRegistry(blockRegistry) {}
+    SurfaceDecorator(GeneratorSeed seed) : m_Seed(seed) {}
     virtual ~SurfaceDecorator() = default;
 
     virtual const Block::State *GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const = 0;
 
-    static Scope<SurfaceDecorator> CreateOverworldDecorator(GeneratorSeed seed, Ref<BlockRegistry> blockRegistry);
+    static Scope<SurfaceDecorator> CreateOverworldDecorator(GeneratorSeed seed);
 
 protected:
     GeneratorSeed m_Seed;
-    Ref<BlockRegistry> m_BlockRegistry;
 };
 
 class OverworldSurfaceDecorator : public SurfaceDecorator
 {
 public:
-    OverworldSurfaceDecorator(GeneratorSeed seed, Ref<BlockRegistry> blockRegistry) : SurfaceDecorator(seed, blockRegistry) {}
+    OverworldSurfaceDecorator(GeneratorSeed seed) : SurfaceDecorator(seed) {}
     virtual ~OverworldSurfaceDecorator() = default;
 
     virtual const Block::State *GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const override;
