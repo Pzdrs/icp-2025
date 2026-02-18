@@ -35,7 +35,7 @@ private:
 
     CreativeCameraController m_CameraController;
     AssetHandle m_BlockAtlasHandle;
-    BlockRegistry m_BlockRegistry;
+    Ref<BlockRegistry> m_BlockRegistry;
     World m_World;
     ShaderLibrary m_ShaderLibrary;
 };

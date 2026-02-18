@@ -9,14 +9,14 @@ Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
     if (y > surfaceY)
     {
         if (y < m_SeaLevel)
-            return {m_BlockRegistry.GetID("water")};
+            return {m_BlockRegistry->GetID("water")};
         else
-            return {m_BlockRegistry.GetID("air")};
+            return {m_BlockRegistry->GetID("air")};
     }
 
     auto decoratedBlock = m_SurfaceDecorator->GetBlock(x, y, z, surfaceY, m_SeaLevel);
     if (decoratedBlock)
         return *decoratedBlock;
 
-    return {m_BlockRegistry.GetID("stone")};
+    return {m_BlockRegistry->GetID("stone")};
 }

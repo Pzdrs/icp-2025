@@ -11,6 +11,7 @@
 #include "input.hpp"
 #include "key_codes.hpp"
 #include "screenshot.hpp"
+#include "job_system.hpp"
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
@@ -27,6 +28,7 @@ Scuffcraft::Scuffcraft()
     m_Window->SetMouseLocked(true);
 
     Renderer::Init();
+    JobSystem::Init(1);
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
@@ -40,6 +42,7 @@ Scuffcraft::Scuffcraft()
 
 Scuffcraft::~Scuffcraft()
 {
+    JobSystem::Shutdown();
     Renderer::Shutdown();
 }
 

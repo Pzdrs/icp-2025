@@ -13,6 +13,9 @@ configure:
 build: 
 	cmake --build $(BUILD_DIR) --parallel
 
+build-np: configure
+	cmake --build $(BUILD_DIR)
+
 clean:
 	rm -rf $(BUILD_DIR)
 

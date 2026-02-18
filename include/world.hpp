@@ -4,6 +4,8 @@
 #include "chunk.hpp"
 #include "worldgen/world_generator.hpp"
 #include "block.hpp"
+#include <unordered_set>
+#include <unordered_map>
 
 struct IVec2Hash
 {
@@ -16,16 +18,49 @@ struct IVec2Hash
     }
 };
 
-class World
+class ChunkManager
 {
-    static constexpr int WORLD_SIZE_XZ = 20;
-
 public:
-    void Draw(const Ref<Shader> &shader, const BlockRegistry &blockRegistry);
-    void Generate(const WorldGenerator &generator);
+    const std::unordered_map<glm::ivec2, Scope<Chunk>, IVec2Hash> &GetChunks() const { return m_Chunks; }
+
+    void ProcessCompletedJobs();
+
+    void EnsureChunkExists(glm::ivec2 pos, const WorldGenerator &generator);
+    void UnloadChunk(const glm::ivec2 &pos);
+    bool HasChunk(const glm::ivec2 &pos) const { return m_Chunks.contains(pos) || m_PendingChunks.contains(pos); }
 
     Chunk *GetChunk(int x, int z) const;
 
 private:
+    void GenerateChunk(const glm::ivec2 &pos, const WorldGenerator &generator);
+
+private:
     std::unordered_map<glm::ivec2, Scope<Chunk>, IVec2Hash> m_Chunks;
+
+    std::unordered_set<glm::ivec2, IVec2Hash> m_PendingChunks;
+    std::queue<Scope<Chunk>> m_CompletedChunks;
+    std::mutex m_CompletedMutex;
+};
+
+class World
+{
+    static constexpr int WORLD_SIZE_XZ = 20;
+    static constexpr int RENDER_DISTANCE = 16;
+
+public:
+    World(Scope<WorldGenerator> generator) : m_Generator(std::move(generator)) {}
+    ~World() = default;
+
+    void Draw(const Ref<Shader> &shader, Ref<BlockRegistry> blockRegistry);
+    // void Generate(const WorldGenerator &generator);
+    void OnUpdate(const glm::vec3 &playerPos);
+    void ProcessCompletedJobs();
+
+    Chunk *GetChunk(int x, int z) const;
+
+private:
+    Scope<WorldGenerator> m_Generator;
+    ChunkManager m_ChunkManager;
+
+    glm::ivec2 m_LastPlayerChunk = {INT32_MIN, INT32_MIN};
 };

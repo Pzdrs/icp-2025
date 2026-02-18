@@ -79,6 +79,7 @@ BlockDefinition BlockRegistry::ParseBlock(const json &j)
 
 void BlockRegistry::LoadManifest(const std::string &manifestPath)
 {
+    std::cout << "Loading block manifest: " << manifestPath << std::endl;
     std::ifstream file(manifestPath);
     if (!file.is_open())
     {

@@ -17,16 +17,15 @@ GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
-      m_BlockRegistry(m_BlockAtlasHandle, {16, 16})
+      m_BlockRegistry(CreateRef<BlockRegistry>(m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f))),
+      m_World(CreateScope<OverworldGenerator>(
+        GeneratorSeed(0), 
+        TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)), 
+        SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0), m_BlockRegistry), m_BlockRegistry))
 {
-    m_BlockRegistry.LoadManifest(BLOCK_MANIFEST);
+    m_BlockRegistry->LoadManifest(BLOCK_MANIFEST);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    auto gen = OverworldGenerator(
-        0,
-        TerrainShaper::CreateNoiseShaper(0),
-        SurfaceDecorator::CreateOverworldDecorator(0, m_BlockRegistry),
-        m_BlockRegistry);
-    m_World.Generate(gen);
+    m_CameraController.SetPosition({0.0f, 250.0f, 0.0f});
 }
 
 GameLayer::~GameLayer()
@@ -44,6 +43,10 @@ void GameLayer::OnDetach()
 void GameLayer::OnUpdate(float dt)
 {
     m_CameraController.OnUpdate(dt);
+
+    m_World.OnUpdate(m_CameraController.GetCamera().GetPosition());
+
+    m_World.ProcessCompletedJobs();
 
     RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     RenderCommand::Clear();

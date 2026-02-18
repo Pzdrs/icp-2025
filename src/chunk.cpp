@@ -10,11 +10,11 @@
 
 Chunk::~Chunk()
 {
-    std::cout << "Destroying Chunk\n";
+    std::cout << "Destroying Chunk at (" << m_WorldPos.x << ", " << m_WorldPos.y << ")\n";
 }
 
-Chunk::Chunk(const World &world, const glm::vec2 &worldPos)
-    : m_WorldPos(worldPos), m_World(world), va(VertexArray::Create())
+Chunk::Chunk(const ChunkManager &chunkManager, const glm::vec2 &worldPos)
+    : m_WorldPos(worldPos), m_ChunkManager(chunkManager)
 {
     std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
 }
@@ -35,7 +35,7 @@ glm::vec2 getFaceUV(const Ref<SubTexture2D> &subTexture, int vertexIndex)
     return {u, v};
 }
 
-bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block::ID type, const BlockRegistry &blockRegistry) const
+bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block::ID type, Ref<BlockRegistry> blockRegistry) const
 {
     glm::ivec3 d = Block::GetFaceDirection(face);
     int nx = chunkX + d.x;
@@ -51,7 +51,7 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block
         nz < 0 || nz >= SIZE_XZ)
     {
         // get neighbor chunk
-        Chunk *neighborChunk = m_World.GetChunk(m_WorldPos.x + d.x, m_WorldPos.y + d.z);
+        Chunk *neighborChunk = m_ChunkManager.GetChunk(m_WorldPos.x + d.x, m_WorldPos.y + d.z);
         if (!neighborChunk)
         {
             // std::cout << "no neighbor chunk at (" << m_WorldPos.x + d.x << ", " << m_WorldPos.y + d.z << ")\n";
@@ -61,18 +61,22 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block
     }
 
     Block::ID neighborType = blocks[nx][ny][nz].type;
-    BlockDefinition nDef = blockRegistry.Get(neighborType);
+    BlockDefinition nDef = blockRegistry->Get(neighborType);
 
     // water
-    if (blockRegistry.Get(type).id == "water" && nDef.id == "water")
+    if (blockRegistry->Get(type).id == "water" && nDef.id == "water")
         return false;
 
     return nDef.isSolid == false;
 }
 
 // TODO: cull chunk border faces
-void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
+void Chunk::GenerateMesh(Ref<BlockRegistry> blockRegistry)
 {
+    if (m_MeshGenerated)
+        return;
+
+    va = VertexArray::Create();
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -84,11 +88,11 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
             {
                 Block::ID type = blocks[x][y][z].type;
 
-                if (type == blockRegistry.GetID("air"))
+                if (type == blockRegistry->GetID("air"))
                     continue;
 
                 glm::vec3 blockPos(x, y, z);
-                float alpha = blockRegistry.Get(type).alpha;
+                float alpha = blockRegistry->Get(type).alpha;
 
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
@@ -99,7 +103,7 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
                     if (!IsFaceExposed(x, y, z, blockFace, type, blockRegistry))
                         continue;
 
-                    Ref<SubTexture2D> faceTex = blockRegistry.GetFaceTexture(type, Block::FaceToTextureFace(blockFace));
+                    Ref<SubTexture2D> faceTex = blockRegistry->GetFaceTexture(type, Block::FaceToTextureFace(blockFace));
 
                     // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
@@ -135,6 +139,7 @@ void Chunk::GenerateMesh(const BlockRegistry &blockRegistry)
 
     va->Unbind();
     std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
+    m_MeshGenerated = true;
 }
 
 void Chunk::Draw(const Ref<Shader> &shader)
