@@ -8,8 +8,26 @@
 class Renderer3D
 {
 public:
+    struct Statistics
+    {
+        uint32_t TriangleCount;
+        uint32_t QuadCount;
+
+        void Reset()
+        {
+            TriangleCount = 0;
+            QuadCount = 0;
+        }
+    };
+
     static void Init();
     static void Shutdown();
 
     static void DrawMesh(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
+
+    static const Statistics &GetStats() { return s_Stats; }
+    static void ResetStats() { s_Stats.Reset(); }
+
+private:
+    inline static Statistics s_Stats{};
 };

@@ -24,7 +24,7 @@ GameLayer::GameLayer()
 {
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    m_CameraController.SetPosition({7.0f, 150.0f, 7.0f});
+    m_CameraController.SetPosition({7.0f, 100.0f, 7.0f});
 }
 
 GameLayer::~GameLayer()

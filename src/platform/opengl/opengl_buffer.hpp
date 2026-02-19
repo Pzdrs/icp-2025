@@ -11,6 +11,8 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
+    virtual uint32_t GetSize() const override { return m_Size; }
+
     virtual void SetData(const void *data, uint32_t size) override;
 
     virtual const BufferLayout &GetLayout() const override { return m_Layout; }
@@ -18,6 +20,7 @@ public:
 
 private:
     uint32_t m_RendererID;
+    uint32_t m_Size;
     BufferLayout m_Layout;
 };
 

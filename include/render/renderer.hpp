@@ -25,15 +25,14 @@ struct RendererCapabilities
 struct Statistics
 {
     uint32_t DrawCalls = 0;
-    uint32_t TriangleCount = 0;
-
-    uint32_t GetTotalVertexCount() const { return TriangleCount * 3; }
-    uint32_t GetTotalIndexCount() const { return TriangleCount * 3; }
+    uint32_t VertexCount = 0;
+    uint32_t IndexCount = 0;
 
     void Reset()
     {
         DrawCalls = 0;
-        TriangleCount = 0;
+        VertexCount = 0;
+        IndexCount = 0;
     }
 };
 
@@ -58,7 +57,8 @@ public:
     static const SceneData &GetSceneData() { return s_SceneData; }
 
     static void AddDrawCall(uint32_t count = 1) { s_Stats.DrawCalls += count; }
-    static void AddTriangles(uint32_t count) { s_Stats.TriangleCount += count; }
+    static void AddVertices(uint32_t count) { s_Stats.VertexCount += count; }
+    static void AddIndices(uint32_t count) { s_Stats.IndexCount += count; }
 
     static RendererAPI::API CurrentAPI() { return RendererAPI::CurrentAPI(); }
     static Screenshot CaptureScreenshot(const unsigned int width, const unsigned int height);

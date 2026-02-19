@@ -27,6 +27,7 @@ void Renderer::BeginScene(const Camera &camera)
 {
     s_SceneData.ViewProjectionMatrix = camera.GetViewProjectionMatrix();
     s_Stats.Reset();
+    Renderer3D::ResetStats();
 }
 
 void Renderer::EndScene()

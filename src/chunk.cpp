@@ -11,13 +11,13 @@
 
 Chunk::~Chunk()
 {
-    std::cout << "Destroying Chunk at (" << m_WorldPos.x << ", " << m_WorldPos.y << ")\n";
+    std::cout << "Destroying Chunk at (" << m_Position.x << ", " << m_Position.y << ")\n";
 }
 
-Chunk::Chunk(const ChunkManager &chunkManager, const glm::vec2 &worldPos)
-    : m_WorldPos(worldPos), m_ChunkManager(chunkManager)
+Chunk::Chunk(const ChunkManager &chunkManager, const ChunkPosition &position)
+    : m_Position(position), m_ChunkManager(chunkManager)
 {
-    std::cout << "Creating Chunk at (" << worldPos.x << ", " << worldPos.y << ")\n";
+    std::cout << "Creating Chunk at (" << position.x << ", " << position.y << ")\n";
 }
 
 glm::ivec2 Chunk::GetChunkCoords(float worldX, float worldZ)
@@ -43,61 +43,53 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block
     int ny = y + d.y;
     int nz = chunkZ + d.z;
 
-    // Outside chunk vertically = visible face
-    if (ny < 0 || ny >= SIZE_Y)
+    if (ny < 0)
+        return false; // dont render bottom face if at bottom of world
+    if (ny >= SIZE_Y)
         return true;
 
     // Outside chunk horizontally = check neighbor chunk
-    if (nx < 0 || nx >= SIZE_XZ ||
-        nz < 0 || nz >= SIZE_XZ)
+    if (nx < 0 || nx >= SIZE_XZ || nz < 0 || nz >= SIZE_XZ)
     {
-        int neighborChunkX = m_WorldPos.x + d.x;
-        int neighborChunkZ = m_WorldPos.y + d.z;
+        // Determine which neighbor chunk to check
+        int neighborChunkX = m_Position.x + (nx < 0 ? -1 : (nx >= SIZE_XZ ? 1 : 0));
+        int neighborChunkZ = m_Position.y + (nz < 0 ? -1 : (nz >= SIZE_XZ ? 1 : 0));
 
-        Chunk *neighborChunk =
-            m_ChunkManager.GetChunk(neighborChunkX, neighborChunkZ);
-
+        Chunk *neighborChunk = m_ChunkManager.GetChunk(neighborChunkX, neighborChunkZ);
         if (!neighborChunk)
-            return true; // treat missing chunk as air
+            return false; // treat missing neighbor as solid (prevents holes)
 
-        // Wrap local coordinates
+        // Wrap local coordinates into neighbor chunk
         int neighborLocalX = (nx + SIZE_XZ) % SIZE_XZ;
         int neighborLocalZ = (nz + SIZE_XZ) % SIZE_XZ;
 
-        Block::ID neighborType =
-            neighborChunk->GetBlock(neighborLocalX, ny, neighborLocalZ).type;
+        Block::ID neighborType = neighborChunk->GetBlock(neighborLocalX, ny, neighborLocalZ).type;
+        const BlockDefinition &nDef = BlockRegistry::Get().Get(neighborType);
 
-        const BlockDefinition &nDef =
-            BlockRegistry::Get().Get(neighborType);
-
-        if (BlockRegistry::Get().Get(type).id == "water" &&
-            nDef.id == "water")
+        // special case: water
+        if (BlockRegistry::Get().Get(type).id == "water" && nDef.id == "water")
             return false;
 
         return !nDef.isSolid;
     }
 
+    // Inside current chunk
     Block::ID neighborType = blocks[nx][ny][nz].type;
-    BlockDefinition nDef = BlockRegistry::Get().Get(neighborType);
+    const BlockDefinition &nDef = BlockRegistry::Get().Get(neighborType);
 
-    // water
+    // special case: water
     if (BlockRegistry::Get().Get(type).id == "water" && nDef.id == "water")
         return false;
 
-    return nDef.isSolid == false;
+    return !nDef.isSolid;
 }
 
-// TODO: cull chunk border faces
-void Chunk::GenerateMesh()
+void Chunk::BuildMesh()
 {
-    if (m_MeshState == MeshState::READY)
-        return;
+    m_SolidVertices.clear();
+    m_SolidIndices.clear();
 
-    va = VertexArray::Create();
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    unsigned int indexOffset = 0;
+    unsigned int solidIndexOffset = 0;
 
     for (int x = 0; x < SIZE_XZ; x++)
         for (int y = 0; y < SIZE_Y; y++)
@@ -111,16 +103,23 @@ void Chunk::GenerateMesh()
                 glm::vec3 blockPos(x, y, z);
                 float alpha = BlockRegistry::Get().Get(type).alpha;
 
+                // Determine whether block is solid or transparent
+                bool isTransparent = alpha < 1.0f || BlockRegistry::Get().Get(type).id == "water";
+
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
-
                     Block::Face blockFace = static_cast<Block::Face>(face);
 
                     if (!IsFaceExposed(x, y, z, blockFace, type))
                         continue;
 
                     Ref<SubTexture2D> faceTex = BlockRegistry::Get().GetFaceTexture(type, Block::FaceToTextureFace(blockFace));
+
+                    // Reference to correct mesh (solid vs transparent)
+                    auto &vertices = m_SolidVertices;
+                    auto &indices = m_SolidIndices;
+                    unsigned int &indexOffset = solidIndexOffset;
 
                     // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
@@ -142,20 +141,29 @@ void Chunk::GenerateMesh()
                     indexOffset += 4;
                 }
             }
+}
 
-    auto vb = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
-    auto ib = IndexBuffer::Create(indices.data(), indices.size());
+void Chunk::UploadMesh()
+{
+    m_SolidVA = VertexArray::Create();
+
+    auto vb = VertexBuffer::Create(m_SolidVertices.data(), m_SolidVertices.size() * sizeof(Vertex));
+    auto ib = IndexBuffer::Create(m_SolidIndices.data(), m_SolidIndices.size());
 
     vb->SetLayout({
         {ShaderDataType::Float3, "a_Position"},
         {ShaderDataType::Float4, "a_Color"},
         {ShaderDataType::Float2, "a_TexCoord"},
     });
-    va->AddVertexBuffer(std::move(vb));
-    va->SetIndexBuffer(std::move(ib));
+    m_SolidVA->Bind();
+    m_SolidVA->AddVertexBuffer(std::move(vb));
+    m_SolidVA->SetIndexBuffer(std::move(ib));
 
-    va->Unbind();
-    std::cout << "Generated mesh with " << vertices.size() << " vertices and " << indices.size() << " indices.\n";
+    // std::cout << "Generated mesh with " << m_SolidVertices.size() << " vertices and " << m_SolidIndices.size() << " indices.\n";
+
+    m_SolidVertices.clear();
+    m_SolidIndices.clear();
+
     m_MeshState = MeshState::READY;
 }
 
@@ -166,6 +174,6 @@ void Chunk::NotifyNeighbor(Direction dir)
 
 void Chunk::Draw(const Ref<Shader> &shader)
 {
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
-    Renderer3D::DrawMesh(shader, va, model);
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_Position.x * SIZE_XZ, 0.0f, m_Position.y * SIZE_XZ));
+    Renderer3D::DrawMesh(shader, m_SolidVA, model);
 }

@@ -77,6 +77,8 @@ void ChunkManager::GenerateChunk(const glm::ivec2 &pos, const WorldGenerator &ge
             }
         }
 
+    // sleep to simulate generation time
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     {
         std::lock_guard lock(m_CompletedMutex);
         m_CompletedChunks.push(std::move(newChunk));
@@ -87,10 +89,14 @@ void World::Draw(const Ref<Shader> &shader)
 {
     for (auto &[pos, chunk] : m_ChunkManager.GetChunks())
     {
+
+        if (chunk->GetMeshState() == MeshState::DIRTY)
+        {
+            chunk->BuildMesh();
+            chunk->UploadMesh();
+        }
         if (chunk->GetMeshState() == MeshState::READY)
             chunk->Draw(shader);
-        else if (chunk->GetMeshState() == MeshState::DIRTY)
-            chunk->GenerateMesh();
     }
 }
 

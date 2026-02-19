@@ -39,13 +39,13 @@ static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 OpenGLVertexArray::OpenGLVertexArray()
 {
     glGenVertexArrays(1, &m_RendererID);
-    std::cout << "Created OpenGLVertexArray with ID: " << m_RendererID << std::endl;
+    // std::cout << "Created OpenGLVertexArray with ID: " << m_RendererID << std::endl;
 }
 
 OpenGLVertexArray::~OpenGLVertexArray()
 {
     glDeleteVertexArrays(1, &m_RendererID);
-    std::cout << "Destroying OpenGLVertexArray with ID: " << m_RendererID << std::endl;
+    // std::cout << "Destroying OpenGLVertexArray with ID: " << m_RendererID << std::endl;
 }
 
 void OpenGLVertexArray::Bind() const

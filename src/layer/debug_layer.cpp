@@ -2,6 +2,7 @@
 #include "layer/debug_layer.hpp"
 #include <imgui.h>
 #include "render/renderer.hpp"
+#include "render/renderer3d.hpp"
 #include "render/render_command.hpp"
 #include "scuffcraft.hpp"
 
@@ -55,7 +56,10 @@ void DebugLayer::OnImGuiRender()
         RenderCommand::SetMultisampling(multisampling);
     }
     ImGui::Text("Draw Calls: %d", Renderer::GetStats().DrawCalls);
-    ImGui::Text("Triangles: %d", Renderer::GetStats().TriangleCount);
+    ImGui::Text("Vertices: %d", Renderer::GetStats().VertexCount);
+    ImGui::Text("Indices: %d", Renderer::GetStats().IndexCount);
+    ImGui::Text("Triangles: %d", Renderer3D::GetStats().TriangleCount);
+    ImGui::Text("Faces: %d", Renderer3D::GetStats().QuadCount);
 
     ImGui::Separator();
 

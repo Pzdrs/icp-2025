@@ -7,6 +7,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
+using WorldPosition = glm::vec3;
+
 struct IVec2Hash
 {
     std::size_t operator()(const glm::ivec2 &v) const noexcept
@@ -17,8 +19,6 @@ struct IVec2Hash
         return h1 ^ (h2 << 1);
     }
 };
-
-
 
 class ChunkManager
 {

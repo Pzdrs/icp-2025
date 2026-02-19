@@ -17,6 +17,8 @@ enum class MeshState
     DIRTY
 };
 
+using ChunkPosition = glm::ivec2;
+
 class Chunk
 {
 
@@ -24,10 +26,11 @@ public:
     static constexpr int SIZE_XZ = 16;
     static constexpr int SIZE_Y = 256;
 
-    Chunk(const ChunkManager &chunkManager, const glm::vec2 &worldPos);
+    Chunk(const ChunkManager &chunkManager, const ChunkPosition &position);
     ~Chunk();
 
-    void GenerateMesh();
+    void BuildMesh();
+    void UploadMesh();
     void Draw(const Ref<Shader> &shader);
 
     void NotifyNeighbor(Direction dir);
@@ -35,7 +38,7 @@ public:
     void SetBlock(int x, int y, int z, Block::ID type) { blocks[x][y][z].type = type; }
     Block::State GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
 
-    glm::ivec2 GetPosition() const { return glm::ivec2(m_WorldPos.x, m_WorldPos.y); }
+    ChunkPosition GetPosition() const { return m_Position; }
     MeshState GetMeshState() const { return m_MeshState; }
     void MarkMeshDirty() { m_MeshState = MeshState::DIRTY; }
 
@@ -46,10 +49,14 @@ private:
 
 private:
     Block::State blocks[SIZE_XZ][SIZE_Y][SIZE_XZ];
-    MeshState m_MeshState = MeshState::NOT_READY;
 
-    Ref<VertexArray> va = nullptr;
+    MeshState m_MeshState = MeshState::DIRTY;
 
-    const glm::vec2 m_WorldPos;
+    std::vector<Vertex> m_SolidVertices;
+    std::vector<uint32_t> m_SolidIndices;
+
+    Ref<VertexArray> m_SolidVA;
+
+    const ChunkPosition m_Position;
     const ChunkManager &m_ChunkManager;
 };
