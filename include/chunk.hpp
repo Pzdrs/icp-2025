@@ -1,11 +1,12 @@
 #pragma once
 #include "render/vertex_array.hpp"
-#include "render/renderer.hpp"
+#include "render/shader.hpp"
 #include "block.hpp"
 #include "block_registry.hpp"
 #include "render/buffer.hpp"
 #include <glm/glm.hpp>
 #include "direction.hpp"
+#include "render/vertex.hpp"
 
 class ChunkManager;
 

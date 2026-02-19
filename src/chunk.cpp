@@ -7,6 +7,7 @@
 #include "world.hpp"
 #include <render/texture.hpp>
 #include "block_registry.hpp"
+#include "render/renderer3d.hpp"
 
 Chunk::~Chunk()
 {
@@ -166,5 +167,5 @@ void Chunk::NotifyNeighbor(Direction dir)
 void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_WorldPos.x * SIZE_XZ, 0.0f, m_WorldPos.y * SIZE_XZ));
-    Renderer::Submit(shader, va, model);
+    Renderer3D::DrawMesh(shader, va, model);
 }
