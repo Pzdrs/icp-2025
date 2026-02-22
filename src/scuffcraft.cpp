@@ -12,6 +12,7 @@
 #include "key_codes.hpp"
 #include "screenshot.hpp"
 #include "job_system.hpp"
+#include "audio/audio_engine.hpp"
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
@@ -28,7 +29,9 @@ Scuffcraft::Scuffcraft()
     m_Window->SetMouseLocked(true);
 
     Renderer::Init();
-    JobSystem::Init(1);
+    AudioEngine::Init();
+    JobSystem::Init(std::thread::hardware_concurrency() - 1);
+    // JobSystem::Init(1);
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
@@ -44,6 +47,7 @@ Scuffcraft::~Scuffcraft()
 {
     JobSystem::Shutdown();
     Renderer::Shutdown();
+    AudioEngine::Shutdown();
 }
 
 void Scuffcraft::OnEvent(Event &e)

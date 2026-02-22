@@ -16,11 +16,21 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 find_package(nfd CONFIG REQUIRED)
 find_package(OpenAL REQUIRED)
+find_package(fmt REQUIRED)
 
 add_executable(scuffcraft ${SOURCES})
 
 target_precompile_headers(scuffcraft PRIVATE ${PROJECT_SOURCE_DIR}/include/pch.hpp)
 target_include_directories(scuffcraft PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+target_link_libraries(scuffcraft PRIVATE
+    OpenAL::OpenAL
+    "-framework CoreAudio"
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
+    "-framework CoreFoundation"
+    fmt::fmt
+)
 
 target_link_libraries(scuffcraft PRIVATE
     glad::glad
@@ -30,5 +40,4 @@ target_link_libraries(scuffcraft PRIVATE
     imguizmo::imguizmo
     nlohmann_json::nlohmann_json
     nfd::nfd
-    OpenAL::OpenAL
 )

@@ -39,6 +39,8 @@ export VCPKG_ROOT=$(pwd)
   - [x]  Freecam (WSAD use direction vectors)
 - [x]  at least three different textures (or subtextures from texture atlas etc.)
 - [ ]  3D positional audio (multiple sources, background sound)
+  - [x] Background music
+  - [ ] Positional sound
 
 ### EXTRAS
 

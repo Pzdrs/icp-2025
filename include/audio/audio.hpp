@@ -1,18 +1,21 @@
 #pragma once
-
-#include "core.hpp"
 #include "asset/asset.hpp"
 #include <filesystem>
-#include "audio/audio_api.hpp"
+#include "core.hpp"
 
-class Audio
+class Audio : public Asset
 {
 public:
-    inline static void Init()
-    {
-        s_AudioAPI->Init();
-    }
+    virtual ~Audio() = default;
 
-private:
-    inline static Scope<AudioAPI> s_AudioAPI = AudioAPI::Create();
+    static AssetType GetStaticType() { return AssetType::Audio; }
+    virtual AssetType GetType() const override { return GetStaticType(); }
+
+    static Ref<Audio> Create(const void *data, uint32_t size, uint32_t sampleRate = 44100, uint32_t channels = 2);
+};
+
+class AudioImporter
+{
+public:
+    static Ref<Audio> ImportAudio(const AssetHandle handle, const std::filesystem::path &path);
 };

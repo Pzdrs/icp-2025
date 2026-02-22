@@ -7,13 +7,13 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(const void *data, uint32_t size) : m_Size
     glGenBuffers(1, &m_RendererID);
     glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-    std::cout << "Created VertexBuffer with ID: " << m_RendererID << " and size: " << size << std::endl;
+    // std::cout << "Created VertexBuffer with ID: " << m_RendererID << " and size: " << size << std::endl;
 }
 
 OpenGLVertexBuffer::~OpenGLVertexBuffer()
 {
     glDeleteBuffers(1, &m_RendererID);
-    std::cout << "Destroyed VertexBuffer with ID: " << m_RendererID << std::endl;
+    // std::cout << "Destroyed VertexBuffer with ID: " << m_RendererID << std::endl;
 }
 
 void OpenGLVertexBuffer::Bind() const

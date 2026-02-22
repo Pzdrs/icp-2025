@@ -35,6 +35,7 @@ private:
 
     CreativeCameraController m_CameraController;
     AssetHandle m_BlockAtlasHandle;
+    AssetHandle m_SoundtrackHandle;
     World m_World;
     ShaderLibrary m_ShaderLibrary;
 };

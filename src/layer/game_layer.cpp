@@ -9,14 +9,18 @@
 #include "worldgen/world_generator.hpp"
 #include "input.hpp"
 #include "screenshot.hpp"
+#include "audio/audio_engine.hpp"
+#include "audio/audio.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
+static const std::string SOUNDTRACK = "assets/audio/soundtrack/key.mp3";
 static const std::string BLOCK_MANIFEST = "assets/misc/blocks.json";
 
 GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
+      m_SoundtrackHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(SOUNDTRACK, AssetType::Audio)),
       m_World(CreateScope<OverworldGenerator>(
         GeneratorSeed(0), 
         TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)), 
@@ -24,7 +28,7 @@ GameLayer::GameLayer()
 {
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    m_CameraController.SetPosition({7.0f, 100.0f, 7.0f});
+    m_CameraController.SetPosition({7.0f, 200.0f, 7.0f});
 }
 
 GameLayer::~GameLayer()
@@ -33,6 +37,7 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnAttach()
 {
+    AudioEngine::Play(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SoundtrackHandle));
 }
 
 void GameLayer::OnDetach()
