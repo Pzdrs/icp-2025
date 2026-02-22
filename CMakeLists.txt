@@ -15,6 +15,7 @@ find_package(imguizmo CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 find_package(nfd CONFIG REQUIRED)
+find_package(OpenAL REQUIRED)
 
 add_executable(scuffcraft ${SOURCES})
 
@@ -29,4 +30,5 @@ target_link_libraries(scuffcraft PRIVATE
     imguizmo::imguizmo
     nlohmann_json::nlohmann_json
     nfd::nfd
+    OpenAL::OpenAL
 )

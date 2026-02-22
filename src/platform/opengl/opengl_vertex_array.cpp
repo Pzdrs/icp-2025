@@ -60,7 +60,6 @@ void OpenGLVertexArray::Unbind() const
 
 void OpenGLVertexArray::AddVertexBuffer(Scope<VertexBuffer> vertexBuffer)
 {
-
     if (vertexBuffer->GetLayout().GetElements().size() == 0)
     {
         // assert
