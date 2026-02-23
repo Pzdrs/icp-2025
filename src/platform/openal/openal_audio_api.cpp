@@ -10,6 +10,7 @@ AudioAPI::SourceState TranslateALState(ALint state)
     {
         case AL_PLAYING: return AudioAPI::SourceState::Playing;
         case AL_PAUSED: return AudioAPI::SourceState::Paused;
+        case AL_INITIAL: return AudioAPI::SourceState::Initial;
         default: return AudioAPI::SourceState::Stopped;
     }
 }

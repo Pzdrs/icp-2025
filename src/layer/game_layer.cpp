@@ -38,7 +38,7 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnAttach()
 {
-    MusicManager::Start();
+    // MusicManager::Start();
 }
 
 void GameLayer::OnDetach()

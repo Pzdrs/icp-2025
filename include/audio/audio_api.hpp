@@ -13,7 +13,8 @@ public:
     };
 
     enum class SourceState {
-        Stopped = 0,
+        Initial = 0,
+        Stopped,
         Playing,
         Paused
     };

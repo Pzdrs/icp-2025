@@ -53,7 +53,7 @@ private:
 
 class World
 {
-    static constexpr int RENDER_DISTANCE = 0;
+    static constexpr int RENDER_DISTANCE = 1;
 
 public:
     World(Scope<WorldGenerator> generator) : m_Generator(std::move(generator)) {}
