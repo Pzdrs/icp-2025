@@ -21,6 +21,7 @@ GameLayer::GameLayer()
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
       m_SoundtrackHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(SOUNDTRACK, AssetType::Audio)),
+      m_SpatialAudioHandle(Scuffcraft::Get().GetAssetManager().LoadAsset("assets/audio/mono.mp3", AssetType::Audio)),
       m_World(CreateScope<OverworldGenerator>(
           GeneratorSeed(0),
           TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)),
@@ -37,7 +38,8 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnAttach()
 {
-    AudioEngine::PlayBackground(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SoundtrackHandle));
+    // AudioEngine::PlayBackground(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SoundtrackHandle));
+    AudioEngine::PlayAt(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SpatialAudioHandle), glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void GameLayer::OnDetach()

@@ -19,6 +19,10 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void PlayBackground(const Ref<Audio> &source) = 0;
+    virtual void PlayAt(const Ref<Audio> &source, const glm::vec3 &position) = 0;
+
+    virtual void SetListenerPosition(glm::vec3 position) = 0;
+    virtual void SetListenerOrientation(glm::vec3 forward, glm::vec3 up) = 0;
 
     virtual void SetMasterVolume(float volume) = 0;
     virtual float GetMasterVolume() const = 0;

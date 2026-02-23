@@ -7,23 +7,47 @@
 Ref<Audio> LoadAudioSourceMP3(const AssetHandle handle, const std::filesystem::path &path)
 {
     drmp3 mp3;
+
     if (!drmp3_init_file(&mp3, path.string().c_str(), nullptr))
     {
-        std::cout << "Failed to load audio file: " << path << std::endl;
+        LOG("Failed to load audio file: %s", path.string().c_str());
         return nullptr;
     }
 
-    uint32_t dataSize = static_cast<uint32_t>(mp3.totalPCMFrameCount * mp3.channels * sizeof(int16_t));
-    std::vector<int16_t> audioData(mp3.totalPCMFrameCount * mp3.channels);
-    drmp3_read_pcm_frames_s16(&mp3, mp3.totalPCMFrameCount, audioData.data());
+    std::vector<int16_t> audioData;
+
+    const uint64_t chunkFrames = 4096;
+    std::vector<int16_t> tempBuffer(chunkFrames * mp3.channels);
+
+    uint64_t framesRead;
+
+    while ((framesRead = drmp3_read_pcm_frames_s16(
+                &mp3,
+                chunkFrames,
+                tempBuffer.data())) > 0)
+    {
+        size_t samplesRead = framesRead * mp3.channels;
+        audioData.insert(audioData.end(),
+                         tempBuffer.begin(),
+                         tempBuffer.begin() + samplesRead);
+    }
+
     drmp3_uninit(&mp3);
 
-    Ref<Audio> audioSource = Audio::Create(audioData.data(), dataSize, mp3.sampleRate, mp3.channels);
+    if (audioData.empty())
+        return nullptr;
+
+    size_t dataSize = audioData.size() * sizeof(int16_t);
+
+    Ref<Audio> audioSource =
+        Audio::Create(audioData.data(), dataSize, mp3.sampleRate, mp3.channels);
+
     if (audioSource)
     {
         audioSource->SetType(AssetType::Audio);
         audioSource->SetHandle(handle);
     }
+
     return audioSource;
 }
 

@@ -13,8 +13,10 @@ class ChunkManager;
 enum class MeshState
 {
     NOT_READY = 0,
+    BUILDING,
     READY,
-    DIRTY
+    DIRTY,
+    BUILT
 };
 
 using ChunkPosition = glm::ivec2;
@@ -26,23 +28,28 @@ public:
     static constexpr int SIZE_XZ = 16;
     static constexpr int SIZE_Y = 256;
 
+    struct Mesh {
+        std::vector<Vertex> solidVertices;
+        std::vector<uint32_t> solidIndices;
+    };
+
     Chunk(const ChunkManager &chunkManager, const ChunkPosition &position);
     ~Chunk();
 
-    void BuildMesh();
+    Mesh BuildMesh();
     void UploadMesh();
     void Draw(const Ref<Shader> &shader);
-
-    void NotifyNeighbor(Direction dir);
 
     void SetBlock(int x, int y, int z, Block::ID type) { blocks[x][y][z].type = type; }
     Block::State GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
 
     ChunkPosition GetPosition() const { return m_Position; }
     MeshState GetMeshState() const { return m_MeshState; }
-    void MarkMeshDirty() { m_MeshState = MeshState::DIRTY; }
 
     static glm::ivec2 GetChunkCoords(float worldX, float worldZ);
+
+    void SetMeshState(MeshState state) { m_MeshState = state; }
+    void SetMeshData(Mesh mesh);
 
 private:
     bool IsFaceExposed(int x, int y, int z, Block::Face face, Block::ID type) const;

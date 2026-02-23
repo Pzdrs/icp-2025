@@ -29,9 +29,15 @@ void OpenALAudioAPI::Init()
         return;
     }
 
+    alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+
     InitBackgroundSource();
 
     LOG("OpenAL initialized successfully");
+
+    ALenum model = AL_NONE;
+    alGetIntegerv(AL_DISTANCE_MODEL, (ALint *)&model);
+    LOG("Distance model: %d", model);
 }
 
 void OpenALAudioAPI::InitBackgroundSource()
@@ -62,6 +68,36 @@ void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
     alSourcei(m_BackgroundSource, AL_BUFFER, openALAudio->GetHandle());
 
     alSourcePlay(m_BackgroundSource);
+}
+
+void OpenALAudioAPI::PlayAt(const Ref<Audio> &source, const glm::vec3 &position)
+{
+    auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
+
+    ALuint sourceHandle;
+    alGenSources(1, &sourceHandle);
+
+    alSourcei(sourceHandle, AL_SOURCE_RELATIVE, AL_FALSE);
+    alSource3f(sourceHandle, AL_POSITION, position.x, position.y, position.z);
+
+    alSourcef(sourceHandle, AL_REFERENCE_DISTANCE, 5.0f);
+    alSourcef(sourceHandle, AL_ROLLOFF_FACTOR, 1.0f);
+    alSourcef(sourceHandle, AL_MAX_DISTANCE, 100.0f);
+
+    alSourcei(sourceHandle, AL_BUFFER, openALAudio->GetHandle());
+
+    alSourcePlay(sourceHandle);
+}
+
+void OpenALAudioAPI::SetListenerPosition(glm::vec3 position)
+{
+    alListener3f(AL_POSITION, position.x, position.y, position.z);
+}
+
+void OpenALAudioAPI::SetListenerOrientation(glm::vec3 forward, glm::vec3 up)
+{
+    float orientation[6] = {forward.x, forward.y, forward.z, up.x, up.y, up.z};
+    alListenerfv(AL_ORIENTATION, orientation);
 }
 
 void OpenALAudioAPI::SetMasterVolume(float volume)

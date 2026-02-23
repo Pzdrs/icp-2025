@@ -8,16 +8,17 @@
 #include <render/texture.hpp>
 #include "block_registry.hpp"
 #include "render/renderer3d.hpp"
+#include <thread>
 
 Chunk::~Chunk()
 {
-    std::cout << "Destroying Chunk at (" << m_Position.x << ", " << m_Position.y << ")\n";
+    // std::cout << "Destroying Chunk at (" << m_Position.x << ", " << m_Position.y << ")\n";
 }
 
 Chunk::Chunk(const ChunkManager &chunkManager, const ChunkPosition &position)
     : m_Position(position), m_ChunkManager(chunkManager)
 {
-    std::cout << "Creating Chunk at (" << position.x << ", " << position.y << ")\n";
+    // std::cout << "Creating Chunk at (" << position.x << ", " << position.y << ")\n";
 }
 
 glm::ivec2 Chunk::GetChunkCoords(float worldX, float worldZ)
@@ -57,7 +58,9 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block
 
         Chunk *neighborChunk = m_ChunkManager.GetChunk(neighborChunkX, neighborChunkZ);
         if (!neighborChunk)
-            return false; // treat missing neighbor as solid (prevents holes)
+        {
+            return false;
+        } // treat missing neighbor as solid (prevents holes)
 
         // Wrap local coordinates into neighbor chunk
         int neighborLocalX = (nx + SIZE_XZ) % SIZE_XZ;
@@ -84,10 +87,10 @@ bool Chunk::IsFaceExposed(int chunkX, int y, int chunkZ, Block::Face face, Block
     return !nDef.isSolid;
 }
 
-void Chunk::BuildMesh()
+Chunk::Mesh Chunk::BuildMesh()
 {
-    m_SolidVertices.clear();
-    m_SolidIndices.clear();
+    LOG("Chunk::BuildMesh");
+    Mesh mesh;
 
     unsigned int solidIndexOffset = 0;
 
@@ -117,9 +120,8 @@ void Chunk::BuildMesh()
                     Ref<SubTexture2D> faceTex = BlockRegistry::Get().GetFaceTexture(type, Block::FaceToTextureFace(blockFace));
 
                     // Reference to correct mesh (solid vs transparent)
-                    auto &vertices = m_SolidVertices;
-                    auto &indices = m_SolidIndices;
-                    unsigned int &indexOffset = solidIndexOffset;
+                    auto &vertices = mesh.solidVertices;
+                    auto &indices = mesh.solidIndices;
 
                     // Add 4 vertices per face
                     for (int v = 0; v < 4; v++)
@@ -136,15 +138,19 @@ void Chunk::BuildMesh()
 
                     // Add 6 indices per face
                     for (int i = 0; i < 6; i++)
-                        indices.push_back(indexOffset + Block::GetFaceIndex(i));
-
-                    indexOffset += 4;
+                        indices.push_back(solidIndexOffset + Block::GetFaceIndex(i));
+                    solidIndexOffset += 4;
                 }
             }
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // simulate expensive mesh generation
+
+    return mesh;
 }
 
 void Chunk::UploadMesh()
 {
+    LOG("Chunk::UploadMesh");
     m_SolidVA = VertexArray::Create();
 
     auto vb = VertexBuffer::Create(m_SolidVertices.data(), m_SolidVertices.size() * sizeof(Vertex));
@@ -167,13 +173,16 @@ void Chunk::UploadMesh()
     m_MeshState = MeshState::READY;
 }
 
-void Chunk::NotifyNeighbor(Direction dir)
-{
-    m_MeshState = MeshState::DIRTY;
-}
-
 void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_Position.x * SIZE_XZ, 0.0f, m_Position.y * SIZE_XZ));
     Renderer3D::DrawMesh(shader, m_SolidVA, model);
+}
+
+void Chunk::SetMeshData(Mesh mesh)
+{
+    LOG("Chunk::SetMeshData");
+    m_SolidVertices = std::move(mesh.solidVertices);
+    m_SolidIndices = std::move(mesh.solidIndices);
+    m_MeshState = MeshState::BUILT;
 }

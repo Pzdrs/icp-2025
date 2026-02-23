@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "render/camera/camera_controller.hpp"
 #include "input.hpp"
+#include "audio/audio_engine.hpp"
 
 void CameraController::SetPosition(const glm::vec3 &position)
 {
@@ -108,6 +109,8 @@ bool FreeCameraController::OnMouseMoved(MouseMovedEvent &e)
             m_Yaw += 360.0f;
 
         m_Camera.SetPitchYaw(m_Pitch, m_Yaw);
+
+        AudioEngine::SetListenerOrientation(m_Camera.GetForward(), m_Camera.GetUp());
     }
 
     m_LastX = e.getX();
@@ -189,6 +192,10 @@ void CreativeCameraController::OnUpdate(float dt)
     if (glm::dot(moveDir, moveDir) > 0.0001f)
         moveDir = glm::normalize(moveDir);
 
-    // Apply speed once
-    m_Camera.SetPosition(moveDir * m_CameraSpeed * dt + m_Camera.GetPosition());
+    // Only update position if there's input to prevent unnecessary updates
+    if (moveDir != glm::vec3(0.0f))
+    {
+        m_Camera.SetPosition(moveDir * m_CameraSpeed * dt + m_Camera.GetPosition());
+        AudioEngine::SetListenerPosition(m_Camera.GetPosition());
+    }
 }

@@ -11,6 +11,10 @@ public:
     virtual void Shutdown() override;
 
     virtual void PlayBackground(const Ref<Audio> &source) override;
+    virtual void PlayAt(const Ref<Audio> &source, const glm::vec3 &position) override;
+
+    virtual void SetListenerPosition(glm::vec3 position) override;
+    virtual void SetListenerOrientation(glm::vec3 forward, glm::vec3 up) override;
 
     virtual void SetMasterVolume(float volume) override;
     virtual float GetMasterVolume() const override { return m_MasterVolume; };

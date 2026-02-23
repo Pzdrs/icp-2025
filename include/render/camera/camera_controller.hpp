@@ -54,7 +54,7 @@ protected:
 class FreeCameraController : public PerspectiveCameraController
 {
 protected:
-    static constexpr float DEFAULT_CAMERA_SPEED = 20.0f;
+    static constexpr float DEFAULT_CAMERA_SPEED = 100.0f;
     static constexpr float DEFAULT_MOUSE_SENSITIVITY = 0.1f;
 
 public:

@@ -23,7 +23,7 @@ struct IVec2Hash
 class ChunkManager
 {
 public:
-    const std::unordered_map<glm::ivec2, Scope<Chunk>, IVec2Hash> &GetChunks() const { return m_Chunks; }
+    const std::unordered_map<ChunkPosition, Scope<Chunk>, IVec2Hash> &GetChunks() const { return m_Chunks; }
 
     void ProcessCompletedJobs();
 
@@ -34,22 +34,26 @@ public:
     Chunk *GetChunk(int x, int z) const;
 
     void OnChunkGenerated(Scope<Chunk> chunk);
+    void OnMeshBuilt(ChunkPosition pos, Chunk::Mesh mesh);
 
 private:
     void GenerateChunk(const glm::ivec2 &pos, const WorldGenerator &generator);
 
 private:
-    std::unordered_map<glm::ivec2, Scope<Chunk>, IVec2Hash> m_Chunks;
+    std::unordered_map<ChunkPosition, Scope<Chunk>, IVec2Hash> m_Chunks;
 
-    std::unordered_set<glm::ivec2, IVec2Hash> m_PendingChunks;
+    std::unordered_set<ChunkPosition, IVec2Hash> m_PendingChunks;
+
     std::queue<Scope<Chunk>> m_CompletedChunks;
+    std::queue<std::pair<ChunkPosition, Chunk::Mesh>> m_CompletedMeshes;
+
     std::mutex m_CompletedMutex;
+    std::mutex m_MeshMutex;
 };
 
 class World
 {
-    static constexpr int WORLD_SIZE_XZ = 20;
-    static constexpr int RENDER_DISTANCE = 10;
+    static constexpr int RENDER_DISTANCE = 0;
 
 public:
     World(Scope<WorldGenerator> generator) : m_Generator(std::move(generator)) {}
