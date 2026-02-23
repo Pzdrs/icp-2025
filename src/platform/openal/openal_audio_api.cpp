@@ -29,7 +29,19 @@ void OpenALAudioAPI::Init()
         return;
     }
 
+    InitBackgroundSource();
+
     LOG("OpenAL initialized successfully");
+}
+
+void OpenALAudioAPI::InitBackgroundSource()
+{
+    alGenSources(1, &m_BackgroundSource);
+
+    // 2D sound
+    alSourcei(m_BackgroundSource, AL_SOURCE_RELATIVE, AL_TRUE);
+    alSource3f(m_BackgroundSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
+    alSourcef(m_BackgroundSource, AL_GAIN, 1.0f);
 }
 
 void OpenALAudioAPI::Shutdown()
@@ -43,28 +55,11 @@ void OpenALAudioAPI::Shutdown()
         alcCloseDevice(m_Device);
 }
 
-// do source pools later
-void OpenALAudioAPI::Play(const Ref<Audio> &source)
+void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
 {
-    // Do we even need to check dynamic cast?
     auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
-    if (!openALAudio)
-    {
-        LOG("OpenALAudioAPI::Play received non-OpenAL audio asset");
-        return;
-    }
 
-    ALuint sourceID;
-    alGenSources(1, &sourceID);
+    alSourcei(m_BackgroundSource, AL_BUFFER, openALAudio->GetHandle());
 
-    // 2D sound
-    alSourcei(sourceID, AL_SOURCE_RELATIVE, AL_TRUE);
-    alSource3f(sourceID, AL_POSITION, 0.0f, 0.0f, 0.0f);
-    alSourcef(sourceID, AL_GAIN, 1.0f);
-    alSourcei(sourceID, AL_LOOPING, AL_TRUE);
-
-    // Attach decoded OpenAL buffer
-    alSourcei(sourceID, AL_BUFFER, static_cast<ALint>(openALAudio->GetHandle()));
-
-    alSourcePlay(sourceID);
+    alSourcePlay(m_BackgroundSource);
 }

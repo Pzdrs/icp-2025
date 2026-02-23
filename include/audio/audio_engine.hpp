@@ -19,9 +19,9 @@ public:
         s_AudioAPI->Shutdown();
     }
 
-    inline static void Play(const Ref<Audio> &source)
+    inline static void PlayBackground(const Ref<Audio> &source)
     {
-        s_AudioAPI->Play(source);
+        s_AudioAPI->PlayBackground(source);
     }
 
     inline static AudioAPI::API CurrentAPI() { return AudioAPI::CurrentAPI(); }

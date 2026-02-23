@@ -18,7 +18,7 @@ public:
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
 
-    virtual void Play(const Ref<Audio> &source) = 0;
+    virtual void PlayBackground(const Ref<Audio> &source) = 0;
 
     static API CurrentAPI() { return s_API; }
     static Scope<AudioAPI> Create();

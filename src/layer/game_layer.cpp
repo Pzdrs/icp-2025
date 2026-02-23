@@ -37,7 +37,7 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnAttach()
 {
-    AudioEngine::Play(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SoundtrackHandle));
+    AudioEngine::PlayBackground(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_SoundtrackHandle));
 }
 
 void GameLayer::OnDetach()
