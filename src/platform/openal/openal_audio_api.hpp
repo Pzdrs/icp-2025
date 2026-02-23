@@ -10,9 +10,9 @@ public:
     virtual void Init() override;
     virtual void Shutdown() override;
 
-    virtual void PlayBackground(const Ref<Audio> &source) override;
-    virtual void StopBackground() override;
-    virtual AudioAPI::SourceState GetBackgroundState() const override;
+    virtual void PlayMusic(const Ref<Audio> &source) override;
+    virtual void StopMusic() override;
+    virtual AudioAPI::SourceState GetMusicState() const override;
 
     virtual void PlayAt(const Ref<Audio> &source, const glm::vec3 &position) override;
 

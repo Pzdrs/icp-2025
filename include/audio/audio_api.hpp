@@ -24,9 +24,9 @@ public:
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
 
-    virtual void PlayBackground(const Ref<Audio> &source) = 0;
-    virtual void StopBackground() = 0;
-    virtual SourceState GetBackgroundState() const = 0;
+    virtual void PlayMusic(const Ref<Audio> &source) = 0;
+    virtual void StopMusic() = 0;
+    virtual SourceState GetMusicState() const = 0;
     
     virtual void PlayAt(const Ref<Audio> &source, const glm::vec3 &position) = 0;
 

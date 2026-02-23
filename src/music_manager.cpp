@@ -34,12 +34,12 @@ void MusicManager::Start()
 
 void MusicManager::Stop()
 {
-    AudioEngine::StopBackground();
+    AudioEngine::StopMusic();
 }
 
 void MusicManager::Update()
 {
-    if (AudioEngine::GetBackgroundState() == AudioAPI::SourceState::Stopped)
+    if (AudioEngine::GetMusicState() == AudioAPI::SourceState::Stopped)
     {
         PlayNext();
     }
@@ -52,7 +52,7 @@ void MusicManager::PlayNext()
 
     AssetHandle handle = m_MusicHandles[m_ShuffledOrder[m_CurrentIndex]];
     Ref<Audio> music = Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(handle);
-    AudioEngine::PlayBackground(music);
+    AudioEngine::PlayMusic(music);
 
     m_CurrentIndex = (m_CurrentIndex + 1) % m_MusicHandles.size();
 }

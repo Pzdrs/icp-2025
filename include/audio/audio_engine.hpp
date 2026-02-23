@@ -19,19 +19,19 @@ public:
         s_AudioAPI->Shutdown();
     }
 
-    inline static void PlayBackground(const Ref<Audio> &source)
+    inline static void PlayMusic(const Ref<Audio> &source)
     {
-        s_AudioAPI->PlayBackground(source);
+        s_AudioAPI->PlayMusic(source);
     }
 
-    inline static void StopBackground()
+    inline static void StopMusic()
     {
-        s_AudioAPI->StopBackground();
+        s_AudioAPI->StopMusic();
     }
 
-    inline static AudioAPI::SourceState GetBackgroundState()
+    inline static AudioAPI::SourceState GetMusicState()
     {
-        return s_AudioAPI->GetBackgroundState();
+        return s_AudioAPI->GetMusicState();
     }
 
     inline static void PlayAt(const Ref<Audio> &source, const glm::vec3 &position)

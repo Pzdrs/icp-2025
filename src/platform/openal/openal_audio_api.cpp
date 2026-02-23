@@ -64,7 +64,7 @@ void OpenALAudioAPI::Shutdown()
         alcCloseDevice(m_Device);
 }
 
-void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
+void OpenALAudioAPI::PlayMusic(const Ref<Audio> &source)
 {
     auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
 
@@ -73,12 +73,12 @@ void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
     alSourcePlay(m_MusicSource);
 }
 
-void OpenALAudioAPI::StopBackground()
+void OpenALAudioAPI::StopMusic()
 {
     alSourceStop(m_MusicSource);
 }
 
-AudioAPI::SourceState OpenALAudioAPI::GetBackgroundState() const
+AudioAPI::SourceState OpenALAudioAPI::GetMusicState() const
 {
     ALint state;
     alGetSourcei(m_MusicSource, AL_SOURCE_STATE, &state);
