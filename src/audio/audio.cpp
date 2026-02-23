@@ -32,6 +32,8 @@ Ref<Audio> LoadAudioSourceMP3(const AssetHandle handle, const std::filesystem::p
                          tempBuffer.begin() + samplesRead);
     }
 
+    uint32_t sampleRate = mp3.sampleRate;
+    uint32_t channels = mp3.channels;
     drmp3_uninit(&mp3);
 
     if (audioData.empty())
@@ -39,8 +41,7 @@ Ref<Audio> LoadAudioSourceMP3(const AssetHandle handle, const std::filesystem::p
 
     size_t dataSize = audioData.size() * sizeof(int16_t);
 
-    Ref<Audio> audioSource =
-        Audio::Create(audioData.data(), dataSize, mp3.sampleRate, mp3.channels);
+    Ref<Audio> audioSource = Audio::Create(audioData.data(), dataSize, sampleRate, channels);
 
     if (audioSource)
     {

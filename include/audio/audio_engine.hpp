@@ -24,6 +24,16 @@ public:
         s_AudioAPI->PlayBackground(source);
     }
 
+    inline static void StopBackground()
+    {
+        s_AudioAPI->StopBackground();
+    }
+
+    inline static AudioAPI::SourceState GetBackgroundState()
+    {
+        return s_AudioAPI->GetBackgroundState();
+    }
+
     inline static void PlayAt(const Ref<Audio> &source, const glm::vec3 &position)
     {
         s_AudioAPI->PlayAt(source, position);

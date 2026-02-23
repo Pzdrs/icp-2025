@@ -4,6 +4,16 @@
 #include "openal_audio.hpp"
 #include <memory>
 
+AudioAPI::SourceState TranslateALState(ALint state)
+{
+    switch (state)
+    {
+        case AL_PLAYING: return AudioAPI::SourceState::Playing;
+        case AL_PAUSED: return AudioAPI::SourceState::Paused;
+        default: return AudioAPI::SourceState::Stopped;
+    }
+}
+
 void OpenALAudioAPI::Init()
 {
     m_Device = alcOpenDevice(nullptr);
@@ -32,22 +42,15 @@ void OpenALAudioAPI::Init()
     alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
     InitBackgroundSource();
-
-    LOG("OpenAL initialized successfully");
-
-    ALenum model = AL_NONE;
-    alGetIntegerv(AL_DISTANCE_MODEL, (ALint *)&model);
-    LOG("Distance model: %d", model);
 }
 
 void OpenALAudioAPI::InitBackgroundSource()
 {
-    alGenSources(1, &m_BackgroundSource);
+    alGenSources(1, &m_MusicSource);
 
-    // 2D sound
-    alSourcei(m_BackgroundSource, AL_SOURCE_RELATIVE, AL_TRUE);
-    alSource3f(m_BackgroundSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
-    alSourcef(m_BackgroundSource, AL_GAIN, 1.0f);
+    alSourcei(m_MusicSource, AL_SOURCE_RELATIVE, AL_TRUE);
+    alSource3f(m_MusicSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
+    alSourcef(m_MusicSource, AL_GAIN, 1.0f);
 }
 
 void OpenALAudioAPI::Shutdown()
@@ -65,9 +68,21 @@ void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
 {
     auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
 
-    alSourcei(m_BackgroundSource, AL_BUFFER, openALAudio->GetHandle());
+    alSourcei(m_MusicSource, AL_BUFFER, openALAudio->GetHandle());
 
-    alSourcePlay(m_BackgroundSource);
+    alSourcePlay(m_MusicSource);
+}
+
+void OpenALAudioAPI::StopBackground()
+{
+    alSourceStop(m_MusicSource);
+}
+
+AudioAPI::SourceState OpenALAudioAPI::GetBackgroundState() const
+{
+    ALint state;
+    alGetSourcei(m_MusicSource, AL_SOURCE_STATE, &state);
+    return TranslateALState(state);
 }
 
 void OpenALAudioAPI::PlayAt(const Ref<Audio> &source, const glm::vec3 &position)
@@ -109,5 +124,5 @@ void OpenALAudioAPI::SetMasterVolume(float volume)
 void OpenALAudioAPI::SetMusicVolume(float volume)
 {
     m_MusicVolume = volume;
-    alSourcef(m_BackgroundSource, AL_GAIN, m_MusicVolume);
+    alSourcef(m_MusicSource, AL_GAIN, m_MusicVolume);
 }

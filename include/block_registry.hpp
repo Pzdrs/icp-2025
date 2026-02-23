@@ -24,7 +24,6 @@ public:
     BlockRegistry(const AssetHandle atlasHandle, const glm::vec2 &spriteSize)
         : m_BlockAtlasHandle(atlasHandle), m_SpriteSize(spriteSize)
     {
-        std::cout << "Created BlockRegistry with atlas handle " << atlasHandle << " and sprite size (" << spriteSize.x << ", " << spriteSize.y << ")\n";
     }
 
     ~BlockRegistry() = default;

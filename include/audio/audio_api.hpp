@@ -12,6 +12,12 @@ public:
         OpenAL
     };
 
+    enum class SourceState {
+        Stopped = 0,
+        Playing,
+        Paused
+    };
+
 public:
     virtual ~AudioAPI() = default;
 
@@ -19,6 +25,9 @@ public:
     virtual void Shutdown() = 0;
 
     virtual void PlayBackground(const Ref<Audio> &source) = 0;
+    virtual void StopBackground() = 0;
+    virtual SourceState GetBackgroundState() const = 0;
+    
     virtual void PlayAt(const Ref<Audio> &source, const glm::vec3 &position) = 0;
 
     virtual void SetListenerPosition(glm::vec3 position) = 0;
