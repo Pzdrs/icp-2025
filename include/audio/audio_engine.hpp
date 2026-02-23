@@ -24,7 +24,17 @@ public:
         s_AudioAPI->PlayBackground(source);
     }
 
-    inline static AudioAPI::API CurrentAPI() { return AudioAPI::CurrentAPI(); }
+    inline static float GetMasterVolume() { return s_AudioAPI->GetMasterVolume(); }
+    inline static void SetMasterVolume(float volume) { s_AudioAPI->SetMasterVolume(volume); }
+
+    inline static float GetMusicVolume() { return s_AudioAPI->GetMusicVolume(); }
+    inline static void SetMusicVolume(float volume) { s_AudioAPI->SetMusicVolume(volume); }
+
+    inline static AudioAPI::API
+    CurrentAPI()
+    {
+        return AudioAPI::CurrentAPI();
+    }
 
 private:
     inline static Scope<AudioAPI> s_AudioAPI = AudioAPI::Create();

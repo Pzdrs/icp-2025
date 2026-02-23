@@ -22,9 +22,9 @@ GameLayer::GameLayer()
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
       m_SoundtrackHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(SOUNDTRACK, AssetType::Audio)),
       m_World(CreateScope<OverworldGenerator>(
-        GeneratorSeed(0), 
-        TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)), 
-        SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0))))
+          GeneratorSeed(0),
+          TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)),
+          SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0))))
 {
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
@@ -71,6 +71,17 @@ void GameLayer::OnImGuiRender()
     ImGui::Text("Press Escape to pause/unpause");
     ImGui::Text("Press Super (Command/Windows key) to zoom");
     ImGui::Text("Scroll to zoom in/out after holding Super");
+    ImGui::End();
+
+    ImGui::Begin("Audio controls");
+
+    float masterVolume = AudioEngine::GetMasterVolume();
+    float musicVolume = AudioEngine::GetMusicVolume();
+    if (ImGui::SliderFloat("Master Volume", &masterVolume, 0.0f, 1.0f))
+        AudioEngine::SetMasterVolume(masterVolume);
+    if (ImGui::SliderFloat("Music Volume", &musicVolume, 0.0f, 1.0f))
+        AudioEngine::SetMusicVolume(musicVolume);
+
     ImGui::End();
 }
 

@@ -12,6 +12,12 @@ public:
 
     virtual void PlayBackground(const Ref<Audio> &source) override;
 
+    virtual void SetMasterVolume(float volume) override;
+    virtual float GetMasterVolume() const override { return m_MasterVolume; };
+
+    virtual void SetMusicVolume(float volume) override;
+    virtual float GetMusicVolume() const override { return m_MusicVolume; };
+
 private:
     void InitBackgroundSource();
 
@@ -20,4 +26,7 @@ private:
     ALCcontext *m_Context;
 
     ALuint m_BackgroundSource;
+
+    float m_MasterVolume = 1.0f;
+    float m_MusicVolume = 1.0f;
 };

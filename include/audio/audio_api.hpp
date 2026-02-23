@@ -20,6 +20,12 @@ public:
 
     virtual void PlayBackground(const Ref<Audio> &source) = 0;
 
+    virtual void SetMasterVolume(float volume) = 0;
+    virtual float GetMasterVolume() const = 0;
+
+    virtual void SetMusicVolume(float volume) = 0;
+    virtual float GetMusicVolume() const = 0;
+
     static API CurrentAPI() { return s_API; }
     static Scope<AudioAPI> Create();
 

@@ -63,3 +63,15 @@ void OpenALAudioAPI::PlayBackground(const Ref<Audio> &source)
 
     alSourcePlay(m_BackgroundSource);
 }
+
+void OpenALAudioAPI::SetMasterVolume(float volume)
+{
+    m_MasterVolume = volume;
+    alListenerf(AL_GAIN, m_MasterVolume);
+}
+
+void OpenALAudioAPI::SetMusicVolume(float volume)
+{
+    m_MusicVolume = volume;
+    alSourcef(m_BackgroundSource, AL_GAIN, m_MusicVolume);
+}
