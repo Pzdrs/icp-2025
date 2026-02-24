@@ -23,7 +23,7 @@ public:
     static void Init();
     static void Shutdown();
 
-    static void DrawMesh(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
+    static void DrawMesh(const Ref<Shader> &shader, const Scope<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
 
     static const Statistics &GetStats() { return s_Stats; }
     static void ResetStats() { s_Stats.Reset(); }

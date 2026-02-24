@@ -3,14 +3,14 @@
 #include "render/renderer.hpp"
 #include "../platform/opengl/opengl_vertex_array.hpp"
 
-Ref<VertexArray> VertexArray::Create()
+Scope<VertexArray> VertexArray::Create()
 {
     switch (Renderer::CurrentAPI())
     {
     case RendererAPI::API::None:
         return nullptr;
     case RendererAPI::API::OpenGL:
-        return CreateRef<OpenGLVertexArray>();
+        return CreateScope<OpenGLVertexArray>();
     }
 
     // assert

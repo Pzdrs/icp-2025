@@ -13,7 +13,7 @@ void Renderer3D::Shutdown()
 {
 }
 
-void Renderer3D::DrawMesh(const Ref<Shader> &shader, const Ref<VertexArray> &vertexArray, const glm::mat4 &transform)
+void Renderer3D::DrawMesh(const Ref<Shader> &shader, const Scope<VertexArray> &vertexArray, const glm::mat4 &transform)
 {
     shader->Bind();
     shader->SetInt("uTexture", 0);

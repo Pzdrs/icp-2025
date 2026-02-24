@@ -29,7 +29,8 @@ GameLayer::GameLayer()
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     MusicManager::Init(MUSIC_DIR);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    m_CameraController.SetPosition({7.0f, 200.0f, 7.0f});
+    m_CameraController.SetPosition({7.0f, 500.0f, 7.0f});
+    m_CameraController.SetPitchYaw(-90.0f, 0.0f);
 }
 
 GameLayer::~GameLayer()
@@ -38,7 +39,7 @@ GameLayer::~GameLayer()
 
 void GameLayer::OnAttach()
 {
-    // MusicManager::Start();
+    MusicManager::Start();
 }
 
 void GameLayer::OnDetach()

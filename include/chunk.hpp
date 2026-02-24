@@ -33,11 +33,11 @@ public:
         std::vector<uint32_t> solidIndices;
     };
 
-    Chunk(const ChunkManager &chunkManager, const ChunkPosition &position);
+    Chunk(const ChunkManager &chunkManager, ChunkPosition position);
     ~Chunk();
 
     Mesh BuildMesh();
-    void UploadMesh();
+    void UploadMesh(const Mesh &mesh);
     void Draw(const Ref<Shader> &shader);
 
     void SetBlock(int x, int y, int z, Block::ID type) { blocks[x][y][z].type = type; }
@@ -46,10 +46,9 @@ public:
     ChunkPosition GetPosition() const { return m_Position; }
     MeshState GetMeshState() const { return m_MeshState; }
 
-    static glm::ivec2 GetChunkCoords(float worldX, float worldZ);
+    static ChunkPosition GetChunkCoords(float worldX, float worldZ);
 
     void SetMeshState(MeshState state) { m_MeshState = state; }
-    void SetMeshData(Mesh mesh);
 
 private:
     bool IsFaceExposed(int x, int y, int z, Block::Face face, Block::ID type) const;
@@ -59,10 +58,7 @@ private:
 
     MeshState m_MeshState = MeshState::DIRTY;
 
-    std::vector<Vertex> m_SolidVertices;
-    std::vector<uint32_t> m_SolidIndices;
-
-    Ref<VertexArray> m_SolidVA;
+    Scope<VertexArray> m_SolidVA;
 
     const ChunkPosition m_Position;
     const ChunkManager &m_ChunkManager;

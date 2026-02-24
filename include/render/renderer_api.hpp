@@ -25,7 +25,7 @@ public:
     virtual bool IsMultisamplingEnabled() const = 0;
     virtual void Clear() = 0;
 
-    virtual void DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_t indexCount = 0) = 0;
+    virtual void DrawIndexed(const Scope<VertexArray> &vertexArray, uint32_t indexCount = 0) = 0;
 
     virtual std::vector<unsigned char> CaptureScreenshot(const unsigned int width, const unsigned int height) = 0;
 

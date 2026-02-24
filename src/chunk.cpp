@@ -15,13 +15,13 @@ Chunk::~Chunk()
     // std::cout << "Destroying Chunk at (" << m_Position.x << ", " << m_Position.y << ")\n";
 }
 
-Chunk::Chunk(const ChunkManager &chunkManager, const ChunkPosition &position)
+Chunk::Chunk(const ChunkManager &chunkManager, ChunkPosition position)
     : m_Position(position), m_ChunkManager(chunkManager)
 {
     // std::cout << "Creating Chunk at (" << position.x << ", " << position.y << ")\n";
 }
 
-glm::ivec2 Chunk::GetChunkCoords(float worldX, float worldZ)
+ChunkPosition Chunk::GetChunkCoords(float worldX, float worldZ)
 {
     int chunkX = static_cast<int>(std::floor(worldX / SIZE_XZ));
     int chunkZ = static_cast<int>(std::floor(worldZ / SIZE_XZ));
@@ -148,13 +148,13 @@ Chunk::Mesh Chunk::BuildMesh()
     return mesh;
 }
 
-void Chunk::UploadMesh()
+void Chunk::UploadMesh(const Mesh &mesh)
 {
-    LOG("Chunk::UploadMesh");
+    LOG("Chunk::UploadMesh (with mesh)");
     m_SolidVA = VertexArray::Create();
 
-    auto vb = VertexBuffer::Create(m_SolidVertices.data(), m_SolidVertices.size() * sizeof(Vertex));
-    auto ib = IndexBuffer::Create(m_SolidIndices.data(), m_SolidIndices.size());
+    auto vb = VertexBuffer::Create(mesh.solidVertices.data(), mesh.solidVertices.size() * sizeof(Vertex));
+    auto ib = IndexBuffer::Create(mesh.solidIndices.data(), mesh.solidIndices.size());
 
     vb->SetLayout({
         {ShaderDataType::Float3, "a_Position"},
@@ -165,11 +165,6 @@ void Chunk::UploadMesh()
     m_SolidVA->AddVertexBuffer(std::move(vb));
     m_SolidVA->SetIndexBuffer(std::move(ib));
 
-    // std::cout << "Generated mesh with " << m_SolidVertices.size() << " vertices and " << m_SolidIndices.size() << " indices.\n";
-
-    m_SolidVertices.clear();
-    m_SolidIndices.clear();
-
     m_MeshState = MeshState::READY;
 }
 
@@ -177,12 +172,4 @@ void Chunk::Draw(const Ref<Shader> &shader)
 {
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_Position.x * SIZE_XZ, 0.0f, m_Position.y * SIZE_XZ));
     Renderer3D::DrawMesh(shader, m_SolidVA, model);
-}
-
-void Chunk::SetMeshData(Mesh mesh)
-{
-    LOG("Chunk::SetMeshData");
-    m_SolidVertices = std::move(mesh.solidVertices);
-    m_SolidIndices = std::move(mesh.solidIndices);
-    m_MeshState = MeshState::BUILT;
 }

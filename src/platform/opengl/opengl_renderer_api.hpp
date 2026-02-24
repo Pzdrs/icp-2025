@@ -15,7 +15,7 @@ public:
     virtual void SetClearColor(const glm::vec4 &color) override;
     virtual void Clear() override;
 
-    virtual void DrawIndexed(const Ref<VertexArray> &vertexArray, uint32_t indexCount = 0) override;
+    virtual void DrawIndexed(const Scope<VertexArray> &vertexArray, uint32_t indexCount = 0) override;
 
     virtual std::vector<unsigned char> CaptureScreenshot(const unsigned int width, const unsigned int height) override;
 private:
