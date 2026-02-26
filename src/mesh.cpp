@@ -60,7 +60,7 @@ Ref<StaticMesh> MeshImporter::ImportStaticMesh(const AssetHandle handle, const s
     }
 
     auto vb = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(Vertex));
-    auto ib = IndexBuffer::Create(indices.data(), indices.size() * sizeof(uint32_t));
+    auto ib = IndexBuffer::Create(indices.data(), indices.size());
     auto vao = VertexArray::Create();
 
     vb->SetLayout({

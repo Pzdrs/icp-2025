@@ -10,19 +10,23 @@
 World::World(Scope<WorldGenerator> generator)
     : m_Generator(std::move(generator))
 {
-    m_ChestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest2.obj", AssetType::Mesh);
+    m_ChestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest.obj", AssetType::Mesh);
     m_SteveMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/steve.obj", AssetType::Mesh);
 }
 
-void World::Draw(const Ref<Shader> &shader)
+void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial)
 {
-    Renderer3D::DrawMesh(shader, Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_ChestMeshHandle)->GetVertexArray(), glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 65.0f, 0.0f)));
-    Renderer3D::DrawMesh(shader, Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_SteveMeshHandle)->GetVertexArray(), glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 66.0f, 0.0f)));
+    Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_SteveMeshHandle)->GetVertexArray(), entityMaterial, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 65.0f, 2.0f)));
+
+    Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_ChestMeshHandle)->GetVertexArray(), blockMaterial, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 65.0f, 0.0f)));
 
     for (auto &[pos, chunk] : m_ChunkManager.GetChunks())
     {
         if (chunk->GetMeshState() == MeshState::READY)
-            chunk->Draw(shader);
+        {
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunk->GetPosition().x * Chunk::SIZE_XZ, 0.0f, chunk->GetPosition().y * Chunk::SIZE_XZ));
+            Renderer3D::DrawMesh(chunk->GetSolidVA(), blockMaterial, model);
+        }
     }
 }
 

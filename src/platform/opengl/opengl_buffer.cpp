@@ -2,6 +2,7 @@
 #include "opengl_buffer.hpp"
 #include <glad/glad.h>
 
+// TODO: add dynamic buffer support
 OpenGLVertexBuffer::OpenGLVertexBuffer(const void *data, uint32_t size) : m_Size(size)
 {
     glGenBuffers(1, &m_RendererID);

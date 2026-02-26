@@ -38,7 +38,6 @@ public:
 
     Mesh BuildMesh();
     void UploadMesh(const Mesh &mesh);
-    void Draw(const Ref<Shader> &shader);
 
     void SetBlock(int x, int y, int z, Block::ID type) { blocks[x][y][z].type = type; }
     Block::State GetBlock(int x, int y, int z) const { return blocks[x][y][z]; }
@@ -49,6 +48,8 @@ public:
     static ChunkPosition GetChunkCoords(float worldX, float worldZ);
 
     void SetMeshState(MeshState state) { m_MeshState = state; }
+
+    Scope<VertexArray> &GetSolidVA() { return m_SolidVA; }
 
 private:
     bool IsFaceExposed(int x, int y, int z, Block::Face face, Block::ID type) const;

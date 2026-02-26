@@ -15,9 +15,11 @@ void Renderer3D::Shutdown()
 {
 }
 
-void Renderer3D::DrawMesh(const Ref<Shader> &shader, const Scope<VertexArray> &vertexArray, const glm::mat4 &transform)
+void Renderer3D::DrawMesh(const Scope<VertexArray> &vertexArray, const Ref<Material> &material, const glm::mat4 &transform)
 {
-    shader->Bind();
+    material->Bind();
+
+    const Ref<Shader> &shader = material->GetShader();
     shader->SetInt("uTexture", 0);
     shader->SetMat4("uTransform", transform);
     shader->SetMat4("uViewProjection", Renderer::GetSceneData().ViewProjectionMatrix);

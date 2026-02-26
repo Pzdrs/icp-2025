@@ -21,6 +21,7 @@ GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
+      m_SteveMeshHandle(Scuffcraft::Get().GetAssetManager().LoadAsset("assets/textures/steve.png", AssetType::Texture2D)),
       m_World(CreateScope<OverworldGenerator>(
           GeneratorSeed(0),
           TerrainShaper::CreateSuperflatShaper(GeneratorSeed(0)),
@@ -29,6 +30,12 @@ GameLayer::GameLayer()
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     MusicManager::Init(MUSIC_DIR);
     m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
+    m_BlockMaterial = CreateRef<Material>(m_ShaderLibrary.Get("BlockShader"));
+    m_EntityMaterial = CreateRef<Material>(m_ShaderLibrary.Get("BlockShader"));
+
+    m_BlockMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_BlockAtlasHandle));
+    m_EntityMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_SteveMeshHandle));
+
     m_CameraController.SetPosition({7.0f, 200.0f, 7.0f});
     m_CameraController.SetPitchYaw(-90.0f, 0.0f);
 }
@@ -62,7 +69,7 @@ void GameLayer::OnUpdate(float dt)
 
     Renderer::BeginScene(m_CameraController.GetCamera());
 
-    m_World.Draw(m_ShaderLibrary.Get("BlockShader"));
+    m_World.Draw(m_BlockMaterial, m_EntityMaterial);
 
     Renderer::EndScene();
 }

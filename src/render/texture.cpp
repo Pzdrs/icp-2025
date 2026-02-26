@@ -49,7 +49,6 @@ Ref<Texture2D> TextureImporter::ImportTexture2D(const AssetHandle handle, const 
     }
 
     Ref<Texture2D> texture = Texture2D::Create(spec, data);
-    texture->SetType(AssetType::Texture2D);
     texture->SetHandle(handle);
 
     data.Release();

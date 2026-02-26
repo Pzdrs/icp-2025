@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include "render/vertex_array.hpp"
 #include "render/shader.hpp"
+#include "mesh.hpp"
+#include "render/material.hpp"
 
 // TODO: add batching support to reduce draw calls
 class Renderer3D
@@ -23,7 +25,7 @@ public:
     static void Init();
     static void Shutdown();
 
-    static void DrawMesh(const Ref<Shader> &shader, const Scope<VertexArray> &vertexArray, const glm::mat4 &transform = glm::mat4(1.0f));
+    static void DrawMesh(const Scope<VertexArray> &vertexArray, const Ref<Material> &material, const glm::mat4 &transform = glm::mat4(1.0f));
 
     static const Statistics &GetStats() { return s_Stats; }
     static void ResetStats() { s_Stats.Reset(); }

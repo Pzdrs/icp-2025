@@ -7,7 +7,6 @@
 #include "world.hpp"
 #include <render/texture.hpp>
 #include "block_registry.hpp"
-#include "render/renderer3d.hpp"
 #include <thread>
 
 Chunk::~Chunk()
@@ -170,10 +169,4 @@ void Chunk::UploadMesh(const Mesh &mesh)
     m_SolidVA->SetIndexBuffer(std::move(ib));
 
     m_MeshState = MeshState::READY;
-}
-
-void Chunk::Draw(const Ref<Shader> &shader)
-{
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_Position.x * SIZE_XZ, 0.0f, m_Position.y * SIZE_XZ));
-    Renderer3D::DrawMesh(shader, m_SolidVA, model);
 }

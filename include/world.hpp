@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "worldgen/world_generator.hpp"
 #include "block.hpp"
-#include "render/shader.hpp"
+#include "render/material.hpp"
 #include "chunk_manager.hpp"
 
 class World
@@ -14,7 +14,7 @@ public:
     World(Scope<WorldGenerator> generator);
     ~World() = default;
 
-    void Draw(const Ref<Shader> &shader);
+    void Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial);
     void OnUpdate(const glm::vec3 &playerPos);
     void ProcessCompletedJobs();
 
