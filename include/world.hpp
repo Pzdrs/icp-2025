@@ -15,7 +15,7 @@ public:
     ~World() = default;
 
     void Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial);
-    void OnUpdate(const glm::vec3 &playerPos);
+    void OnUpdate(const float dt, const glm::vec3 &playerPos);
     void ProcessCompletedJobs();
 
     ChunkManager &GetChunkManager() { return m_ChunkManager; }

@@ -60,7 +60,7 @@ void GameLayer::OnUpdate(float dt)
 
     m_CameraController.OnUpdate(dt);
 
-    m_World.OnUpdate(m_CameraController.GetCamera().GetPosition());
+    m_World.OnUpdate(dt, m_CameraController.GetCamera().GetPosition());
 
     m_World.ProcessCompletedJobs();
 

@@ -30,7 +30,7 @@ void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entity
     }
 }
 
-void World::OnUpdate(const glm::vec3 &playerPos)
+void World::OnUpdate(const float dt, const glm::vec3 &playerPos)
 {
     if (!m_ChunkUpdatesEnabled)
         return;

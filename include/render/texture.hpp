@@ -50,4 +50,5 @@ class TextureImporter
 {
 public:
     static Ref<Texture2D> ImportTexture2D(const AssetHandle handle, const std::filesystem::path &path);
+
 };
