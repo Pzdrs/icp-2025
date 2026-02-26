@@ -10,8 +10,10 @@ void OpenGLRendererAPI::Init()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_CULL_FACE);
+    // Default is GL_BACK, but set it explicitly just in case,,.
     glCullFace(GL_BACK);
-    glFrontFace(GL_CW);
+    // Default is CCW, but set it explicitly just in case
+    glFrontFace(GL_CCW);
 
     SetMultisampling(IsMultisamplingEnabled());
 }
@@ -60,6 +62,8 @@ void OpenGLRendererAPI::DrawIndexed(const Scope<VertexArray> &vertexArray, uint3
     vertexArray->Bind();
     uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+    // TODO: investigate why this is needed
+    vertexArray->Unbind();
 }
 
 std::vector<unsigned char> OpenGLRendererAPI::CaptureScreenshot(const unsigned int width, const unsigned int height)

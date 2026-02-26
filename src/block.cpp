@@ -41,10 +41,10 @@ static const glm::vec3 CUBE_VERTS[6][4] = {
      {0, -1, 0}},
 };
 
-// CW winding
+// CCW winding
 static const unsigned int FACE_INDICES[6] = {
-    0, 1, 2,
-    2, 3, 0};
+    0, 3, 2,
+    2, 1, 0};
 
 // tied to the order of faces in the CUBE_VERTS array
 static const glm::ivec3 FACE_DIRS[6] = {
