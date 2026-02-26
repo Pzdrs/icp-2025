@@ -34,4 +34,6 @@ private:
 
     AssetHandle m_ChestMeshHandle;
     AssetHandle m_SteveMeshHandle;
+
+    glm::vec3 m_StevePosition;
 };

@@ -6,6 +6,8 @@
 #include "render/renderer3d.hpp"
 #include "mesh.hpp"
 #include <glm/glm.hpp>
+#include <math.h>
+#include "time.hpp"
 
 World::World(Scope<WorldGenerator> generator)
     : m_Generator(std::move(generator))
@@ -16,7 +18,7 @@ World::World(Scope<WorldGenerator> generator)
 
 void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial)
 {
-    Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_SteveMeshHandle)->GetVertexArray(), entityMaterial, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 65.0f, 2.0f)));
+    Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_SteveMeshHandle)->GetVertexArray(), entityMaterial, glm::translate(glm::mat4(1.0f), m_StevePosition));
 
     Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_ChestMeshHandle)->GetVertexArray(), blockMaterial, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 65.0f, 0.0f)));
 
@@ -32,6 +34,18 @@ void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entity
 
 void World::OnUpdate(const float dt, const glm::vec3 &playerPos)
 {
+
+    float time = (float)Time::TotalTime();
+    float radius = 2.0f;
+    float height = 65.0f;
+
+    glm::vec3 position(
+        radius * cos(time),
+        height,
+        radius * sin(time));
+
+    m_StevePosition = position;
+
     if (!m_ChunkUpdatesEnabled)
         return;
 

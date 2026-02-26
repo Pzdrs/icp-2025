@@ -20,6 +20,7 @@ public:
     virtual void OnAttach() override;
     virtual void OnDetach() override;
     virtual void OnUpdate(float dt) override;
+    virtual void OnUpdateFixed(float dt) override;
     virtual void OnImGuiRender() override;
     virtual void OnEvent(Event &event) override;
 

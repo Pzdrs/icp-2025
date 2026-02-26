@@ -1,7 +1,4 @@
 #include "pch.hpp"
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include "scuffcraft.hpp"
 #include "event/mouse_event.hpp"
 #include "event/key_event.hpp"
@@ -13,6 +10,7 @@
 #include "screenshot.hpp"
 #include "job_system.hpp"
 #include "audio/audio_engine.hpp"
+#include "time.hpp"
 
 Scuffcraft *Scuffcraft::s_Instance = nullptr;
 
@@ -32,6 +30,7 @@ Scuffcraft::Scuffcraft()
     AudioEngine::Init();
     // JobSystem::Init(std::thread::hardware_concurrency() - 1);
     JobSystem::Init(1);
+    Time::Init();
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
@@ -70,12 +69,21 @@ void Scuffcraft::Run()
 {
     while (m_Running)
     {
-        float currentFrame = static_cast<float>(glfwGetTime());
-        m_DeltaTime = currentFrame - m_LastFrameTime;
-        m_LastFrameTime = currentFrame;
+        Time::Update();
 
+        while (Time::ShouldRunFixedStep())
+        {
+            float fixedDt = Time::FixedDeltaTime();
+
+            for (Layer *layer : m_LayerStack)
+                layer->OnUpdateFixed(fixedDt);
+
+            Time::ConsumeFixedStep();
+        }
+
+        float dt = Time::DeltaTime();
         for (Layer *layer : m_LayerStack)
-            layer->OnUpdate(m_DeltaTime);
+            layer->OnUpdate(dt);
 
         m_ImGuiLayer->Begin();
         for (Layer *layer : m_LayerStack)
@@ -119,6 +127,5 @@ bool Scuffcraft::OnFramebufferResize(FramebufferResizeEvent &e)
 
 bool Scuffcraft::OnKeyPressed(KeyPressedEvent &e)
 {
-
     return false;
 }

@@ -12,6 +12,7 @@
 #include "audio/audio_engine.hpp"
 #include "audio/audio.hpp"
 #include "music_manager.hpp"
+#include "time.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string MUSIC_DIR = "assets/audio/soundtrack";
@@ -47,6 +48,7 @@ GameLayer::~GameLayer()
 void GameLayer::OnAttach()
 {
     // MusicManager::Start();
+    // Time::Pause(true);
 }
 
 void GameLayer::OnDetach()
@@ -54,13 +56,16 @@ void GameLayer::OnDetach()
     MusicManager::Stop();
 }
 
+void GameLayer::OnUpdateFixed(float dt)
+{
+    m_World.OnUpdate(dt, m_CameraController.GetCamera().GetPosition());
+}
+
 void GameLayer::OnUpdate(float dt)
 {
     MusicManager::Update();
 
     m_CameraController.OnUpdate(dt);
-
-    m_World.OnUpdate(dt, m_CameraController.GetCamera().GetPosition());
 
     m_World.ProcessCompletedJobs();
 

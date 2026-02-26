@@ -7,32 +7,15 @@
 #include "scuffcraft.hpp"
 
 DebugLayer::DebugLayer(const Camera &camera)
-    : Layer("DebugLayer"), m_Camera(camera)
+    : Layer("DebugLayer"), m_Camera(camera), m_FPSCounter()
 {
-}
-
-DebugLayer::~DebugLayer()
-{
-}
-
-void DebugLayer::OnAttach()
-{
-}
-
-void DebugLayer::OnDetach()
-{
-}
-
-void DebugLayer::OnUpdate(float dt)
-{
-    const float smoothing = 0.1f;
-    m_FrameTime = m_FrameTime * (1.0f - smoothing) + dt * smoothing;
 }
 
 void DebugLayer::OnImGuiRender()
 {
     const auto &caps = Renderer::GetCapabilities();
-    const auto fps = 1.0f / m_FrameTime;
+
+    m_FPSCounter.Update();
 
     ImGui::Begin("Debug Overlay", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -43,8 +26,8 @@ void DebugLayer::OnImGuiRender()
     ImGui::Text("GLSL: %s", caps.ShaderLanguage.c_str());
     ImGui::Separator();
 
-    ImGui::Text("FPS: %.1f", fps);
-    ImGui::Text("Frame Time: %.2f ms", m_FrameTime * 1000.0f);
+    ImGui::Text("FPS: %.1f", m_FPSCounter.GetFPS());
+    ImGui::Text("Frame Time: %.2f ms", m_FPSCounter.GetFrameTimeMS());
     bool vsync = Scuffcraft::Get().GetWindow().IsVSync();
     if (ImGui::Checkbox("VSync", &vsync))
     {
@@ -72,8 +55,4 @@ void DebugLayer::OnImGuiRender()
     }
 
     ImGui::End();
-}
-
-void DebugLayer::OnEvent(Event &event)
-{
 }

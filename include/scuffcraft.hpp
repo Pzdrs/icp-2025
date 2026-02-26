@@ -39,9 +39,6 @@ private:
     bool m_Minimized = false;
     bool m_Fullscreen = false;
 
-    float m_DeltaTime = 0.0f;
-    float m_LastFrameTime = 0.0f;
-
     LayerStack m_LayerStack;
 
     Scope<AssetManager> m_AssetManager;
