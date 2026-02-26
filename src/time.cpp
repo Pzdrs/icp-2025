@@ -22,7 +22,11 @@ void Time::Update()
     s_TotalTicks += deltaTicks;
 
     if (!s_Paused)
+    {
         s_Accumulator += static_cast<uint64_t>(deltaTicks * s_TimeScale);
+        if (s_Accumulator > MAX_ACCUMULATED)
+            s_Accumulator = MAX_ACCUMULATED;
+    }
 }
 
 float Time::DeltaTime()
