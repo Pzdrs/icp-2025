@@ -20,8 +20,6 @@ public:
 
     virtual void Bind(uint32_t slot = 0) const override;
 
-    virtual bool IsLoaded() const override { return m_IsLoaded; }
-
     virtual bool operator==(const Texture &other) const override
     {
         return m_RendererID == other.GetRendererID();

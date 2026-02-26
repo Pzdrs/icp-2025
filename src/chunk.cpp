@@ -109,6 +109,11 @@ Chunk::Mesh Chunk::BuildMesh()
                 // Determine whether block is solid or transparent
                 bool isTransparent = alpha < 1.0f || BlockRegistry::Get().Get(type).id == "water";
 
+                if (isTransparent)
+                {
+                    continue;
+                } // skip transparent blocks for now (TODO: separate solid vs transparent meshes)
+
                 // 6 faces per cube
                 for (int face = 0; face < 6; face++)
                 {
@@ -143,7 +148,7 @@ Chunk::Mesh Chunk::BuildMesh()
                 }
             }
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // simulate expensive mesh generation
+    std::this_thread::sleep_for(std::chrono::milliseconds(50)); // simulate expensive mesh generation
 
     return mesh;
 }
@@ -161,7 +166,6 @@ void Chunk::UploadMesh(const Mesh &mesh)
         {ShaderDataType::Float4, "a_Color"},
         {ShaderDataType::Float2, "a_TexCoord"},
     });
-    m_SolidVA->Bind();
     m_SolidVA->AddVertexBuffer(std::move(vb));
     m_SolidVA->SetIndexBuffer(std::move(ib));
 

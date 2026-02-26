@@ -12,6 +12,7 @@
     },
     "imguizmo",
     "nativefiledialog-extended",
-    "openal-soft"
+    "openal-soft",
+    "tinyobjloader"
   ]
 }

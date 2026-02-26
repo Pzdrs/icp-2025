@@ -8,10 +8,10 @@
 
 class World
 {
-    static constexpr int RENDER_DISTANCE = 16;
+    static constexpr int RENDER_DISTANCE = 1;
 
 public:
-    World(Scope<WorldGenerator> generator) : m_Generator(std::move(generator)) {}
+    World(Scope<WorldGenerator> generator);
     ~World() = default;
 
     void Draw(const Ref<Shader> &shader);
@@ -28,4 +28,10 @@ private:
     ChunkManager m_ChunkManager;
 
     ChunkPosition m_LastPlayerChunk = {INT32_MIN, INT32_MIN};
+
+    bool m_Infinite = false;
+    bool m_ChunkUpdatesEnabled = true;
+
+    AssetHandle m_ChestMeshHandle;
+    AssetHandle m_SteveMeshHandle;
 };

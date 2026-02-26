@@ -2,9 +2,23 @@
 #include "world.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
+#include "scuffcraft.hpp"
+#include "render/renderer3d.hpp"
+#include "mesh.hpp"
+#include <glm/glm.hpp>
+
+World::World(Scope<WorldGenerator> generator)
+    : m_Generator(std::move(generator))
+{
+    m_ChestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest2.obj", AssetType::Mesh);
+    m_SteveMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/steve.obj", AssetType::Mesh);
+}
 
 void World::Draw(const Ref<Shader> &shader)
 {
+    Renderer3D::DrawMesh(shader, Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_ChestMeshHandle)->GetVertexArray(), glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 65.0f, 0.0f)));
+    Renderer3D::DrawMesh(shader, Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_SteveMeshHandle)->GetVertexArray(), glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 66.0f, 0.0f)));
+
     for (auto &[pos, chunk] : m_ChunkManager.GetChunks())
     {
         if (chunk->GetMeshState() == MeshState::READY)
@@ -14,9 +28,15 @@ void World::Draw(const Ref<Shader> &shader)
 
 void World::OnUpdate(const glm::vec3 &playerPos)
 {
-    ChunkPosition playerChunk = Chunk::GetChunkCoords(playerPos.x, playerPos.z);
-    if (playerChunk != m_LastPlayerChunk)
+    if (!m_ChunkUpdatesEnabled)
+        return;
+
+    if (m_Infinite)
     {
+        ChunkPosition playerChunk = Chunk::GetChunkCoords(playerPos.x, playerPos.z);
+        if (playerChunk == m_LastPlayerChunk)
+            return;
+
         m_LastPlayerChunk = playerChunk;
 
         std::vector<ChunkPosition> requiredChunks;
@@ -43,7 +63,37 @@ void World::OnUpdate(const glm::vec3 &playerPos)
         for (const auto &pos : requiredChunks)
             m_ChunkManager.EnsureChunkExists(pos, *m_Generator);
 
-        // UnloadFarChunks(playerChunk);
+        UnloadFarChunks(playerChunk);
+    }
+    else
+    {
+        ChunkPosition playerChunk = {0, 0};
+        int worldDistance = 1;
+
+        std::vector<ChunkPosition> requiredChunks;
+        for (int dx = -worldDistance; dx <= worldDistance; dx++)
+        {
+            for (int dz = -worldDistance; dz <= worldDistance; dz++)
+            {
+                ChunkPosition pos = playerChunk + ChunkPosition(dx, dz);
+
+                if (!m_ChunkManager.HasChunk(pos))
+                    requiredChunks.push_back(pos);
+            }
+        }
+
+        std::sort(requiredChunks.begin(), requiredChunks.end(),
+                  [playerChunk](const ChunkPosition &a, const ChunkPosition &b)
+                  {
+                      auto da = glm::length2(glm::vec2(a - playerChunk));
+                      auto db = glm::length2(glm::vec2(b - playerChunk));
+                      return da < db;
+                  });
+
+        for (const auto &pos : requiredChunks)
+            m_ChunkManager.EnsureChunkExists(pos, *m_Generator);
+
+        m_ChunkUpdatesEnabled = false;
     }
 }
 

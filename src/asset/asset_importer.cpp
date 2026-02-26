@@ -2,11 +2,13 @@
 #include "asset/asset_importer.hpp"
 #include "render/texture.hpp"
 #include "audio/audio.hpp"
+#include "mesh.hpp"
 
 using AssetImportFunction = std::function<Ref<Asset>(const AssetHandle handle, const std::filesystem::path &)>;
 static std::map<AssetType, AssetImportFunction> s_AssetImporters = {
     {AssetType::Texture2D, TextureImporter::ImportTexture2D},
-    {AssetType::Audio, AudioImporter::ImportAudio}};
+    {AssetType::Audio, AudioImporter::ImportAudio},
+    {AssetType::Mesh, MeshImporter::ImportMesh}};
 
 Ref<Asset> AssetImporter::ImportAsset(const AssetHandle handle, const std::filesystem::path &path, AssetType type)
 {

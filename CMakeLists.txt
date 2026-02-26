@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-find_package(OpenCV REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -17,6 +16,7 @@ find_package(Stb REQUIRED)
 find_package(nfd CONFIG REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(fmt REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
 
 add_executable(scuffcraft ${SOURCES})
 
@@ -40,4 +40,5 @@ target_link_libraries(scuffcraft PRIVATE
     imguizmo::imguizmo
     nlohmann_json::nlohmann_json
     nfd::nfd
+    tinyobjloader::tinyobjloader
 )

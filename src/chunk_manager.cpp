@@ -26,8 +26,12 @@ void ChunkManager::ProcessCompletedJobs()
 
 void ChunkManager::EnsureChunkExists(ChunkPosition pos, const WorldGenerator &generator)
 {
-    if (m_PendingChunks.contains(pos) || m_Chunks.contains(pos))
-        return;
+    {
+        std::shared_lock lock(m_ChunksMutex);
+
+        if (m_PendingChunks.contains(pos) || m_Chunks.contains(pos))
+            return;
+    }
 
     m_PendingChunks.insert(pos);
     JobSystem::Dispatch(
@@ -62,7 +66,6 @@ bool ChunkManager::HasChunk(ChunkPosition pos) const
 Chunk *ChunkManager::GetChunk(int x, int z) const
 {
     std::shared_lock lock(m_ChunksMutex);
-
     ChunkPosition pos(x, z);
     auto it = m_Chunks.find(pos);
     if (it != m_Chunks.end())
@@ -72,47 +75,43 @@ Chunk *ChunkManager::GetChunk(int x, int z) const
 
 void ChunkManager::OnChunkGenerated(Scope<Chunk> chunk)
 {
-    std::unique_lock lock(m_ChunksMutex);
-
-    LOG("ChunkManager::OnChunkGenerated");
     ChunkPosition pos = chunk->GetPosition();
-    m_Chunks[pos] = std::move(chunk);
-    m_PendingChunks.erase(pos);
+    Chunk *chunkPtr = nullptr;
 
-    m_Chunks[pos]->SetMeshState(MeshState::BUILDING);
-    // no need for a pending mesh check
-    LOG("Dispatch from ChunkManager::OnChunkGenerated");
-
-    JobSystem::Dispatch(
-        [this, pos]()
-        {
-            auto it = m_Chunks.find(pos);
-            if (it != m_Chunks.end())
-            {
-                auto mesh = it->second->BuildMesh();
-                std::lock_guard lock(m_CompletedMeshesMutex);
-                m_CompletedMeshes.push({pos, std::move(mesh)});
-            }
-        });
-
-    for (auto [dir, offset] : std::vector<std::pair<Direction, ChunkPosition>>{
-             {NORTH, {0, 1}}, {EAST, {1, 0}}, {SOUTH, {0, -1}}, {WEST, {-1, 0}}})
     {
-        auto neighborIt = m_Chunks.find(pos + offset);
-        if (neighborIt != m_Chunks.end())
-        {
-            Chunk *neighborChunk = neighborIt->second.get();
-            neighborChunk->SetMeshState(MeshState::BUILDING);
-            LOG("Dispatch from ChunkManager::OnChunkGenerated for neighbor");
-            JobSystem::Dispatch(
-                [this, neighborChunk]()
-                {
-                    auto mesh = neighborChunk->BuildMesh();
-                    std::lock_guard lock(m_CompletedMeshesMutex);
-                    m_CompletedMeshes.push({neighborChunk->GetPosition(), std::move(mesh)});
-                });
-        }
-    }
+        std::unique_lock lock(m_ChunksMutex);
+        m_Chunks[pos] = std::move(chunk);
+        m_PendingChunks.erase(pos);
+
+        chunkPtr = m_Chunks[pos].get();
+        chunkPtr->SetMeshState(MeshState::BUILDING);
+    } // unlock before meshing
+
+    JobSystem::Dispatch([this, pos, chunkPtr]()
+                        {
+        auto mesh = chunkPtr->BuildMesh();
+        std::lock_guard lock(m_CompletedMeshesMutex);
+        m_CompletedMeshes.push({pos, std::move(mesh)}); });
+
+    // return;
+
+    // for (auto [dir, offset] : std::vector<std::pair<Direction, ChunkPosition>>{
+    //          {NORTH, {0, 1}}, {EAST, {1, 0}}, {SOUTH, {0, -1}}, {WEST, {-1, 0}}})
+    // {
+    //     auto neighborIt = m_Chunks.find(pos + offset);
+    //     if (neighborIt != m_Chunks.end())
+    //     {
+    //         Chunk *neighborChunk = neighborIt->second.get();
+    //         neighborChunk->SetMeshState(MeshState::BUILDING);
+    //         JobSystem::Dispatch(
+    //             [this, neighborChunk]()
+    //             {
+    //                 auto mesh = neighborChunk->BuildMesh();
+    //                 std::lock_guard lock(m_CompletedMeshesMutex);
+    //                 m_CompletedMeshes.push({neighborChunk->GetPosition(), std::move(mesh)});
+    //             });
+    //     }
+    // }
 }
 
 void ChunkManager::OnMeshBuilt(ChunkPosition pos, Chunk::Mesh mesh)
@@ -160,14 +159,23 @@ void ChunkManager::GenerateChunk(ChunkPosition pos, const WorldGenerator &genera
 
 void ChunkManager::BuildMesh(ChunkPosition pos)
 {
-    auto it = m_Chunks.find(pos);
-    if (it == m_Chunks.end())
-        return;
+    Chunk *chunk = nullptr;
+    {
+        std::shared_lock lockChunks(m_ChunksMutex);
 
-    if (it->second->GetMeshState() != MeshState::BUILDING)
-        return;
+        auto it = m_Chunks.find(pos);
+        if (it == m_Chunks.end())
+            return;
 
-    auto mesh = it->second->BuildMesh();
+        if (it->second->GetMeshState() != MeshState::BUILDING)
+            return;
+
+        chunk = it->second.get();
+    }
+
+    auto mesh = chunk->BuildMesh();
+
+    chunk->SetMeshState(MeshState::BUILT);
 
     std::lock_guard lock(m_CompletedMeshesMutex);
     m_CompletedMeshes.push({pos, std::move(mesh)});

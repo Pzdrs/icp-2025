@@ -46,7 +46,7 @@ export VCPKG_ROOT=$(pwd)
 
 - [ ]  lighting model, at least 3 lights (1x ambient, 1x directional, 1x reflector: at least one is moving; + possible other lights)
 - [ ]  correct full scale transparency (at least one transparent object; NOT if(alpha<0.1) {discard;} )
-- [ ]  height map textured by height, proper player height coords
+- [x]  height map textured by height, proper player height coords
 - [ ]  particles
 - [ ]  scripting (useful)
 - [ ]  correct collisions

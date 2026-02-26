@@ -5,6 +5,8 @@
 #include "render/renderer.hpp"
 #include "render/vertex.hpp"
 
+// maybe move vertex struct here
+
 void Renderer3D::Init()
 {
 }

@@ -174,6 +174,11 @@ void CreativeCameraController::OnUpdate(float dt)
 
     glm::vec3 moveDir(0.0f);
 
+    if (Input::IsKeyPressed(Key::LeftControl))
+        m_CameraSpeed = DEFAULT_CAMERA_SPEED * 5.0f;
+    else
+        m_CameraSpeed = DEFAULT_CAMERA_SPEED;
+
     if (Input::IsKeyPressed(Key::W))
         moveDir += forwardXZ;
     if (Input::IsKeyPressed(Key::S))

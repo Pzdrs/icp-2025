@@ -11,9 +11,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [30, 45],
-      "top": [30, 45],
-      "bottom": [30, 45]
+      "side": [1, 63],
+      "top": [1, 63],
+      "bottom": [1, 63]
     }
   },
   {
@@ -22,9 +22,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [17, 53],
-      "top": [17, 53],
-      "bottom": [17, 53]
+      "side": [2, 63],
+      "top": [2, 63],
+      "bottom": [2, 63]
     }
   },
   {
@@ -33,9 +33,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [20, 57],
-      "top": [21, 58],
-      "bottom": [17, 53]
+      "side": [3, 63],
+      "top": [0, 63],
+      "bottom": [2, 63]
     }
   },
   {
@@ -44,9 +44,9 @@
     "solid": false,
     "alpha": 0.5,
     "textures": {
-      "side": [8, 59],
-      "top": [15, 43],
-      "bottom": [15, 43]
+      "side": [32, 56],
+      "top": [62, 60],
+      "bottom": [62, 60]
     }
   },
   {
@@ -55,9 +55,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [17, 56],
-      "top": [17, 56],
-      "bottom": [17, 56]
+      "side": [24, 63],
+      "top": [24, 63],
+      "bottom": [24, 63]
     }
   },
   {
@@ -66,9 +66,9 @@
     "solid": true,
     "alpha": 1.0,
     "textures": {
-      "side": [20, 51],
-      "top": [20, 51],
-      "bottom": [20, 51]
+      "side": [19, 63],
+      "top": [19, 63],
+      "bottom": [19, 63]
     }
   }
 ]

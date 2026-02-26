@@ -30,8 +30,8 @@ Scuffcraft::Scuffcraft()
 
     Renderer::Init();
     AudioEngine::Init();
-    JobSystem::Init(std::thread::hardware_concurrency() - 1);
-    // JobSystem::Init(1);
+    // JobSystem::Init(std::thread::hardware_concurrency() - 1);
+    JobSystem::Init(1);
 
     m_ImGuiLayer = new ImGuiLayer();
     PushOverlay(m_ImGuiLayer);
