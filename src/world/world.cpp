@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "world.hpp"
+#include "world/world.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 #include "scuffcraft.hpp"
@@ -9,19 +9,15 @@
 #include <math.h>
 #include "time.hpp"
 #include "world/components.hpp"
+#include "world/entity.hpp"
 
 World::World(Scope<WorldGenerator> generator)
     : m_Generator(std::move(generator))
 {
-    m_ChestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest.obj", AssetType::Mesh);
-    m_SteveMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/steve.obj", AssetType::Mesh);
-    m_CreeperMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/creeper.obj", AssetType::Mesh);
 }
 
-void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial)
+void World::Draw(const Ref<Material> &blockMaterial)
 {
-    Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(m_ChestMeshHandle)->GetVertexArray(), blockMaterial, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 65.0f, 0.0f)));
-
     for (auto &[pos, chunk] : m_ChunkManager.GetChunks())
     {
         if (chunk->GetMeshState() == MeshState::READY)
@@ -35,7 +31,7 @@ void World::Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entity
                                                                     {
         if (mesh.meshHandle.IsValid())
         {
-            Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(mesh.meshHandle)->GetVertexArray(), entityMaterial, transform);
+            Renderer3D::DrawMesh(Scuffcraft::Get().GetAssetManager().GetAsset<StaticMesh>(mesh.meshHandle)->GetVertexArray(), mesh.material, transform);
         } });
 }
 
@@ -133,27 +129,15 @@ void World::UnloadFarChunks(ChunkPosition playerChunk)
         m_ChunkManager.UnloadChunk(pos);
 }
 
-entt::entity World::SummonEntity(EntityType type, const glm::vec3 &position)
+Entity World::CreateEntity()
 {
-    switch (type)
-    {
-    case EntityType::Steve:
-    {
-        const auto entity = m_Registry.create();
-        m_Registry.emplace<TransformComponent>(entity, position);
-        m_Registry.emplace<StaticMeshComponent>(entity, m_SteveMeshHandle);
-        m_Registry.emplace<CircularMotionComponent>(entity, 2.0f, 1.0f, position.y);
-        return entity;
-    }
-    case EntityType::Creeper:
-    {
-        const auto entity = m_Registry.create();
-        m_Registry.emplace<TransformComponent>(entity, position);
-        m_Registry.emplace<StaticMeshComponent>(entity, m_CreeperMeshHandle);
-        m_Registry.emplace<RotationComponent>(entity, 1.0f, 0.0f);
-        return entity;
-    }
-    }
+    const auto handle = m_Registry.create();
+    return Entity(handle, this);
+}
+
+void World::DestroyEntity(Entity entity)
+{
+    m_Registry.destroy(entity);
 }
 
 void World::UpdateEntities(const float dt)

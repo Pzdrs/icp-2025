@@ -4,7 +4,7 @@
 #include "event/key_event.hpp"
 #include "scuffcraft.hpp"
 #include <imgui.h>
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include "render/render_command.hpp"
 #include "worldgen/world_generator.hpp"
 #include "input.hpp"
@@ -13,6 +13,8 @@
 #include "audio/audio.hpp"
 #include "music_manager.hpp"
 #include "time.hpp"
+#include "world/entity.hpp"
+#include "world/components.hpp"
 
 static const std::string BLOCK_ATLAS = "assets/textures/blocks.png";
 static const std::string MUSIC_DIR = "assets/audio/soundtrack";
@@ -48,8 +50,25 @@ GameLayer::~GameLayer()
 void GameLayer::OnAttach()
 {
     // MusicManager::Start();
-    m_World.SummonEntity(EntityType::Steve, glm::vec3(0.0f, 65.0f, 0.0f));
-    m_World.SummonEntity(EntityType::Creeper, glm::vec3(5.0f, 65.0f, 0.0f));
+
+    auto chestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest.obj", AssetType::Mesh);
+    auto steveMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/steve.obj", AssetType::Mesh);
+    auto creeperMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/creeper.obj", AssetType::Mesh);
+
+    auto chest = m_World.CreateEntity();
+    auto steve = m_World.CreateEntity();
+    auto creeper = m_World.CreateEntity();
+
+    chest.AddComponent<TransformComponent>(glm::vec3(0.0f, 65.0f, 0.0f));
+    chest.AddComponent<StaticMeshComponent>(chestMeshHandle, m_BlockMaterial);
+
+    steve.AddComponent<TransformComponent>(glm::vec3(0.0f, 65.0f, 0.0f));
+    steve.AddComponent<StaticMeshComponent>(steveMeshHandle, m_EntityMaterial);
+    steve.AddComponent<CircularMotionComponent>(2.0f, 1.0f, 65.0f);
+
+    creeper.AddComponent<TransformComponent>(glm::vec3(5.0f, 65.0f, 0.0f));
+    creeper.AddComponent<StaticMeshComponent>(creeperMeshHandle, m_EntityMaterial);
+    creeper.AddComponent<RotationComponent>(1.0f, 0.0f);
 }
 
 void GameLayer::OnDetach()
@@ -75,7 +94,7 @@ void GameLayer::OnUpdate(float dt)
 
     Renderer::BeginScene(m_CameraController.GetCamera());
 
-    m_World.Draw(m_BlockMaterial, m_EntityMaterial);
+    m_World.Draw(m_BlockMaterial);
 
     Renderer::EndScene();
 }

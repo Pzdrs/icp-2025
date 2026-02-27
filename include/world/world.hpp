@@ -4,9 +4,10 @@
 #include "worldgen/world_generator.hpp"
 #include "block.hpp"
 #include "render/material.hpp"
-#include "chunk_manager.hpp"
+#include "world/chunk_manager.hpp"
 #include <entt/entt.hpp>
-#include "entity/entity_type.hpp"
+
+class Entity;
 
 class World
 {
@@ -16,11 +17,12 @@ public:
     World(Scope<WorldGenerator> generator);
     ~World() = default;
 
-    void Draw(const Ref<Material> &blockMaterial, const Ref<Material> &entityMaterial);
+    void Draw(const Ref<Material> &blockMaterial);
     void OnUpdate(const float dt, const glm::vec3 &playerPos);
     void ProcessCompletedJobs();
 
-    entt::entity SummonEntity(EntityType type, const glm::vec3 &position);
+    Entity CreateEntity();
+    void DestroyEntity(Entity entity);
 
     ChunkManager &GetChunkManager() { return m_ChunkManager; }
 
@@ -40,7 +42,5 @@ private:
     bool m_Infinite = false;
     bool m_ChunkUpdatesEnabled = true;
 
-    AssetHandle m_ChestMeshHandle, m_SteveMeshHandle, m_CreeperMeshHandle;
-
-    glm::vec3 m_StevePosition;
+    friend class Entity;
 };

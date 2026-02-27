@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "worldgen/terrain_shaper.hpp"
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include "glm/glm.hpp"
 
 Scope<TerrainShaper> TerrainShaper::CreateNoiseShaper(GeneratorSeed seed)

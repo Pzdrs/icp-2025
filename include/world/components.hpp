@@ -2,10 +2,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "asset/asset.hpp"
+#include "render/material.hpp"
 
 struct StaticMeshComponent
 {
     AssetHandle meshHandle;
+    Ref<Material> material;
 };
 
 struct TransformComponent

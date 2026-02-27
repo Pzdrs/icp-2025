@@ -1,5 +1,5 @@
 #include "pch.hpp"
-#include "chunk_manager.hpp"
+#include "world/chunk_manager.hpp"
 #include "job_system.hpp"
 
 void ChunkManager::ProcessCompletedJobs()

@@ -5,7 +5,7 @@
 #include "event/mouse_event.hpp"
 #include "render/renderer.hpp"
 #include "render/camera/camera_controller.hpp"
-#include "world.hpp"
+#include "world/world.hpp"
 #include "block.hpp"
 #include "render/shader.hpp"
 #include "render/texture.hpp"

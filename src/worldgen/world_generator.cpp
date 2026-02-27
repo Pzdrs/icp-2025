@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "worldgen/world_generator.hpp"
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include "block_registry.hpp"
 
 Block::State OverworldGenerator::GetBlock(int x, int y, int z) const

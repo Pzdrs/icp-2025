@@ -1,10 +1,10 @@
 #include "pch.hpp"
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 
 #include <render/vertex.hpp>
 #include <block.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "world.hpp"
+#include "world/world.hpp"
 #include <render/texture.hpp>
 #include "block_registry.hpp"
 #include <thread>

@@ -1,7 +1,7 @@
 #pragma once
 #include "window.hpp"
 #include "block.hpp"
-#include "world.hpp"
+#include "world/world.hpp"
 #include "event/event.hpp"
 #include "event/key_event.hpp"
 #include "event/application_event.hpp"

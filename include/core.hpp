@@ -5,6 +5,15 @@
 #define BIND_EVENT_FN(fn) [this](auto &&...args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 #define LOG(x, ...) printf(x "\n", ##__VA_ARGS__)
+#define ASSERT(x, ...)                             \
+    do                                             \
+    {                                              \
+        if (!(x))                                  \
+        {                                          \
+            LOG("Assertion failed: " __VA_ARGS__); \
+            __builtin_trap();                      \
+        }                                          \
+    } while (0)
 
 template <typename T>
 using Scope = std::unique_ptr<T>;

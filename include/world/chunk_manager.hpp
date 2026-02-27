@@ -1,7 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "chunk.hpp"
+#include "world/chunk.hpp"
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
