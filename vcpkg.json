@@ -13,6 +13,7 @@
     "imguizmo",
     "nativefiledialog-extended",
     "openal-soft",
-    "tinyobjloader"
+    "tinyobjloader",
+    "entt"
   ]
 }

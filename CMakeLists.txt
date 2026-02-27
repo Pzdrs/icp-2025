@@ -17,6 +17,7 @@ find_package(nfd CONFIG REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(fmt REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)
+find_package(EnTT CONFIG REQUIRED)
 
 add_executable(scuffcraft ${SOURCES})
 
@@ -41,4 +42,5 @@ target_link_libraries(scuffcraft PRIVATE
     nlohmann_json::nlohmann_json
     nfd::nfd
     tinyobjloader::tinyobjloader
+    EnTT::EnTT
 )

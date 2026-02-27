@@ -9,6 +9,8 @@ public:
     UUID(uint64_t uuid);
     UUID(const UUID &) = default;
 
+    bool IsValid() const { return m_UUID != 0; }
+    
     operator uint64_t() const { return m_UUID; }
 
 private:

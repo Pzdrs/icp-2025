@@ -5,6 +5,8 @@
 #include "block.hpp"
 #include "render/material.hpp"
 #include "chunk_manager.hpp"
+#include <entt/entt.hpp>
+#include "entity/entity_type.hpp"
 
 class World
 {
@@ -18,12 +20,18 @@ public:
     void OnUpdate(const float dt, const glm::vec3 &playerPos);
     void ProcessCompletedJobs();
 
+    entt::entity SummonEntity(EntityType type, const glm::vec3 &position);
+
     ChunkManager &GetChunkManager() { return m_ChunkManager; }
 
 private:
     void UnloadFarChunks(ChunkPosition playerChunk);
 
+    void UpdateEntities(const float dt);
+
 private:
+    entt::registry m_Registry;
+
     Scope<WorldGenerator> m_Generator;
     ChunkManager m_ChunkManager;
 
@@ -32,8 +40,7 @@ private:
     bool m_Infinite = false;
     bool m_ChunkUpdatesEnabled = true;
 
-    AssetHandle m_ChestMeshHandle;
-    AssetHandle m_SteveMeshHandle;
+    AssetHandle m_ChestMeshHandle, m_SteveMeshHandle, m_CreeperMeshHandle;
 
     glm::vec3 m_StevePosition;
 };

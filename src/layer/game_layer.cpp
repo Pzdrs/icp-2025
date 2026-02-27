@@ -48,7 +48,8 @@ GameLayer::~GameLayer()
 void GameLayer::OnAttach()
 {
     // MusicManager::Start();
-    // Time::Pause(true);
+    m_World.SummonEntity(EntityType::Steve, glm::vec3(0.0f, 65.0f, 0.0f));
+    m_World.SummonEntity(EntityType::Creeper, glm::vec3(5.0f, 65.0f, 0.0f));
 }
 
 void GameLayer::OnDetach()
