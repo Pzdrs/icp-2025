@@ -24,7 +24,7 @@ GameLayer::GameLayer()
     : Layer("GameLayer"),
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
-      m_SteveMeshHandle(Scuffcraft::Get().GetAssetManager().LoadAsset("assets/textures/steve.png", AssetType::Texture2D)),
+      m_AwMan(Scuffcraft::Get().GetAssetManager().LoadAsset("assets/audio/entity/creeper.mp3", AssetType::Audio)),
       m_World(CreateScope<OverworldGenerator>(
           GeneratorSeed(0),
           TerrainShaper::CreateSuperflatShaper(GeneratorSeed(0)),
@@ -32,14 +32,15 @@ GameLayer::GameLayer()
 {
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     MusicManager::Init(MUSIC_DIR);
-    m_ShaderLibrary.Load("BlockShader", "assets/shaders/block.glsl");
-    m_BlockMaterial = CreateRef<Material>(m_ShaderLibrary.Get("BlockShader"));
-    m_EntityMaterial = CreateRef<Material>(m_ShaderLibrary.Get("BlockShader"));
+
+    m_ShaderLibrary.Load("terrain", "assets/shaders/terrain.glsl");
+    m_ShaderLibrary.Load("entity", "assets/shaders/entity.glsl");
+    
+    m_BlockMaterial = CreateRef<Material>(m_ShaderLibrary.Get("terrain"));
 
     m_BlockMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_BlockAtlasHandle));
-    m_EntityMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_SteveMeshHandle));
 
-    m_CameraController.SetPosition({7.0f, 200.0f, 7.0f});
+    m_CameraController.SetPosition({7.0f, 70.0f, 7.0f});
     m_CameraController.SetPitchYaw(-90.0f, 0.0f);
 }
 
@@ -51,24 +52,45 @@ void GameLayer::OnAttach()
 {
     // MusicManager::Start();
 
+    auto steveTexture = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/textures/steve.png", AssetType::Texture2D);
+    auto creeperTexture = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/textures/creeper.png", AssetType::Texture2D);
+    auto witherTexture = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/textures/wither.png", AssetType::Texture2D);
+
     auto chestMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/chest.obj", AssetType::Mesh);
     auto steveMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/steve.obj", AssetType::Mesh);
     auto creeperMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/creeper.obj", AssetType::Mesh);
+    auto witherMeshHandle = Scuffcraft::Get().GetAssetManager().LoadAsset("assets/models/wither.obj", AssetType::Mesh);
+
+    auto steveMaterial = CreateRef<Material>(m_ShaderLibrary.Get("entity"));
+    steveMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(steveTexture));
+
+    auto creeperMaterial = CreateRef<Material>(m_ShaderLibrary.Get("entity"));
+    creeperMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(creeperTexture));
+
+    auto witherMaterial = CreateRef<Material>(m_ShaderLibrary.Get("entity"));
+    witherMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(witherTexture));
 
     auto chest = m_World.CreateEntity();
     auto steve = m_World.CreateEntity();
     auto creeper = m_World.CreateEntity();
+    auto wither = m_World.CreateEntity();
 
     chest.AddComponent<TransformComponent>(glm::vec3(0.0f, 65.0f, 0.0f));
     chest.AddComponent<StaticMeshComponent>(chestMeshHandle, m_BlockMaterial);
 
     steve.AddComponent<TransformComponent>(glm::vec3(0.0f, 65.0f, 0.0f));
-    steve.AddComponent<StaticMeshComponent>(steveMeshHandle, m_EntityMaterial);
+    steve.AddComponent<StaticMeshComponent>(steveMeshHandle, steveMaterial);
     steve.AddComponent<CircularMotionComponent>(2.0f, 1.0f, 65.0f);
 
     creeper.AddComponent<TransformComponent>(glm::vec3(5.0f, 65.0f, 0.0f));
-    creeper.AddComponent<StaticMeshComponent>(creeperMeshHandle, m_EntityMaterial);
+    creeper.AddComponent<StaticMeshComponent>(creeperMeshHandle, creeperMaterial);
     creeper.AddComponent<RotationComponent>(1.0f, 0.0f);
+
+    wither.AddComponent<TransformComponent>(glm::vec3(-5.0f, 65.0f, 0.0f));
+    wither.AddComponent<StaticMeshComponent>(witherMeshHandle, witherMaterial);
+    wither.AddComponent<RotationComponent>(-1.0f, 0.0f);
+
+    AudioEngine::PlayAt(Scuffcraft::Get().GetAssetManager().GetAsset<Audio>(m_AwMan), glm::vec3(5.0f, 65.0f, 0.0f));
 }
 
 void GameLayer::OnDetach()

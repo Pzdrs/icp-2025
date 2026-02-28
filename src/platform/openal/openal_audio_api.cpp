@@ -4,6 +4,7 @@
 #include "openal_audio.hpp"
 #include <memory>
 
+// TODO: pool sources instead of generating a new one for each sound effect
 AudioAPI::SourceState TranslateALState(ALint state)
 {
     switch (state)
@@ -96,9 +97,9 @@ void OpenALAudioAPI::PlayAt(const Ref<Audio> &source, const glm::vec3 &position)
     alSourcei(sourceHandle, AL_SOURCE_RELATIVE, AL_FALSE);
     alSource3f(sourceHandle, AL_POSITION, position.x, position.y, position.z);
 
-    alSourcef(sourceHandle, AL_REFERENCE_DISTANCE, 5.0f);
+    alSourcef(sourceHandle, AL_REFERENCE_DISTANCE, 2.0f);
     alSourcef(sourceHandle, AL_ROLLOFF_FACTOR, 1.0f);
-    alSourcef(sourceHandle, AL_MAX_DISTANCE, 100.0f);
+    alSourcef(sourceHandle, AL_MAX_DISTANCE, 20.0f);
 
     alSourcei(sourceHandle, AL_BUFFER, openALAudio->GetHandle());
 

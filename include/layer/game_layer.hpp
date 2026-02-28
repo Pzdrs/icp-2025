@@ -36,8 +36,9 @@ private:
     bool m_Fullscreen = false;
 
     CreativeCameraController m_CameraController;
-    AssetHandle m_BlockAtlasHandle, m_SteveMeshHandle;
-    Ref<Material> m_BlockMaterial, m_EntityMaterial;
+    AssetHandle m_BlockAtlasHandle;
+    AssetHandle m_AwMan;
+    Ref<Material> m_BlockMaterial;
     World m_World;
     ShaderLibrary m_ShaderLibrary;
 };
