@@ -33,14 +33,14 @@ export VCPKG_ROOT=$(pwd)
   - [x] antialiasing toggle (with debug menu) - disabled by default, looks better that way
 - [x]  simple GUI: display (at least) GL version, profile, FPS
 - [x]  event processing: camera, object, app behaviour etc. controlled by mouse (both axes, wheel), keyboard, window resize, etc.
-- [ ]  multiple different independently moving 3D models, at leats two loaded from file
+- [x]  multiple different independently moving 3D models, at leats two loaded from file
 - [x]  free floating and first-person-view camera  
   - [x]  Minecraft creative-like camera
   - [x]  Freecam (WSAD use direction vectors)
 - [x]  at least three different textures (or subtextures from texture atlas etc.)
-- [ ]  3D positional audio (multiple sources, background sound)
+- [x]  3D positional audio (multiple sources, background sound)
   - [x] Background music
-  - [ ] Positional sound
+  - [x] Positional sound
 
 ### EXTRAS
 
