@@ -4,15 +4,18 @@
 #include "openal_audio.hpp"
 #include <memory>
 
-// TODO: pool sources instead of generating a new one for each sound effect
 AudioAPI::SourceState TranslateALState(ALint state)
 {
     switch (state)
     {
-        case AL_PLAYING: return AudioAPI::SourceState::Playing;
-        case AL_PAUSED: return AudioAPI::SourceState::Paused;
-        case AL_INITIAL: return AudioAPI::SourceState::Initial;
-        default: return AudioAPI::SourceState::Stopped;
+    case AL_PLAYING:
+        return AudioAPI::SourceState::Playing;
+    case AL_PAUSED:
+        return AudioAPI::SourceState::Paused;
+    case AL_INITIAL:
+        return AudioAPI::SourceState::Initial;
+    default:
+        return AudioAPI::SourceState::Stopped;
     }
 }
 
@@ -43,16 +46,21 @@ void OpenALAudioAPI::Init()
 
     alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
-    InitBackgroundSource();
+    InitSources();
 }
 
-void OpenALAudioAPI::InitBackgroundSource()
+void OpenALAudioAPI::InitSources()
 {
+    // Music source
     alGenSources(1, &m_MusicSource);
 
     alSourcei(m_MusicSource, AL_SOURCE_RELATIVE, AL_TRUE);
     alSource3f(m_MusicSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
     alSourcef(m_MusicSource, AL_GAIN, 1.0f);
+
+    // Source pool
+    for (auto &source : m_SourcePool)
+        alGenSources(1, &source.handle);
 }
 
 void OpenALAudioAPI::Shutdown()
@@ -66,33 +74,40 @@ void OpenALAudioAPI::Shutdown()
         alcCloseDevice(m_Device);
 }
 
-void OpenALAudioAPI::PlayMusic(const Ref<Audio> &source)
+void OpenALAudioAPI::Update()
 {
-    auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
+    for (auto &source : m_SourcePool)
+    {
+        if (!source.inUse)
+            continue;
 
-    alSourcei(m_MusicSource, AL_BUFFER, openALAudio->GetHandle());
-
-    alSourcePlay(m_MusicSource);
+        ALint state;
+        alGetSourcei(source.handle, AL_SOURCE_STATE, &state);
+        if (state == AL_STOPPED)
+            source.inUse = false;
+    }
 }
 
-void OpenALAudioAPI::StopMusic()
+ALuint OpenALAudioAPI::AcquireSource()
 {
-    alSourceStop(m_MusicSource);
-}
+    for (auto &source : m_SourcePool)
+    {
+        if (source.inUse)
+            continue;
 
-AudioAPI::SourceState OpenALAudioAPI::GetMusicState() const
-{
-    ALint state;
-    alGetSourcei(m_MusicSource, AL_SOURCE_STATE, &state);
-    return TranslateALState(state);
+        source.inUse = true;
+        return source.handle;
+    }
+
+    LOG("Out of OpenAL sources!");
+    return 0;
 }
 
 void OpenALAudioAPI::PlayAt(const Ref<Audio> &source, const glm::vec3 &position)
 {
     auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
 
-    ALuint sourceHandle;
-    alGenSources(1, &sourceHandle);
+    ALuint sourceHandle = AcquireSource();
 
     alSourcei(sourceHandle, AL_SOURCE_RELATIVE, AL_FALSE);
     alSource3f(sourceHandle, AL_POSITION, position.x, position.y, position.z);
@@ -123,8 +138,33 @@ void OpenALAudioAPI::SetMasterVolume(float volume)
     alListenerf(AL_GAIN, m_MasterVolume);
 }
 
+///////////////////
+// MUSIC
+///////////////////
+
 void OpenALAudioAPI::SetMusicVolume(float volume)
 {
     m_MusicVolume = volume;
     alSourcef(m_MusicSource, AL_GAIN, m_MusicVolume);
+}
+
+void OpenALAudioAPI::PlayMusic(const Ref<Audio> &source)
+{
+    auto openALAudio = std::dynamic_pointer_cast<OpenALAudio>(source);
+
+    alSourcei(m_MusicSource, AL_BUFFER, openALAudio->GetHandle());
+
+    alSourcePlay(m_MusicSource);
+}
+
+void OpenALAudioAPI::StopMusic()
+{
+    alSourceStop(m_MusicSource);
+}
+
+AudioAPI::SourceState OpenALAudioAPI::GetMusicState() const
+{
+    ALint state;
+    alGetSourcei(m_MusicSource, AL_SOURCE_STATE, &state);
+    return TranslateALState(state);
 }

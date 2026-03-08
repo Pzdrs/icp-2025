@@ -70,6 +70,7 @@ void Scuffcraft::Run()
     while (m_Running)
     {
         Time::Update();
+        AudioEngine::Update();
 
         while (Time::ShouldRunFixedStep())
         {

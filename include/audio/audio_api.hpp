@@ -24,6 +24,7 @@ public:
 
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
+    virtual void Update() = 0;
 
     virtual void PlayMusic(const Ref<Audio> &source) = 0;
     virtual void StopMusic() = 0;

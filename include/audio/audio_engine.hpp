@@ -19,6 +19,11 @@ public:
         s_AudioAPI->Shutdown();
     }
 
+    inline static void Update()
+    {
+        s_AudioAPI->Update();
+    }
+
     inline static void PlayMusic(const Ref<Audio> &source)
     {
         s_AudioAPI->PlayMusic(source);
