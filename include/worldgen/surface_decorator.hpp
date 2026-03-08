@@ -9,7 +9,7 @@ public:
     SurfaceDecorator(GeneratorSeed seed) : m_Seed(seed) {}
     virtual ~SurfaceDecorator() = default;
 
-    virtual const Block::State *GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const = 0;
+    virtual std::optional<Block::State> GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const = 0;
 
     static Scope<SurfaceDecorator> CreateOverworldDecorator(GeneratorSeed seed);
 
@@ -23,5 +23,5 @@ public:
     OverworldSurfaceDecorator(GeneratorSeed seed) : SurfaceDecorator(seed) {}
     virtual ~OverworldSurfaceDecorator() = default;
 
-    virtual const Block::State *GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const override;
+    virtual std::optional<Block::State> GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const override;
 };

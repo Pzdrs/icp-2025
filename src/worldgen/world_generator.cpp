@@ -16,8 +16,8 @@ Block::State OverworldGenerator::GetBlock(int x, int y, int z) const
     }
 
     auto decoratedBlock = m_SurfaceDecorator->GetBlock(x, y, z, surfaceY, m_SeaLevel);
-    if (decoratedBlock)
-        return *decoratedBlock;
+    if (decoratedBlock.has_value())
+        return decoratedBlock.value();
 
     return {BlockRegistry::Get().GetID("stone")};
 }

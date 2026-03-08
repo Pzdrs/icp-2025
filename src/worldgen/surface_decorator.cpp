@@ -6,23 +6,15 @@ Scope<SurfaceDecorator> SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed
     return CreateScope<OverworldSurfaceDecorator>(seed);
 }
 
-const Block::State *OverworldSurfaceDecorator::GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const
+std::optional<Block::State> OverworldSurfaceDecorator::GetBlock(int x, int y, int z, int surfaceHeight, int seaLevel) const
 {
-    static const Block::State GRASS{BlockRegistry::Get().GetID("grass")};
-    static const Block::State DIRT{BlockRegistry::Get().GetID("dirt")};
-    static const Block::State GRAVEL{BlockRegistry::Get().GetID("gravel")};
+    auto id = [](std::string name) { return BlockRegistry::Get().GetID(name); };
 
     if (y == surfaceHeight)
-    {
-        if (y < seaLevel - 1)
-            return &GRAVEL;
-        else
-            return &GRASS;
-    }
-    else if (y < surfaceHeight && y >= surfaceHeight - 3)
-    {
-        return &DIRT;
-    }
+        return Block::State{ y < seaLevel - 1 ? id("gravel") : id("grass") };
 
-    return nullptr;
+    if (y < surfaceHeight && y >= surfaceHeight - 3)
+        return Block::State{ id("dirt") };
+
+    return std::nullopt;
 }
