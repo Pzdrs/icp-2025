@@ -35,7 +35,7 @@ GameLayer::GameLayer()
           SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0)))),
       m_ActiveWorld(m_World)
 {
-    BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
+    BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(18.0f, 16.0f));
     MusicManager::Init(MUSIC_DIR);
 
     m_ShaderLibrary.Load("terrain", "assets/shaders/terrain.glsl");
