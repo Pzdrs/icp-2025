@@ -39,6 +39,8 @@ private:
     AssetHandle m_BlockAtlasHandle;
     AssetHandle m_AwMan;
     Ref<Material> m_BlockMaterial;
-    World m_World;
+    World m_World, m_DemoWorld;
+
+    World &m_ActiveWorld;
     ShaderLibrary m_ShaderLibrary;
 };

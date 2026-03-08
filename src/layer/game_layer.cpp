@@ -25,17 +25,22 @@ GameLayer::GameLayer()
       m_CameraController((float)Scuffcraft::Get().GetWindow().GetWidth() / (float)Scuffcraft::Get().GetWindow().GetHeight()),
       m_BlockAtlasHandle(Scuffcraft::Get().GetAssetManager().LoadAsset(BLOCK_ATLAS, AssetType::Texture2D)),
       m_AwMan(Scuffcraft::Get().GetAssetManager().LoadAsset("assets/audio/entity/creeper.mp3", AssetType::Audio)),
-      m_World(CreateScope<OverworldGenerator>(
+      m_DemoWorld(CreateScope<OverworldGenerator>(
           GeneratorSeed(0),
           TerrainShaper::CreateSuperflatShaper(GeneratorSeed(0)),
-          SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0))))
+          SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0)))),
+      m_World(CreateScope<OverworldGenerator>(
+          GeneratorSeed(0),
+          TerrainShaper::CreateNoiseShaper(GeneratorSeed(0)),
+          SurfaceDecorator::CreateOverworldDecorator(GeneratorSeed(0)))),
+      m_ActiveWorld(m_DemoWorld)
 {
     BlockRegistry::Init(BLOCK_MANIFEST, m_BlockAtlasHandle, glm::vec2(16.0f, 16.0f));
     MusicManager::Init(MUSIC_DIR);
 
     m_ShaderLibrary.Load("terrain", "assets/shaders/terrain.glsl");
     m_ShaderLibrary.Load("entity", "assets/shaders/entity.glsl");
-    
+
     m_BlockMaterial = CreateRef<Material>(m_ShaderLibrary.Get("terrain"));
 
     m_BlockMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(m_BlockAtlasHandle));
@@ -70,10 +75,10 @@ void GameLayer::OnAttach()
     auto witherMaterial = CreateRef<Material>(m_ShaderLibrary.Get("entity"));
     witherMaterial->SetTexture(Scuffcraft::Get().GetAssetManager().GetAsset<Texture2D>(witherTexture));
 
-    auto chest = m_World.CreateEntity();
-    auto steve = m_World.CreateEntity();
-    auto creeper = m_World.CreateEntity();
-    auto wither = m_World.CreateEntity();
+    auto chest = m_ActiveWorld.CreateEntity();
+    auto steve = m_ActiveWorld.CreateEntity();
+    auto creeper = m_ActiveWorld.CreateEntity();
+    auto wither = m_ActiveWorld.CreateEntity();
 
     chest.AddComponent<TransformComponent>(glm::vec3(0.0f, 65.0f, 0.0f));
     chest.AddComponent<StaticMeshComponent>(chestMeshHandle, m_BlockMaterial);
@@ -100,23 +105,23 @@ void GameLayer::OnDetach()
 
 void GameLayer::OnUpdateFixed(float dt)
 {
-    m_World.OnUpdate(dt, m_CameraController.GetCamera().GetPosition());
+    m_ActiveWorld.OnUpdate(dt, m_CameraController.GetCamera().GetPosition());
 }
 
 void GameLayer::OnUpdate(float dt)
 {
-    MusicManager::Update();
+    // MusicManager::Update();
 
     m_CameraController.OnUpdate(dt);
 
-    m_World.ProcessCompletedJobs();
+    m_ActiveWorld.ProcessCompletedJobs();
 
     RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
     RenderCommand::Clear();
 
     Renderer::BeginScene(m_CameraController.GetCamera());
 
-    m_World.Draw(m_BlockMaterial);
+    m_ActiveWorld.Draw(m_BlockMaterial);
 
     Renderer::EndScene();
 }
