@@ -18,10 +18,7 @@ namespace detection
     class FaceProcessor
     {
     public:
-        FaceProcessor(const std::string &cascadePath,
-                      const std::string &lockscreenPath,
-                      const std::string &warningPath,
-                      int cameraIndex = 0);
+        FaceProcessor(const std::string &cascadePath, int cameraIndex = 0);
         ~FaceProcessor();
 
         int RunFromCamera(FPSMeter *fps = nullptr);
@@ -41,8 +38,6 @@ namespace detection
         void TrackerLoop();
 
         cv::CascadeClassifier m_FaceCascade;
-        std::string m_LockscreenPath;
-        std::string m_WarningPath;
         int m_CameraIndex = 0;
 
         std::unique_ptr<cv::VideoCapture> m_Capture;

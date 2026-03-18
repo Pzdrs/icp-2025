@@ -61,8 +61,7 @@ namespace detection
 
         try
         {
-            FaceProcessor processor(resolved.cascadePath, resolved.lockscreenPath, resolved.warningPath,
-                                    resolved.cameraIndex);
+            FaceProcessor processor(resolved.cascadePath, resolved.cameraIndex);
             FPSMeter fps;
             FPSMeter *fpsPtr = resolved.showFps ? &fps : nullptr;
             return processor.RunFromCameraPlusFPS(fpsPtr);

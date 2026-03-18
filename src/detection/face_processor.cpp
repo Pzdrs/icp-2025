@@ -21,13 +21,8 @@ namespace detection
         }
     } // namespace
 
-    FaceProcessor::FaceProcessor(const std::string &cascadePath,
-                                 const std::string &lockscreenPath,
-                                 const std::string &warningPath,
-                                 int cameraIndex)
-        : m_LockscreenPath(lockscreenPath),
-          m_WarningPath(warningPath),
-          m_CameraIndex(cameraIndex)
+    FaceProcessor::FaceProcessor(const std::string &cascadePath, int cameraIndex)
+        : m_CameraIndex(cameraIndex)
     {
         if (!m_FaceCascade.load(cascadePath))
         {
@@ -57,17 +52,8 @@ namespace detection
             return EXIT_FAILURE;
         }
 
-        cv::Mat lockscreen = m_LockscreenPath.empty() ? cv::Mat() : cv::imread(m_LockscreenPath);
-        if (lockscreen.empty())
-        {
-            lockscreen = CreateFallbackImage(cv::Scalar(40, 40, 40), "Waiting for face...");
-        }
-
-        cv::Mat warning = m_WarningPath.empty() ? cv::Mat() : cv::imread(m_WarningPath);
-        if (warning.empty())
-        {
-            warning = CreateFallbackImage(cv::Scalar(10, 10, 160), "Multiple faces detected!");
-        }
+        const cv::Mat lockscreen = CreateFallbackImage(cv::Scalar(40, 40, 40), "Waiting for face...");
+        const cv::Mat warning = CreateFallbackImage(cv::Scalar(10, 10, 160), "Multiple faces detected!");
 
         cv::Mat latestFrame;
         while (!terminate_requested.load())
