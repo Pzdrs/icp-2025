@@ -20,7 +20,7 @@ export VCPKG_ROOT=$(pwd)
 
 ## Requirements
 
-- [ ]  realtime 2D raster processing = tracker, constant quality video encoder (can be separate project) 
+- [x]  realtime 2D raster processing = tracker, constant quality video encoder (can be separate project) 
 - [x]  multiple threads + synchronisation 
   - [x]  procedural world generation (infinite world, chunk-based, multithreaded)
 - [x]  3D GL Core profile + shaders version 4.6, enabled GL debug, used DSA (Direct State Access)
