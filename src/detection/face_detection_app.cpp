@@ -1,7 +1,6 @@
 #include "detection/face_detection_app.hpp"
 
 #include <array>
-#include <cstdlib>
 #include <iostream>
 
 #include <opencv2/opencv.hpp>
@@ -18,11 +17,6 @@ namespace detection
             if (!options.cascadePath.empty())
             {
                 return options.cascadePath;
-            }
-
-            if (const char *env = std::getenv("SCUFFCRAFT_CASCADE"))
-            {
-                return env;
             }
 
             const std::array<std::string, 2> bundledPaths = {
@@ -55,7 +49,7 @@ namespace detection
         if (resolved.cascadePath.empty())
         {
             std::cerr << "Face detection requires a Haar cascade file.\n"
-                      << "Add one to assets or set SCUFFCRAFT_CASCADE." << std::endl;
+                      << "Add haarcascade_frontalface_default.xml to assets/ or specify a path via the menu." << std::endl;
             return EXIT_FAILURE;
         }
 

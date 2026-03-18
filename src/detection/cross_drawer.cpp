@@ -37,4 +37,4 @@ namespace detection
         cv::line(image, verticalStart, verticalEnd, color, thickness);
     }
 
-} // namespace detection
+}

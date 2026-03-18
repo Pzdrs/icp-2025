@@ -19,7 +19,7 @@ namespace detection
             }
             return image;
         }
-    } // namespace
+    }
 
     FaceProcessor::FaceProcessor(const std::string &cascadePath, int cameraIndex)
         : m_CameraIndex(cameraIndex)
