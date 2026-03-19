@@ -1,19 +1,18 @@
 #pragma once
 
+#include <string>
+
 #include <opencv2/core.hpp>
+#include <opencv2/videoio.hpp>
 
-namespace detection
+class RedRecognizer
 {
+public:
+    RedRecognizer();
+    int run_static(std::string path);
+    int run_video(std::string path);
+    cv::Point2f find_red(cv::Mat &frame);
 
-    class ImageProcessor
-    {
-    public:
-        // Detects the largest red object in the HSV interval.
-        // Returns normalized coordinates (0..1). If nothing is found, (-1, -1) is returned.
-        static cv::Point2f DetectRedObject(const cv::Mat &inputImg, cv::Mat &mask,
-                                           const cv::Scalar &lowerBound,
-                                           const cv::Scalar &upperBound,
-                                           float minAreaRatio = 0.01f);
-    };
-
-}
+private:
+    cv::VideoCapture capture_device;
+};

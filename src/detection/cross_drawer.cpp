@@ -1,40 +1,17 @@
 #include "detection/cross_drawer.hpp"
 
-#include <algorithm>
-#include <cmath>
-
-#include <opencv2/imgproc.hpp>
-
-namespace detection
+void CrossDrawer::draw_cross(cv::Mat &img, int x, int y, int size)
 {
+    cv::line(img, cv::Point(x - size / 2, y), cv::Point(x + size / 2, y), CV_RGB(255, 0, 0), 3);
+    cv::line(img, cv::Point(x, y - size / 2), cv::Point(x, y + size / 2), CV_RGB(255, 0, 0), 3);
+}
 
-    void CrossDrawer::DrawCrossNormalized(cv::Mat &image, const cv::Point2f &normalized,
-                                          int size, const cv::Scalar &color, int thickness)
-    {
-        if (image.empty())
-        {
-            return;
-        }
+void CrossDrawer::draw_cross_normalized(cv::Mat &img, cv::Point2f center_normalized, int size)
+{
+    center_normalized.x = std::clamp(center_normalized.x, 0.0f, 1.0f);
+    center_normalized.y = std::clamp(center_normalized.y, 0.0f, 1.0f);
+    size = std::clamp(size, 1, std::min(img.cols, img.rows));
 
-        if (normalized.x < 0.0f || normalized.x > 1.0f || normalized.y < 0.0f || normalized.y > 1.0f)
-        {
-            return;
-        }
-
-        const int width = image.cols;
-        const int height = image.rows;
-        const int cx = static_cast<int>(std::round(normalized.x * static_cast<float>(width - 1)));
-        const int cy = static_cast<int>(std::round(normalized.y * static_cast<float>(height - 1)));
-
-        const int half = size / 2;
-
-        cv::Point horizontalStart(std::max(0, cx - half), cy);
-        cv::Point horizontalEnd(std::min(width - 1, cx + half), cy);
-        cv::Point verticalStart(cx, std::max(0, cy - half));
-        cv::Point verticalEnd(cx, std::min(height - 1, cy + half));
-
-        cv::line(image, horizontalStart, horizontalEnd, color, thickness);
-        cv::line(image, verticalStart, verticalEnd, color, thickness);
-    }
-
+    cv::Point2f center_absolute(center_normalized.x * img.cols, center_normalized.y * img.rows);
+    draw_cross(img, static_cast<int>(center_absolute.x), static_cast<int>(center_absolute.y), size);
 }

@@ -37,7 +37,11 @@ int main()
 {
     if (AskDetection())
     {
-        return detection::RunFaceDetection({});
+        return run_face_detection({
+            .cascadePath = "assets/misc/haarcascade_frontalface_default.xml",
+            .cameraIndex = 1,
+            .showFps = true,
+        });
     }
 
     Scuffcraft app;

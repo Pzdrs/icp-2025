@@ -2,16 +2,11 @@
 
 #include <string>
 
-namespace detection
+struct FaceDetectionOptions
 {
+    std::string cascadePath;
+    int cameraIndex = 1;
+    bool showFps = true;
+};
 
-    struct FaceDetectionOptions
-    {
-        std::string cascadePath;
-        int cameraIndex = 0;
-        bool showFps = true;
-    };
-
-    int RunFaceDetection(const FaceDetectionOptions &options);
-
-}
+int run_face_detection(const FaceDetectionOptions &options);
