@@ -59,12 +59,6 @@ std::vector<cv::Point2f> FaceRecognizer::find_face(cv::Mat &frame)
 
 int FaceRecognizer::run(void)
 {
-    if (!init())
-    {
-        std::cerr << "Failed to initialize face recognizer." << std::endl;
-        return EXIT_FAILURE;
-    }
-
     if (start_background_detection() != EXIT_SUCCESS)
     {
         return EXIT_FAILURE;
@@ -94,12 +88,19 @@ int FaceRecognizer::run(void)
         {
             scene = lockscreen.clone();
         }
-        else if (count == 1 && !latest_frame.empty())
+        else if (count == 1)
         {
-            scene = latest_frame;
-            if (x >= 0.0f && y >= 0.0f)
+            if (!latest_frame.empty())
             {
-                CrossDrawer::draw_cross_normalized(scene, cv::Point2f(x, y), 30);
+                scene = latest_frame;
+                if (x >= 0.0f && y >= 0.0f)
+                {
+                    CrossDrawer::draw_cross_normalized(scene, cv::Point2f(x, y), 30);
+                }
+            }
+            else
+            {
+                scene = lockscreen.clone();
             }
         }
         else
@@ -165,6 +166,7 @@ int FaceRecognizer::start_background_detection(void)
 int FaceRecognizer::stop_background_detection(void)
 {
     terminate_requested.store(true);
+    frame_ready_cv.notify_all();
 
     if (capture_thread.joinable())
     {
@@ -208,6 +210,7 @@ void FaceRecognizer::capture_loop(void)
             shared_frame = local.clone();
             frame_ready.store(true);
         }
+        frame_ready_cv.notify_one();
     }
 }
 
@@ -217,14 +220,15 @@ void FaceRecognizer::tracker_loop(void)
     cv::Mat frame;
     while (!terminate_requested.load())
     {
-        if (!frame_ready.load())
         {
-            std::this_thread::yield();
-            continue;
-        }
-
-        {
-            std::scoped_lock lock(frame_mutex);
+            std::unique_lock lock(frame_mutex);
+            frame_ready_cv.wait(lock, [this] {
+                return terminate_requested.load() || frame_ready.load();
+            });
+            if (terminate_requested.load())
+            {
+                break;
+            }
             if (shared_frame.empty())
             {
                 frame_ready.store(false);

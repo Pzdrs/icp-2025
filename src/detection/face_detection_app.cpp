@@ -15,7 +15,7 @@ int run_face_detection(const FaceDetectionOptions &options)
     FaceRecognizer recognizer(options.cascadePath, options.cameraIndex, options.showFps);
     if (!recognizer.init())
     {
-        std::cerr << "Face detection failed: could not open cascade or camera." << std::endl;
+        std::cerr << "Face detection failed: could not load face cascade." << std::endl;
         return EXIT_FAILURE;
     }
 

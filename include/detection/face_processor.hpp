@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -44,5 +45,6 @@ private:
 
     cv::Mat shared_frame;
     std::mutex frame_mutex;
+    std::condition_variable frame_ready_cv;
     std::atomic<bool> frame_ready{false};
 };
