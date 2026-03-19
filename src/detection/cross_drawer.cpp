@@ -2,8 +2,8 @@
 
 void CrossDrawer::draw_cross(cv::Mat &img, int x, int y, int size)
 {
-    cv::line(img, cv::Point(x - size / 2, y), cv::Point(x + size / 2, y), CV_RGB(255, 0, 0), 3);
-    cv::line(img, cv::Point(x, y - size / 2), cv::Point(x, y + size / 2), CV_RGB(255, 0, 0), 3);
+    cv::line(img, cv::Point(x - size / 2, y), cv::Point(x + size / 2, y), CV_RGB(0, 255, 0), 3);
+    cv::line(img, cv::Point(x, y - size / 2), cv::Point(x, y + size / 2), CV_RGB(0, 255, 0), 3);
 }
 
 void CrossDrawer::draw_cross_normalized(cv::Mat &img, cv::Point2f center_normalized, int size)

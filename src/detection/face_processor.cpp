@@ -1,5 +1,6 @@
 #include "detection/face_processor.hpp"
 
+#include <chrono>
 #include <iostream>
 
 cv::Mat make_fallback_image(const cv::Scalar &color, const std::string &text)
@@ -25,16 +26,12 @@ bool FaceRecognizer::init(void)
         return false;
     }
 
-    capture_device.open(camera_index);
-    return capture_device.isOpened();
+    return true;
 }
 
 FaceRecognizer::~FaceRecognizer()
 {
-    if (capture_device.isOpened())
-    {
-        capture_device.release();
-    }
+    stop_background_detection();
 }
 
 std::vector<cv::Point2f> FaceRecognizer::find_face(cv::Mat &frame)
@@ -62,34 +59,47 @@ std::vector<cv::Point2f> FaceRecognizer::find_face(cv::Mat &frame)
 
 int FaceRecognizer::run(void)
 {
-    if (!capture_device.isOpened() && !init())
+    if (!init())
     {
         std::cerr << "Failed to initialize face recognizer." << std::endl;
         return EXIT_FAILURE;
     }
 
-    RedRecognizer red_recognizer;
+    if (start_background_detection() != EXIT_SUCCESS)
+    {
+        return EXIT_FAILURE;
+    }
+
     fps_meter fps;
     const cv::Mat lockscreen = make_fallback_image(cv::Scalar(40, 40, 40), "Waiting for face...");
     const cv::Mat warning = make_fallback_image(cv::Scalar(10, 10, 160), "Multiple faces detected!");
 
-    cv::Mat frame;
-    while (capture_device.read(frame))
+    cv::Mat latest_frame;
+    while (!terminate_requested.load())
     {
-        cv::Mat scene;
-        std::vector<cv::Point2f> faces = find_face(frame);
+        {
+            std::scoped_lock lock(frame_mutex);
+            if (!shared_frame.empty())
+            {
+                latest_frame = shared_frame.clone();
+            }
+        }
 
-        if (faces.empty())
+        cv::Mat scene;
+        const int count = face_count.load();
+        const float x = result_x.load();
+        const float y = result_y.load();
+
+        if (count <= 0)
         {
             scene = lockscreen.clone();
         }
-        else if (faces.size() == 1)
+        else if (count == 1 && !latest_frame.empty())
         {
-            scene = frame.clone();
-            const cv::Point2f red_center = red_recognizer.find_red(scene);
-            if (red_center.x >= 0.0f && red_center.y >= 0.0f)
+            scene = latest_frame;
+            if (x >= 0.0f && y >= 0.0f)
             {
-                CrossDrawer::draw_cross_normalized(scene, red_center, 30);
+                CrossDrawer::draw_cross_normalized(scene, cv::Point2f(x, y), 30);
             }
         }
         else
@@ -116,10 +126,127 @@ int FaceRecognizer::run(void)
         const int key = cv::waitKey(1);
         if (key == 27 || key == 'q')
         {
-            break;
+            terminate_requested.store(true);
         }
     }
 
     cv::destroyWindow("Face+Cup Detection");
+    return stop_background_detection();
+}
+
+int FaceRecognizer::start_background_detection(void)
+{
+    if (capture_device && capture_device->isOpened())
+    {
+        std::cerr << "Background detection is already running." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    capture_device = std::make_unique<cv::VideoCapture>(camera_index);
+    if (!capture_device->isOpened())
+    {
+        std::cerr << "Failed to open camera index " << camera_index << std::endl;
+        capture_device.reset();
+        return EXIT_FAILURE;
+    }
+
+    terminate_requested.store(false);
+    result_x.store(-1.0f);
+    result_y.store(-1.0f);
+    face_count.store(0);
+    frame_ready.store(false);
+
+    capture_thread = std::thread(&FaceRecognizer::capture_loop, this);
+    tracker_thread = std::thread(&FaceRecognizer::tracker_loop, this);
+
     return EXIT_SUCCESS;
+}
+
+int FaceRecognizer::stop_background_detection(void)
+{
+    terminate_requested.store(true);
+
+    if (capture_thread.joinable())
+    {
+        capture_thread.join();
+    }
+
+    if (tracker_thread.joinable())
+    {
+        tracker_thread.join();
+    }
+
+    if (capture_device)
+    {
+        capture_device->release();
+        capture_device.reset();
+    }
+
+    return EXIT_SUCCESS;
+}
+
+void FaceRecognizer::capture_loop(void)
+{
+    cv::Mat local;
+    while (!terminate_requested.load())
+    {
+        if (!capture_device || !capture_device->isOpened())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            continue;
+        }
+
+        (*capture_device) >> local;
+        if (local.empty())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
+
+        {
+            std::scoped_lock lock(frame_mutex);
+            shared_frame = local.clone();
+            frame_ready.store(true);
+        }
+    }
+}
+
+void FaceRecognizer::tracker_loop(void)
+{
+    RedRecognizer red_recognizer;
+    cv::Mat frame;
+    while (!terminate_requested.load())
+    {
+        if (!frame_ready.load())
+        {
+            std::this_thread::yield();
+            continue;
+        }
+
+        {
+            std::scoped_lock lock(frame_mutex);
+            if (shared_frame.empty())
+            {
+                frame_ready.store(false);
+                continue;
+            }
+            frame = shared_frame.clone();
+            frame_ready.store(false);
+        }
+
+        const std::vector<cv::Point2f> faces = find_face(frame);
+        face_count.store(static_cast<int>(faces.size()));
+
+        if (faces.size() == 1)
+        {
+            const cv::Point2f red_center = red_recognizer.find_red(frame);
+            result_x.store(red_center.x);
+            result_y.store(red_center.y);
+        }
+        else
+        {
+            result_x.store(-1.0f);
+            result_y.store(-1.0f);
+        }
+    }
 }

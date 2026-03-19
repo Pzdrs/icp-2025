@@ -19,45 +19,40 @@ cv::Point2f RedRecognizer::find_red(cv::Mat &frame)
     cv::Mat hsv;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
 
-    cv::Mat mask;
-    cv::inRange(hsv, cv::Scalar(175, 115, 115), cv::Scalar(180, 255, 255), mask);
+    cv::Mat mask1, mask2;
+    cv::inRange(hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask1);
+    cv::inRange(hsv, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), mask2);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
-    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
-    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
+    cv::Mat mask = mask1 | mask2;
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
     if (contours.empty())
     {
         return cv::Point2f(-1.0f, -1.0f);
     }
 
-    const double min_area = 0.01 * static_cast<double>(frame.cols * frame.rows);
-    double best_area = 0.0;
-    cv::Point2f best_center(-1.0f, -1.0f);
-
-    for (const auto &contour : contours)
+    size_t largest_contour_index = 0;
+    double largest_area = 0.0;
+    for (size_t i = 0; i < contours.size(); ++i)
     {
-        const double area = cv::contourArea(contour);
-        if (area < min_area || area < best_area)
+        double area = cv::contourArea(contours[i]);
+        if (area > largest_area)
         {
-            continue;
+            largest_area = area;
+            largest_contour_index = i;
         }
-
-        cv::Moments moments = cv::moments(contour);
-        if (moments.m00 == 0.0)
-        {
-            continue;
-        }
-
-        const float cx = static_cast<float>(moments.m10 / moments.m00);
-        const float cy = static_cast<float>(moments.m01 / moments.m00);
-        best_area = area;
-        best_center = cv::Point2f(cx / static_cast<float>(frame.cols), cy / static_cast<float>(frame.rows));
     }
 
-    return best_center;
+    cv::Moments moments = cv::moments(contours[largest_contour_index]);
+    if (moments.m00 == 0)
+    {
+        return cv::Point2f(-1.0f, -1.0f);
+    }
+
+    return cv::Point2f(static_cast<float>(moments.m10 / moments.m00) / frame.cols,
+                       static_cast<float>(moments.m01 / moments.m00) / frame.rows);
 }
 
 int RedRecognizer::run_static(std::string path)
