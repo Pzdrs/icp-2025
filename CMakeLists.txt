@@ -18,6 +18,7 @@ find_package(OpenAL REQUIRED)
 find_package(fmt REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
 
 add_executable(scuffcraft ${SOURCES})
 
@@ -43,4 +44,10 @@ target_link_libraries(scuffcraft PRIVATE
     nfd::nfd
     tinyobjloader::tinyobjloader
     EnTT::EnTT
+    opencv_core
+    opencv_imgproc
+    opencv_highgui
+    opencv_videoio
+    opencv_objdetect
+    opencv_imgcodecs
 )
