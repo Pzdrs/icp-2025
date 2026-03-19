@@ -16,9 +16,6 @@
 
         shellHook = ''
           export VCPKG_ROOT=${pkgs.vcpkg}/share/vcpkg
-          alias build="./scripts/build.sh"
-          alias run="./build/icp-fuckfest"
-          alias br="build && run"
         '';
       };
     };
